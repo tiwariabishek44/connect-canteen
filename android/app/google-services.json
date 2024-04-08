@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "999730318693",
+    "project_id": "connect-cant",
+    "storage_bucket": "connect-cant.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:999730318693:android:696c321cf43b858593a58c",
+        "android_client_info": {
+          "package_name": "com.example.connect_canteen"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5VIVGPVFRcNLohPEako3CA8PUf0w5JNQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
