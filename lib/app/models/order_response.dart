@@ -16,6 +16,7 @@ class OrderResponse {
   final String holdDate;
   final String orderTime;
   final String customerImage;
+  final String orderHoldTime;
 
   OrderResponse({
     required this.customerImage,
@@ -35,6 +36,7 @@ class OrderResponse {
     required this.orderType, // Add orderType to the constructor
     required this.holdDate,
     required this.orderTime,
+    required this.orderHoldTime,
   });
 
   Map<String, dynamic> toMap() {
@@ -56,6 +58,7 @@ class OrderResponse {
       'holdDate': holdDate,
       'orderTime': orderTime,
       "customerImage": customerImage,
+      'orderHoldTime': orderHoldTime,
     };
   }
 
@@ -89,6 +92,7 @@ class OrderResponse {
           map['holdDate'] ?? '', // Provide a default value if holdDate is null
       orderTime: map['orderTime'] ?? '',
       customerImage: map['customerImage'] ?? '',
+      orderHoldTime: map['orderHoldTime'] ?? '',
     );
   }
 }

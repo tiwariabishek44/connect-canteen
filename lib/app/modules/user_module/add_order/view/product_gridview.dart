@@ -30,11 +30,16 @@ class ProductGrid extends StatelessWidget {
         return productContorller.productLoaded.value == false
             ? const NoDataWidget(
                 message: "There is no items", iconData: Icons.error_outline)
-            : ListView.builder(
+            : GridView.builder(
                 shrinkWrap: true,
-                physics: ScrollPhysics(),
-                itemCount:
-                    productContorller.allProductResponse.value.response!.length,
+                physics: NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2, // number of items in each row
+                    mainAxisSpacing: 20.0, // spacing between rows
+                    crossAxisSpacing: 20.0, // spacing between columns
+                    childAspectRatio: 0.72),
+                itemCount: productContorller.allProductResponse.value.response!
+                    .length, // total number of items
                 itemBuilder: (context, index) {
                   final product = productContorller
                       .allProductResponse.value.response![index];
@@ -42,27 +47,36 @@ class ProductGrid extends StatelessWidget {
                     // Added condition to check if product is active
                     return GestureDetector(
                       onTap: () async {
-                        Get.to(() => ProductDetailsPage(
-                              dat: dat,
-                              product: product,
-                              user: logincontroller
-                                  .userDataResponse.value.response!.first,
-                            ));
+                        Get.to(
+                            () => ProductDetailsPage(
+                                  dat: dat,
+                                  product: product,
+                                  user: logincontroller
+                                      .userDataResponse.value.response!.first,
+                                ),
+                            transition: Transition.rightToLeft,
+                            duration: duration);
                       },
                       child: Padding(
                         padding: EdgeInsets.symmetric(vertical: 5),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: AppColors.lightColor,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8.0),
+                              boxShadow: [
+                                BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 1,
+                                    blurRadius: 3,
+                                    offset: const Offset(2, 2))
+                              ]),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               AspectRatio(
-                                aspectRatio: 2,
+                                aspectRatio: 1.11,
                                 child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
+                                  borderRadius: BorderRadius.circular(8),
                                   child: CachedNetworkImage(
                                     progressIndicatorBuilder:
                                         (context, url, downloadProgress) =>

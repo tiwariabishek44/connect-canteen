@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:connect_canteen/another_page.dart';
+import 'package:connect_canteen/app/local_notificaiton/local_notifications.dart';
 import 'package:connect_canteen/app/widget/splash_screen.dart';
-import 'package:connect_canteen/home.dart';
-import 'package:connect_canteen/local_notifications.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +12,7 @@ import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
@@ -190,3 +189,82 @@ class OfflineScreen extends StatelessWidget {
     );
   }
 }
+
+
+
+// import 'package:flutter/material.dart';
+// import 'package:intl/intl.dart';
+
+// void main() {
+//   runApp(MyApp());
+// }
+
+// class FoodOrderTime {
+//   final String mealTime;
+//   final String orderHoldTime;
+
+//   FoodOrderTime({required this.mealTime, required this.orderHoldTime});
+// }
+
+// class MyApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'Canteen Food Order Times',
+//       theme: ThemeData(
+//         primarySwatch: Colors.blue,
+//       ),
+//       home: FoodOrderTimePage(),
+//     );
+//   }
+// }
+
+// class FoodOrderTimePage extends StatelessWidget {
+//   final List<FoodOrderTime> foodOrderTimes = [
+//     FoodOrderTime(mealTime: "09:00", orderHoldTime: "08:00"),
+//     FoodOrderTime(mealTime: "12:30", orderHoldTime: "11:30"),
+//     FoodOrderTime(mealTime: "18:00", orderHoldTime: "17:00"),
+//   ];
+
+//   // Function to check if the current time falls within the allowed order time range in Nepali time
+//   bool isOrderTime() {
+//     DateTime currentTime = DateTime.now().toUtc(); // Get current UTC time
+//     var nepalTimeZoneOffset =
+//         Duration(hours: 5, minutes: 45); // Nepal is UTC+5:45
+//     currentTime = currentTime.add(nepalTimeZoneOffset); // Convert to Nepal time
+
+//     // Convert current time to Nepali time
+//     final nepaliCurrentTime = DateFormat('HH:mm').format(currentTime);
+
+//     int currentHour = int.parse(nepaliCurrentTime.split(":")[0]);
+//     return (currentHour >= 15 ||
+//         currentHour < 8); // Order time is from 4 PM to 8 AM
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Canteen Food Order Times'),
+//       ),
+//       body: isOrderTime()
+//           ? ListView.builder(
+//               itemCount: foodOrderTimes.length,
+//               itemBuilder: (BuildContext context, int index) {
+//                 return ListTile(
+//                   title: Text('Meal Time: ${foodOrderTimes[index].mealTime}'),
+//                   subtitle: Text(
+//                       'Order Hold Time: ${foodOrderTimes[index].orderHoldTime}'),
+//                 );
+//               },
+//             )
+//           : Center(
+//               child: Text(
+//                 'Meal orders are accepted from 4 PM to 8 AM Nepali time.',
+//                 style: TextStyle(fontSize: 16),
+//                 textAlign: TextAlign.center,
+//               ),
+//             ),
+//     );
+//   }
+// }

@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:connect_canteen/local_notifications.dart';
+import 'package:connect_canteen/app/local_notificaiton/local_notifications.dart';
 import 'package:flutter/material.dart';
 
 class Homepage extends StatefulWidget {

@@ -8,7 +8,7 @@ import 'package:connect_canteen/app/modules/user_module/home/product_controller.
 import 'package:connect_canteen/app/modules/vendor_modules/menue/view/menue_view.dart';
 import 'package:connect_canteen/app/modules/vendor_modules/analytics/view/analytics_page.dart';
 import 'package:connect_canteen/app/modules/vendor_modules/class_wise_analytics/view/class_wise_analysis.dart';
-import 'package:connect_canteen/app/modules/vendor_modules/orders_holds/view/order_hold_view.dart';
+import 'package:connect_canteen/app/modules/vendor_modules/orders_holds/view/order_cancel.dart';
 import 'package:connect_canteen/app/modules/vendor_modules/dashboard/demand_supply.dart';
 import 'package:connect_canteen/app/modules/vendor_modules/order_requirements/view/order_requirement_view.dart';
 import 'package:intl/intl.dart';

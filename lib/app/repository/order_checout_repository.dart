@@ -67,10 +67,9 @@ class CheckoutRepository {
   }
 
 //----------to hold the orders-------------
-  Future<SingleApiResponse<void>> holdOrder(
-      String groupCode, String date) async {
+  Future<SingleApiResponse<void>> holdOrder(String orderId, String date) async {
     final response = await ApiClient().update<void>(
-      filters: {'id': groupCode},
+      filters: {'id': orderId},
       updateField: {'date': '', 'orderType': 'hold', 'holdDate': date},
       collection: ApiEndpoints.orderCollection,
       responseType:

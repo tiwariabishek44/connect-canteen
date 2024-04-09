@@ -54,7 +54,7 @@ class VendorOrderController extends GetxController {
 
       isloading(true);
       final filter = {
-        "groupcod": groupId,
+        "groupcod": "1429",
         'checkout': 'false',
         'orderType': 'regular',
         'date': formattedDate,

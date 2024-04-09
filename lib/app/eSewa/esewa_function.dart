@@ -32,6 +32,7 @@ class Esewa {
     required String checkout,
     required String mealtime,
     required String date,
+    required String orderHoldTime,
   }) {
     try {
       EsewaFlutterSdk.initPayment(
@@ -48,23 +49,22 @@ class Esewa {
         onPaymentSuccess: (EsewaPaymentSuccessResult result) {
           log(result.toString());
 
-          verify(
-            result,
-            context: context,
-            customerimage: customerImage,
-            classs: classs,
-            customer: customer,
-            groupid: groupid,
-            cid: cid,
-            productName: productName,
-            productImage: productImage,
-            price: price,
-            quantity: quantity,
-            groupcod: groupcod,
-            checkout: checkout,
-            mealtime: mealtime,
-            date: date,
-          );
+          verify(result,
+              context: context,
+              customerimage: customerImage,
+              classs: classs,
+              customer: customer,
+              groupid: groupid,
+              cid: cid,
+              productName: productName,
+              productImage: productImage,
+              price: price,
+              quantity: quantity,
+              groupcod: groupcod,
+              checkout: checkout,
+              mealtime: mealtime,
+              date: date,
+              orderHoldTime: orderHoldTime);
         },
         onPaymentFailure: () {
           debugPrint('FAILURE');
@@ -94,6 +94,7 @@ class Esewa {
     required String mealtime,
     required String date,
     required String customerimage,
+    required String orderHoldTime,
   }) async {
     try {
       String basicAuth =
@@ -128,6 +129,7 @@ class Esewa {
           quantity: 1,
           productImage: productImage,
           customerImage: customerimage,
+          orderHoldTime: orderHoldTime,
         );
         log("--------------${response.body}");
       } else {

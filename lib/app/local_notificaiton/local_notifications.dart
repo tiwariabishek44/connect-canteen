@@ -194,7 +194,7 @@ class LocalNotifications {
       body:
           "Don't forget to order your meal! Order before  hours to ensure you don't miss today's menu. Time is running out!", // Updated notification message
       payload: payload,
-      scheduledDateTime: nowInNepal.add(Duration(seconds: M2)),
+      scheduledDateTime: nowInNepal.add(Duration(hours: M2)),
     );
 
 //-------------Evening  1 notificaiton
@@ -203,7 +203,7 @@ class LocalNotifications {
       body:
           "Don't forget to order your meal! Order before  hours to ensure you don't miss today's menu. Time is running out!", // Updated notification message
       payload: payload,
-      scheduledDateTime: nowInNepal.add(Duration(seconds: E1)),
+      scheduledDateTime: nowInNepal.add(Duration(hours: E1)),
     );
 
 //-------------Evening  2 notificaiton
@@ -212,7 +212,7 @@ class LocalNotifications {
       body:
           "Don't forget to order your meal! Order before  hours to ensure you don't miss today's menu. Time is running out!", // Updated notification message
       payload: payload,
-      scheduledDateTime: nowInNepal.add(Duration(seconds: E2)),
+      scheduledDateTime: nowInNepal.add(Duration(hours: E2)),
     );
 
 //-------------Evening  3 notificaiton
@@ -221,7 +221,7 @@ class LocalNotifications {
       body:
           "Don't forget to order your meal! Order before  hours to ensure you don't miss today's menu. Time is running out!", // Updated notification message
       payload: payload,
-      scheduledDateTime: nowInNepal.add(Duration(seconds: E3)),
+      scheduledDateTime: nowInNepal.add(Duration(hours: E3)),
     );
 
 //-------------Evening  4 notificaiton
@@ -231,7 +231,7 @@ class LocalNotifications {
       body:
           "Don't forget to order your meal! Order before  hours to ensure you don't miss today's menu. Time is running out!", // Updated notification message
       payload: payload,
-      scheduledDateTime: nowInNepal.add(Duration(seconds: E4)),
+      scheduledDateTime: nowInNepal.add(Duration(hours: E4)),
     );
   }
 

@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+import 'package:connect_canteen/app/config/colors.dart';
+import 'package:connect_canteen/app/modules/vendor_modules/orders_checkout/veodor_order_controller.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -12,12 +14,18 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 
 class OrderCancel extends StatelessWidget {
   final holdOrderController = Get.put(CanteenHoldOrders());
+  final ordercontroller = Get.put(VendorOrderController());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
-        title: Text("Orders Hold"),
+        scrolledUnderElevation: 0,
+        title: Text(
+          "Orders Hold",
+          style: AppStyles.appbar,
+        ),
       ),
       body: Padding(
         padding: AppPadding.screenHorizontalPadding,
@@ -28,9 +36,9 @@ class OrderCancel extends StatelessWidget {
                 child: TextField(
                   onChanged: (value) {
                     log(value);
-                    holdOrderController.fetchOrders(value!);
+                    ordercontroller.fetchOrders(value!);
                   },
-                  controller: holdOrderController.groupcod,
+                  controller: ordercontroller.groupcod,
                   decoration: InputDecoration(
                     prefixIcon: IconButton(
                       icon: Icon(
@@ -58,60 +66,89 @@ class OrderCancel extends StatelessWidget {
                   ),
                 )),
             SizedBox(
-              height: 2.h,
+              height: 1.h,
             ),
             Expanded(
                 flex: 9,
                 child: Obx(() {
-                  if (!holdOrderController.isOrderFetch.value) {
+                  if (!ordercontroller.isOrderFetch.value) {
                     return EmptyOrderPage();
                   } else {
-                    if (holdOrderController.isloading.value ||
+                    if (ordercontroller.isloading.value ||
                         holdOrderController.holdLoading.value)
                       return LoadingScreen();
                     else {
                       return SingleChildScrollView(
                         child: Column(
                           children: [
+                            Container(
+                              height: 10.h,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                physics: ScrollPhysics(),
+                                itemCount: ordercontroller
+                                    .orderResponse.value.response!.length,
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                    child: Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 1.w),
+                                      child: Container(
+                                        height: 10.h,
+                                        width: 10.h,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(100),
+                                        ),
+                                        child: ClipOval(
+                                          child: CachedNetworkImage(
+                                            imageUrl: ordercontroller
+                                                    .orderResponse
+                                                    .value
+                                                    .response![index]
+                                                    .customerImage ??
+                                                '',
+                                            fit: BoxFit.cover,
+                                            errorWidget:
+                                                (context, url, error) => Icon(
+                                                    Icons.error_outline,
+                                                    size: 40),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            SizedBox(
+                              height: 2.h,
+                            ),
+                            const Divider(
+                              height: 0.5,
+                              thickness: 0.5,
+                              color: Color.fromARGB(221, 93, 90, 90),
+                            ),
+                            SizedBox(
+                              height: 2.h,
+                            ),
                             ListView.builder(
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
-                              itemCount: holdOrderController
+                              itemCount: ordercontroller
                                   .orderResponse.value.response!.length,
                               itemBuilder: (context, index) {
                                 return Padding(
                                   padding: EdgeInsets.only(bottom: 2.0.h),
                                   child: GestureDetector(
                                     onTap: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return ConfirmationDialog(
-                                            isbutton: true,
-                                            heading: 'Hold Order',
-                                            subheading:
-                                                "Be Sure This  meal will not be prepared in the canteen.",
-                                            firstbutton: "Agree",
-                                            secondbutton: 'Cancel',
-                                            onConfirm: () {
-                                              holdOrderController.holdUserOrder(
-                                                  context,
-                                                  holdOrderController
-                                                      .orderResponse
-                                                      .value
-                                                      .response![index]
-                                                      .id,
-                                                  holdOrderController
-                                                      .orderResponse
-                                                      .value
-                                                      .response![index]
-                                                      .date);
-
-                                              // Perform actions when the user agrees
-                                            },
-                                          );
-                                        },
-                                      );
+                                      FocusScope.of(context).unfocus();
+                                      holdOrderController.holdUserOrder(
+                                          context,
+                                          ordercontroller.orderResponse.value
+                                              .response![index].id,
+                                          ordercontroller.orderResponse.value
+                                              .response![index].date);
                                     },
                                     child: Container(
                                       height: 17.h,
@@ -126,14 +163,14 @@ class OrderCancel extends StatelessWidget {
                                               color: Colors
                                                   .white, // Add a background color
                                             ),
-                                            height: 15.h,
+                                            height: 20.h,
                                             width: 30.w,
                                             child: ClipRRect(
                                               // Use ClipRRect to ensure that the curved corners are applied
                                               borderRadius:
                                                   BorderRadius.circular(7),
                                               child: CachedNetworkImage(
-                                                imageUrl: holdOrderController
+                                                imageUrl: ordercontroller
                                                         .orderResponse
                                                         .value
                                                         .response![index]
@@ -155,7 +192,7 @@ class OrderCancel extends StatelessWidget {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                holdOrderController
+                                                ordercontroller
                                                     .orderResponse
                                                     .value
                                                     .response![index]
@@ -165,34 +202,34 @@ class OrderCancel extends StatelessWidget {
                                                 style: AppStyles.listTileTitle,
                                               ),
                                               Text(
-                                                'Rs.${holdOrderController.orderResponse.value.response![index].price.toStringAsFixed(2)}',
+                                                'Rs.${ordercontroller.orderResponse.value.response![index].price.toStringAsFixed(2)}',
                                                 style: AppStyles.listTileTitle,
                                               ),
                                               Text(
-                                                  '${holdOrderController.orderResponse.value.response![index].customer}',
+                                                  '${ordercontroller.orderResponse.value.response![index].customer}',
                                                   style: AppStyles
                                                       .listTilesubTitle),
                                               Text(
-                                                '${holdOrderController.orderResponse.value.response![index].date}' +
-                                                    '(${holdOrderController.orderResponse.value.response![index].mealtime})',
+                                                '${ordercontroller.orderResponse.value.response![index].date}' +
+                                                    '(${ordercontroller.orderResponse.value.response![index].mealtime})',
                                                 style:
                                                     AppStyles.listTilesubTitle,
                                               ),
                                               Text(
-                                                '${holdOrderController.orderResponse.value.response![index].quantity}-plate',
+                                                '${ordercontroller.orderResponse.value.response![index].quantity}-plate',
                                                 style:
                                                     AppStyles.listTilesubTitle,
                                               ),
                                               SizedBox(
                                                 height: 0.4.h,
                                               ),
-                                              holdOrderController
+                                              ordercontroller
                                                               .orderResponse
                                                               .value
                                                               .response![index]
                                                               .holdDate !=
                                                           '' ||
-                                                      holdOrderController
+                                                      ordercontroller
                                                           .orderResponse
                                                           .value
                                                           .response![index]
@@ -212,7 +249,7 @@ class OrderCancel extends StatelessWidget {
                                                                 horizontal:
                                                                     2.w),
                                                         child: Text(
-                                                            "Hold:${holdOrderController.orderResponse.value.response![index].holdDate}",
+                                                            "Hold:${ordercontroller.orderResponse.value.response![index].holdDate}",
                                                             style: AppStyles
                                                                 .listTilesubTitle),
                                                       ),

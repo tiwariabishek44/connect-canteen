@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connect_canteen/app/widget/custom_loging_widget.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -35,32 +37,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    checkTimeAndSetDate();
-  }
-
-  void checkTimeAndSetDate() {
-    DateTime currentDate = DateTime.now();
-    NepaliDateTime nepaliDateTime = NepaliDateTime.fromDateTime(currentDate);
-    int currentHour = currentDate.hour;
-    setState(() {
-      dat = DateFormat('dd/MM/yyyy\'', 'en').format(nepaliDateTime);
-    });
-
-    if ((currentHour >= 15 && currentHour <= 23) ||
-        (currentHour >= 0 && currentHour < 1)) {
-      // After 4 pm but not after 1 am (next day)
-      NepaliDateTime tomorrow = nepaliDateTime.add(Duration(days: 1));
-      setState(() {
-        dat = DateFormat('dd/MM/yyyy\'', 'en').format(tomorrow);
-      });
-    } else if (currentHour >= 1) {
-      // 1 am or later
-      setState(() {
-        dat = DateFormat('dd/MM/yyyy\'', 'en').format(nepaliDateTime);
-      });
-    } else {
-      // Handle other cases if needed
-    }
   }
 
   @override
@@ -68,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
     LoginController().fetchUserData();
     return Scaffold(
       backgroundColor:
-          AppColors.backgroundColor, // Make scaffold background transparent
+          AppColors.greyColor, // Make scaffold background transparent
       body: RefreshIndicator(
         onRefresh: () => _refreshData(),
         child: Padding(
@@ -80,16 +56,19 @@ class _MyHomePageState extends State<MyHomePage> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    height: 3.h,
-                  ),
-                  CustomTopBar(),
                   Expanded(
                     child: SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
+                          SizedBox(
+                            height: 3.h,
+                          ),
+                          CustomTopBar(),
+                          SizedBox(
+                            height: 2.h,
+                          ),
+                          SizedBox(
                             width: 70.w,
                             child: Text(
                               "Popular Food Items",

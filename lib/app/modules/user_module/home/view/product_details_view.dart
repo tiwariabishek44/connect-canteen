@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connect_canteen/app/models/food_order_time_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:connect_canteen/app/config/colors.dart';
 import 'package:connect_canteen/app/config/style.dart';
 import 'package:connect_canteen/app/eSewa/esewa_function.dart';
@@ -11,10 +11,8 @@ import 'package:connect_canteen/app/models/users_model.dart';
 import 'package:connect_canteen/app/modules/common/login/login_controller.dart';
 import 'package:connect_canteen/app/modules/user_module/add_order/add_product_controller.dart';
 import 'package:connect_canteen/app/modules/user_module/group/group_controller.dart';
-import 'package:connect_canteen/app/modules/user_module/group/view/group.dart';
 import 'package:connect_canteen/app/widget/confirmation_dialog.dart';
 import 'package:connect_canteen/app/widget/loading_screen.dart';
-import 'package:nepali_utils/nepali_utils.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -41,16 +39,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   final addproductController = Get.put(AddProductController());
 
   late final Esewa esewa;
-
-  List<String> timeSlots = [
-    '8:30',
-    '9:30',
-    '11:30',
-    '12:30',
-    '1:30',
+  final List<FoodOrderTime> foodOrdersTime = [
+    FoodOrderTime(mealTime: "09:00", orderHoldTime: "8:00"),
+    FoodOrderTime(mealTime: "10:30", orderHoldTime: "9:30"),
+    FoodOrderTime(mealTime: "11:00", orderHoldTime: "10:00"),
   ];
 
-  bool isMealTimeSelectionVisible = true;
   // Add this variable
   int selectedIndex = -1;
 
@@ -58,41 +52,21 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   void initState() {
     super.initState();
     esewa = Esewa(addproductController);
-
-    checkTimeAndSetVisibility();
-  }
-
-  void checkTimeAndSetVisibility() {
-    DateTime currentDate = DateTime.now();
-    int currentHour = currentDate.hour;
-
-    if ((currentHour >= 16 && currentHour <= 24) ||
-        (currentHour >= 1 && currentHour < 8)) {
-      // After 4 pm but not after 8 am of the next day
-      setState(() {
-        isMealTimeSelectionVisible = true;
-      });
-    }
   }
 
   void showNoSelectionMessage() {
     Get.snackbar(
       'No Time Slot Selected',
       'Please select a time slot',
-      backgroundColor: Colors.red, // Set your desired background color here
-      colorText: Colors.white, // Set the text color
+      backgroundColor: Color.fromARGB(
+          255, 229, 226, 226), // Set your desired background color here
+      colorText: Color.fromARGB(255, 6, 6, 6), // Set the text color
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    DateTime currentDate = DateTime.now();
-    NepaliDateTime nepaliDateTime = NepaliDateTime.fromDateTime(currentDate);
-    String formattedDate = DateFormat.yMd().add_jm().format(nepaliDateTime);
-
-    int currentHour = currentDate.hour;
-
-    String dateMessage;
+    addproductController.checkTimeAndSetVisibility();
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       body: Stack(
@@ -235,12 +209,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         height: 2.h,
                       ),
                       SizedBox(height: 2.h),
-                      isMealTimeSelectionVisible
+                      Obx(() => addproductController.isorderStart.value
                           ? Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "Select Meal Time:-  ",
+                                  "Select Meal Time:-  ${addproductController.mealtime.value}",
                                   style: AppStyles.titleStyle,
                                 ),
                                 Container(
@@ -253,13 +227,17 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                             crossAxisSpacing: 8.0,
                                             mainAxisSpacing: 10.0,
                                             childAspectRatio: 3.5),
-                                    itemCount: timeSlots.length,
+                                    itemCount: foodOrdersTime.length,
                                     itemBuilder: (context, index) {
                                       return GestureDetector(
                                         onTap: () {
-                                          setState(() {
-                                            selectedIndex = index;
-                                          });
+                                          addproductController.mealtime.value =
+                                              foodOrdersTime[index].mealTime;
+                                          addproductController
+                                                  .orderHoldTime.value =
+                                              foodOrdersTime[index]
+                                                  .orderHoldTime
+                                                  .toString();
                                         },
                                         child: Container(
                                           decoration: BoxDecoration(
@@ -268,15 +246,18 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                                     AppColors.secondaryColor),
                                             borderRadius:
                                                 BorderRadius.circular(10),
-                                            color: selectedIndex == index
+                                            color: addproductController
+                                                        .mealtime.value ==
+                                                    foodOrdersTime[index]
+                                                        .mealTime
                                                 ? Color.fromARGB(
-                                                    255, 187, 188, 189)
+                                                    255, 219, 211, 163)
                                                 : const Color.fromARGB(
                                                     255, 247, 245, 245),
                                           ),
                                           child: Center(
                                             child: Text(
-                                              timeSlots[index],
+                                              foodOrdersTime[index].mealTime,
                                               style: TextStyle(
                                                   fontSize: 18.0,
                                                   color: Color.fromARGB(
@@ -289,6 +270,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   ),
                                 ),
                                 SizedBox(height: 3.h),
+                                topicRow('Order For ',
+                                    addproductController.orderDate.value),
                                 topicRow('Subtotal',
                                     "Rs. ${widget.product.price.toInt()}"),
                                 topicRow('Platform Fee', 'Rs.1'),
@@ -299,52 +282,60 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                 ),
                                 GestureDetector(
                                   onTap: () {
-                                    logincontroller.userDataResponse.value
-                                            .response!.first.groupid.isNotEmpty
-                                        ? esewa.pay(context,
-                                            customerImage:
-                                                widget.user.profilePicture,
-                                            mealtime: "8:30",
-                                            classs: widget.user.classes,
-                                            date: widget.dat,
-                                            checkout: 'false',
-                                            customer: widget.user.name,
-                                            groupcod: groupcontroller
-                                                .groupResponse
+                                    addproductController.mealtime.value.isEmpty
+                                        ? showNoSelectionMessage()
+                                        : logincontroller
+                                                .userDataResponse
                                                 .value
                                                 .response!
                                                 .first
-                                                .groupCode,
-                                            groupid: widget.user.groupid,
-                                            cid: widget.user.userid,
-                                            productName: widget.product.name,
-                                            price: widget.product.price + 1,
-                                            quantity: 1,
-                                            productImage: widget.product.image)
-                                        : showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return ConfirmationDialog(
-                                                isbutton: false,
-                                                heading:
-                                                    'You are not in any group',
-                                                subheading:
-                                                    "Make a group or join a group",
-                                                firstbutton: "Create A group",
-                                                secondbutton: 'Cancle',
-                                                onConfirm: () {},
+                                                .groupid
+                                                .isNotEmpty
+                                            ? esewa.pay(context,
+                                                customerImage:
+                                                    widget.user.profilePicture,
+                                                orderHoldTime:
+                                                    addproductController
+                                                        .orderHoldTime.value,
+                                                mealtime: addproductController
+                                                    .mealtime.value,
+                                                classs: widget.user.classes,
+                                                date: addproductController
+                                                    .orderDate.value,
+                                                checkout: 'false',
+                                                customer: widget.user.name,
+                                                groupcod: groupcontroller
+                                                    .groupResponse
+                                                    .value
+                                                    .response!
+                                                    .first
+                                                    .groupCode,
+                                                groupid: widget.user.groupid,
+                                                cid: widget.user.userid,
+                                                productName:
+                                                    widget.product.name,
+                                                price: widget.product.price + 1,
+                                                quantity: 1,
+                                                productImage:
+                                                    widget.product.image)
+                                            : showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return ConfirmationDialog(
+                                                    isbutton: false,
+                                                    heading:
+                                                        'You are not in any group',
+                                                    subheading:
+                                                        "Make a group or join a group",
+                                                    firstbutton:
+                                                        "Create A group",
+                                                    secondbutton: 'Cancle',
+                                                    onConfirm: () {},
+                                                  );
+                                                },
                                               );
-                                            },
-                                          );
                                   },
-
-                                  // () {
-                                  //   // if (selectedIndex == -1) {
-                                  //   //   showNoSelectionMessage();
-                                  //   // } else {
-
-                                  //   // }
-                                  // },
                                   child: Container(
                                     width:
                                         MediaQuery.of(context).size.width * 1,
@@ -365,10 +356,14 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           : Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                "Order Time is schedule from 4 pm to 8 am",
-                                style: AppStyles.listTileTitle,
+                                "Order Time is scheduled from 4 PM to 8 AM",
+                                style: TextStyle(
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue,
+                                ),
                               ),
-                            ),
+                            )),
                     ],
                   ),
                 )

@@ -1,5 +1,8 @@
 import 'dart:developer';
 
+import 'package:connect_canteen/app/config/style.dart';
+import 'package:connect_canteen/app/repository/ger_fine_repository.dart';
+import 'package:connect_canteen/app/widget/payment_succesfull.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -17,6 +20,7 @@ import 'package:nepali_utils/nepali_utils.dart';
 class FineController extends GetxController {
   var loading = false.obs;
   var fineLoading = false.obs;
+  var finePayment = false.obs;
   final loginController = Get.put(LoginController());
 
   final storage = GetStorage();
@@ -39,7 +43,7 @@ class FineController extends GetxController {
     required int fineAmount,
   }) async {
     try {
-      loading(true);
+      finePayment(true);
       DateTime now = DateTime.now();
 
       NepaliDateTime nepaliDateTime = NepaliDateTime.fromDateTime(now);
@@ -59,23 +63,32 @@ class FineController extends GetxController {
         fineResponse.value =
             ApiResponse<StudentFineResponse>.completed(fineResult.response);
 
-        stateUpdate(context, studentId);
+        stateUpdate(
+          context,
+          studentId,
+        );
+        finePayment(false);
 
-        loading(false);
+        Get.to(
+            () => PaymentSuccessPage(
+                  amountPaid: fineAmount.toInt().toString(),
+                ),
+            transition: Transition.rightToLeft,
+            duration: duration);
       } else {
-        loading(false);
+        finePayment(false);
         fineResponse.value = ApiResponse<StudentFineResponse>.error(
             fineResult.message ?? 'Error during product create Failed');
       }
     } catch (e) {
-      loading(false);
+      finePayment(false);
       // If an error occurs during the process, you can handle it here
       log('Error adding item to orders: $e');
       // ignore: use_build_context_synchronously
     }
   }
 
-//-------student fine update ------------//
+// //-------student fine update ------------//
   final userDataRepository =
       UserDataRepository(); // Instantiate AddFriendRepository
 
@@ -87,7 +100,6 @@ class FineController extends GetxController {
       final newFine = {'fineAmount': 0};
       final response = await userDataRepository.userDataUpdate(userId, newFine);
       if (response.status == ApiStatus.SUCCESS) {
-        CustomSnackbar.showSuccess(context, "CheckOut Succesfully");
         await refreshData();
       } else {
         log("Failed to add friend: ${response.message}");
@@ -99,43 +111,42 @@ class FineController extends GetxController {
 
   //---------------Get Student fines------------
 
-  final PayFineRepository allProductRepository = PayFineRepository();
-  final Rx<ApiResponse<StudentFineResponse>> studentFinesResponse =
+  final GetFineRepository getFineRepo = GetFineRepository();
+  final Rx<ApiResponse<StudentFineResponse>> getFineResponse =
       ApiResponse<StudentFineResponse>.initial().obs;
   var fineLoaded = false.obs;
+
   Future<void> fetchFines() async {
     try {
       fineLoaded(false);
       fineLoading(true);
-      studentFinesResponse.value = ApiResponse<StudentFineResponse>.loading();
-      final allProductResult = await allProductRepository.getFines(
+      getFineResponse.value = ApiResponse<StudentFineResponse>.loading();
+      final allFine = await getFineRepo.getFines(
         storage.read(userId),
       );
-      if (allProductResult.status == ApiStatus.SUCCESS) {
-        studentFinesResponse.value = ApiResponse<StudentFineResponse>.completed(
-            allProductResult.response);
-        if (studentFinesResponse.value.response!.length != 0) {
+      if (allFine.status == ApiStatus.SUCCESS) {
+        getFineResponse.value =
+            ApiResponse<StudentFineResponse>.completed(allFine.response);
+        if (getFineResponse.value.response!.length != 0) {
+          log(" this is the fetch fime ");
+
           fineLoaded(true);
         }
 
         fineLoading(false);
       }
     } catch (e) {
-      fineLoading(false);
       log('Error while getting data: $e');
     }
   }
 
 //-----------to refresh.
   Future<void> refreshData() async {
-    // Fetch data based on the selected category
-    await Future.delayed(Duration(seconds: 0));
-    await loginController.fetchUserData();
-    Future.delayed(Duration(seconds: 2), () async {
-      log(" this is insed the refres =============================---------------");
-
+    try {
+      await loginController.fetchUserData();
       await fetchFines();
-      log(" ------------this is insed the refres =============================---------------");
-    });
+    } catch (e) {
+      log(" this is the error ${e}");
+    }
   }
 }

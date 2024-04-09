@@ -1,6 +1,8 @@
 import 'dart:developer';
 
-import 'package:connect_canteen/local_notifications.dart';
+import 'package:connect_canteen/app/config/style.dart';
+import 'package:connect_canteen/app/local_notificaiton/local_notifications.dart';
+import 'package:connect_canteen/app/widget/payment_succesfull.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -18,6 +20,46 @@ class AddProductController extends GetxController {
       ApiResponse<OrderResponse>.initial().obs;
   var isLoading = false.obs;
 
+  var orderDate = ''.obs;
+  var mealtime = ''.obs;
+  var orderHoldTime = ''.obs;
+  var isorderStart = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    checkTimeAndSetVisibility();
+  }
+
+//---------to find the date --------
+
+  void checkTimeAndSetVisibility() {
+    isorderStart.value = false;
+    mealtime.value = '';
+    DateTime currentDate = DateTime.now();
+    // ignore: deprecated_member_use
+    NepaliDateTime nepaliDateTime = NepaliDateTime.fromDateTime(currentDate);
+    int currentHour = currentDate.hour;
+
+    if ((currentHour >= 15 && currentHour <= 23) ||
+        (currentHour >= 0 && currentHour < 1)) {
+      // After 4 pm but not after 1 am (next day)
+      NepaliDateTime tomorrow = nepaliDateTime.add(Duration(days: 1));
+      isorderStart.value = true;
+
+      orderDate.value = DateFormat('dd/MM/yyyy\'', 'en').format(tomorrow);
+
+      log("this is he date " + orderDate.value);
+    } else if (currentHour >= 1 && currentHour <= 8) {
+      // 1 am or later
+      isorderStart.value = true;
+
+      orderDate.value = DateFormat('dd/MM/yyyy\'', 'en').format(nepaliDateTime);
+
+      log(orderDate.value);
+    }
+  }
+
   Future<void> addItemToOrder(
     BuildContext context, {
     required String customerImage,
@@ -33,6 +75,7 @@ class AddProductController extends GetxController {
     required String checkout,
     required String mealtime,
     required String date,
+    required String orderHoldTime,
   }) async {
     try {
       isLoading(true);
@@ -42,7 +85,7 @@ class AddProductController extends GetxController {
       log("--------------this is the order time ${now}");
 
       NepaliDateTime nepaliDateTime = NepaliDateTime.fromDateTime(now);
-      final dat = DateFormat('HH:mm\'', 'en').format(nepaliDateTime);
+      final dat = DateFormat('HH:mm/dd/MM/yyyy\'', 'en').format(nepaliDateTime);
 
       final newItem = {
         "id": '${productId + customer + productName}',
@@ -61,7 +104,8 @@ class AddProductController extends GetxController {
         "orderType": 'regular',
         "holdDate": '',
         'orderTime': dat,
-        "customerImage": customerImage
+        "customerImage": customerImage,
+        "orderHoldTime": orderHoldTime,
       };
 
       orderResponse.value = ApiResponse<OrderResponse>.loading();
@@ -77,24 +121,12 @@ class AddProductController extends GetxController {
         isLoading(false);
         LocalNotifications.showScheduleNotification(
             payload: "This is periodic data");
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              elevation: 0,
-              title: Icon(Icons.check_circle, color: Colors.green, size: 48),
-              content: Text('Order successful!'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Get.back();
-                  },
-                  child: Text('OK'),
+        Get.to(
+            () => PaymentSuccessPage(
+                  amountPaid: price.toInt().toString(),
                 ),
-              ],
-            );
-          },
-        );
+            transition: Transition.rightToLeft,
+            duration: duration);
 
         // Navigate to home page or perform necessary actions upon successful login
       } else {

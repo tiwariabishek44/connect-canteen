@@ -1,4 +1,6 @@
+import 'package:connect_canteen/app/config/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connect_canteen/app/config/style.dart';
@@ -32,37 +34,66 @@ class _MyProfileState extends State<MyProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
+        backgroundColor: AppColors.backgroundColor,
+        scrolledUnderElevation: 0,
         title: Text('Profile'),
         centerTitle: true,
       ),
       body: RefreshIndicator(
         onRefresh: fineController.refreshData,
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(16.0),
-          physics: AlwaysScrollableScrollPhysics(),
-          child: Obx(() {
-            if (loginController.isFetchLoading.value) {
-              return const LoadingWidget();
-            } else {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  _buildProfileAvatar(),
-                  SizedBox(height: 16.0),
-                  _buildUserName(),
-                  SizedBox(height: 8.0),
-                  _buildUserClass(),
-                  SizedBox(height: 16.0),
-                  _buildUserStats(),
-                  SizedBox(height: 16.0),
-                  _buildPayButton(context),
-                  SizedBox(height: 16.0),
-                  _buildFinesSection(),
-                ],
-              );
-            }
-          }),
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              padding: EdgeInsets.all(16.0),
+              physics: AlwaysScrollableScrollPhysics(),
+              child: Obx(() {
+                if (loginController.isFetchLoading.value) {
+                  return const LoadingWidget();
+                } else {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      _buildProfileAvatar(),
+                      SizedBox(height: 16.0),
+                      _buildUserName(),
+                      SizedBox(height: 8.0),
+                      _buildUserClass(),
+                      SizedBox(height: 16.0),
+                      _buildUserStats(),
+                      SizedBox(height: 16.0),
+                      _buildPayButton(context),
+                      SizedBox(height: 16.0),
+                      _buildFinesSection(),
+                    ],
+                  );
+                }
+              }),
+            ),
+            Obx(
+              () => fineController.finePayment.value
+                  ? Positioned(
+                      top: 40.h,
+                      left: 35.w,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.orange,
+
+                          borderRadius: BorderRadius.circular(
+                              20), // Adjust the border radius here
+                        ),
+                        height: 15.h,
+                        width: 30.w,
+                        child: SpinKitCircle(
+                          color: Colors.white,
+                          size: 30.sp,
+                        ),
+                      ),
+                    )
+                  : SizedBox(),
+            ),
+          ],
         ),
       ),
     );
@@ -132,24 +163,39 @@ class _MyProfileState extends State<MyProfile> {
   }
 
   Widget _buildInfoItem(String label, String value) {
-    return Column(
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 16.0,
-            color: Colors.grey[600],
-          ),
+    return Container(
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8.0),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 1,
+                blurRadius: 3,
+                offset: const Offset(2, 2))
+          ]),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 4.0),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 16.0,
+                color: Colors.grey[600],
+              ),
+            ),
+          ],
         ),
-        SizedBox(height: 4.0),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 20.0,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -219,7 +265,7 @@ class _MyProfileState extends State<MyProfile> {
   }
 
   Widget _buildFineList() {
-    final sortedFines = fineController.studentFinesResponse.value.response!
+    final sortedFines = fineController.getFineResponse.value.response!
       ..sort((a, b) => _parseDate(b.date).compareTo(_parseDate(a.date)));
 
     return Column(
@@ -229,9 +275,15 @@ class _MyProfileState extends State<MyProfile> {
           margin: EdgeInsets.only(bottom: 8.0),
           padding: EdgeInsets.all(16.0),
           decoration: BoxDecoration(
-            color: Color(0xFF4CAF50), // Green color for background
-            borderRadius: BorderRadius.circular(8.0),
-          ),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8.0),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 1,
+                    blurRadius: 3,
+                    offset: const Offset(2, 2))
+              ]),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -240,14 +292,12 @@ class _MyProfileState extends State<MyProfile> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
                 ),
               ),
               Text(
                 "Rs. ${fine.fineAmount}",
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.white,
                 ),
               ),
             ],
