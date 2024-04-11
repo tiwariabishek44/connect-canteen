@@ -35,10 +35,9 @@ class OrderCancel extends StatelessWidget {
                 color: Colors.white,
                 child: TextField(
                   onChanged: (value) {
-                    log(value);
+                    ordercontroller.groupCod.value = value;
                     ordercontroller.fetchOrders(value!);
                   },
-                  controller: ordercontroller.groupcod,
                   decoration: InputDecoration(
                     prefixIcon: IconButton(
                       icon: Icon(

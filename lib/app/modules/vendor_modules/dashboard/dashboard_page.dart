@@ -1,3 +1,6 @@
+import 'package:connect_canteen/app/models/order_response.dart';
+import 'package:connect_canteen/app_test/data%20_print_page.dart';
+import 'package:connect_canteen/app_test/test_contorller%20.dart';
 import 'package:get/get.dart';
 import 'package:connect_canteen/app/config/colors.dart';
 
@@ -17,11 +20,16 @@ import 'package:connect_canteen/app/modules/vendor_modules/orders_checkout/order
 import 'package:nepali_utils/nepali_utils.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
+import '../../../../app_test/test_page.dart';
+
 class DshBoard extends StatelessWidget {
   final salseContorlller = Get.put(SalsesController());
-
+  final printController = Get.put(PrintController());
+  final testcontorller = Get.put(TestContorller());
   @override
   Widget build(BuildContext context) {
+    salseContorlller.fetchTotalOrder();
+    salseContorlller.fetchTotalSales();
     DateTime currentDate = DateTime.now();
 
     NepaliDateTime nepaliDateTime = NepaliDateTime.fromDateTime(currentDate);
@@ -156,10 +164,14 @@ class DshBoard extends StatelessWidget {
                     icon: Icons.restaurant_menu,
                     label: 'Canteen Meal',
                     onTap: () {
+                      final List<OrderResponse> orders =
+                          testcontorller.generateDummyOrders();
+
+                      printController.uploadOrders(orders);
                       // Handle click for Menu Management
-                      Get.to(() => VHomePage(),
-                          transition: Transition.rightToLeft,
-                          duration: duration);
+                      // Get.to(() => VHomePage(),
+                      //     transition: Transition.rightToLeft,
+                      //     duration: duration);
                     },
                   ),
                   buildClickableIcon(

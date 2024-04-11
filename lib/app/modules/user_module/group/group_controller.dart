@@ -20,9 +20,9 @@ class GroupController extends GetxController {
   final logincontroller = Get.put(LoginController());
   final storage = GetStorage();
   final groupnameController = TextEditingController();
-  final groupPinController = TextEditingController();
+  final groupCodeController = TextEditingController();
 
-  FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   var deleteMemberLoading = false.obs;
 
@@ -42,45 +42,95 @@ class GroupController extends GetxController {
     try {
       isloading(true);
       String userId = _auth.currentUser!.uid;
-      // Check if a group with the same pin already exists
-      QuerySnapshot pinSnapshot = await _firestore
-          .collection('groups')
-          .where('groupCode', isEqualTo: "1429"
 
-              //  groupPinController.text.trim()
+//------------check whether the group exist or not -------------
 
-              )
-          .get();
+      bool groutExist = await checkIfGroupExits();
 
-      if (pinSnapshot.docs.isNotEmpty) {
-        // If a group with the same pin already exists, throw an exception
-        throw Exception('Another group with the same pin already exists.');
+      if (groutExist) {
+        showDialog(
+          context: Get.context!,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              title: Text(
+                "Failed to Make Group",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.0,
+                  color: Colors.red,
+                ),
+              ),
+              content: Text(
+                "The group code is been reserved",
+                style: TextStyle(
+                  fontSize: 16.0,
+                  color: Colors.black,
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    "OK",
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.blue,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        GroupApiResponse newGroup = GroupApiResponse(
+          groupId: userId,
+          groupCode: groupCodeController.text.trim(),
+          groupName: groupnameController.text.trim(),
+          moderator:
+              logincontroller.userDataResponse.value.response!.first.name,
+        );
+
+        // Add the new group to the 'groups' collection
+        await _firestore.collection('groups').add(newGroup.toJson());
+
+        // Update the user's 'groupid' field in the 'students' collection
+        final FirebaseFirestore firestore = FirebaseFirestore.instance;
+        final studentDocRef = firestore.collection('students').doc(userId);
+        await studentDocRef.update({'groupid': userId});
+
+        logincontroller.fetchUserData();
+        fecthGroupMember();
+        Get.back();
+        isloading(false);
       }
-
-      // If no group with the same pin exists, proceed to create a new group
-      GroupApiResponse newGroup = GroupApiResponse(
-        groupId: userId,
-        groupCode: "1429",
-        groupName: groupPinController.text.trim(),
-        moderator: logincontroller.userDataResponse.value.response!.first.name,
-      );
-
-      // Add the new group to the 'groups' collection
-      await _firestore.collection('groups').add(newGroup.toJson());
-
-      // Update the user's 'groupid' field in the 'students' collection
-      final FirebaseFirestore firestore = FirebaseFirestore.instance;
-      final studentDocRef = firestore.collection('students').doc(userId);
-      await studentDocRef.update({'groupid': userId});
-
-      logincontroller.fetchUserData();
-      fecthGroupMember();
-      Get.back();
-      isloading(false);
     } catch (e) {
       isloading(false);
       log('Error: $e');
       // You can handle the error here, for example, display an error message to the user
+    }
+  }
+
+//-----------------check if gorup exist ------------
+  Future<bool> checkIfGroupExits() async {
+    try {
+      // Query the "canteen" collection using the provided user ID
+      QuerySnapshot querySnapshot = await _firestore
+          .collection('groups')
+          .where('groupCode', isEqualTo: groupCodeController.text.trim())
+          .get();
+
+      // Return true if data exists for the user in the "canteen" collection
+      return querySnapshot.docs.isNotEmpty ? true : false;
+    } catch (e) {
+      // Handle errors
+      return false; // Return false in case of error
     }
   }
 

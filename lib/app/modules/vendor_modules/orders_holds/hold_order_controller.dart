@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:connect_canteen/app/config/api_end_points.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:connect_canteen/app/models/order_response.dart';
@@ -14,20 +15,8 @@ class CanteenHoldOrders extends GetxController {
   final groupcod = TextEditingController();
   var updateGroupCode = ''.obs;
 
-  @override
-  void onReady() {
-    super.onReady();
-  }
-
-  @override
-  void onInit() {
-    super.onInit();
-    fetchHoldOrders();
-    log("this is delete");
-  }
-
 //------------fetch the user orders---------------
-  final orderRepository = CheckoutRepository();
+  final orderRepository = GreatRepository();
   final Rx<ApiResponse<OrderResponse>> orderResponse =
       ApiResponse<OrderResponse>.initial().obs;
   Future<void> fetchOrders(String groupId) async {
@@ -36,7 +25,8 @@ class CanteenHoldOrders extends GetxController {
       isloading(true);
 
       orderResponse.value = ApiResponse<OrderResponse>.loading();
-      final orderResult = await orderRepository.getOrders(groupId);
+      final orderResult = await orderRepository.doGetFromDatabase(
+          groupId, OrderResponse.fromJson);
       if (orderResult.status == ApiStatus.SUCCESS) {
         orderResponse.value =
             ApiResponse<OrderResponse>.completed(orderResult.response);
@@ -65,7 +55,12 @@ class CanteenHoldOrders extends GetxController {
       BuildContext context, String orderId, String date) async {
     try {
       holdLoading(true);
-      final response = await orderRepository.holdOrder(orderId, date);
+
+      final filters = {'id': orderId};
+      final updateField = {'date': '', 'orderType': 'hold', 'holdDate': date};
+
+      final response = await orderRepository.doUpdate(
+          filters, updateField, ApiEndpoints.orderCollection);
       if (response.status == ApiStatus.SUCCESS) {
         log("Hold Succesfully");
         fetchHoldOrders();
@@ -92,15 +87,18 @@ class CanteenHoldOrders extends GetxController {
   Future<void> fetchHoldOrders() async {
     try {
       isloading(true);
+
+      final filters = {
+        'checkout': 'false',
+        'orderType': 'hold',
+        // Add more filters as needed
+      };
       holdOrderResponse.value = ApiResponse<OrderResponse>.loading();
-      final orderResult = await orderRepository.getHoldOrders();
+      final orderResult = await orderRepository.doGetFromDatabase(
+          filters, OrderResponse.fromJson);
       if (orderResult.status == ApiStatus.SUCCESS) {
         holdOrderResponse.value =
             ApiResponse<OrderResponse>.completed(orderResult.response);
-        log('----HOLD ORDERS ARE FETCHS');
-
-        log("this is the all product response  " +
-            holdOrderResponse.value.response!.length.toString());
       }
     } catch (e) {
       isloading(false);

@@ -40,7 +40,7 @@ class ClassWiseOrderController extends GetxController {
   }
 
 //------------fetch the user orders---------------
-  final orderRepository = CheckoutRepository();
+  final orderRepository = GreatRepository();
   final Rx<ApiResponse<OrderResponse>> orderResponse =
       ApiResponse<OrderResponse>.initial().obs;
   Future<void> fetchOrders() async {
@@ -55,7 +55,8 @@ class ClassWiseOrderController extends GetxController {
       };
 
       orderResponse.value = ApiResponse<OrderResponse>.loading();
-      final orderResult = await orderRepository.getOrders(filter);
+      final orderResult = await orderRepository.doGetFromDatabase(
+          filter, OrderResponse.fromJson);
       if (orderResult.status == ApiStatus.SUCCESS) {
         orderResponse.value =
             ApiResponse<OrderResponse>.completed(orderResult.response);

@@ -3,6 +3,7 @@ import 'package:connect_canteen/app/config/style.dart';
 import 'package:connect_canteen/app/modules/common/login/login_controller.dart';
 
 import 'package:connect_canteen/app/modules/vendor_modules/order_requirement_reports/view/order_requirement_report_view.dart';
+import 'package:connect_canteen/app/modules/vendor_modules/orders_holds/hold_order_controller.dart';
 import 'package:connect_canteen/app/modules/vendor_modules/orders_holds/view/order_hold_list.dart';
 import 'package:connect_canteen/app/modules/vendor_modules/sales_report/view/sales_report_view.dart';
 import 'package:connect_canteen/app/widget/custom_loging_widget.dart';
@@ -14,6 +15,7 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 
 class SettingView extends StatelessWidget {
   final logincontroller = Get.put(LoginController());
+  final orderContorller = Get.put(CanteenHoldOrders());
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +71,8 @@ class SettingView extends StatelessWidget {
                 leadingIcon: const Icon(Icons.description),
               ),
               ProfileTile(
-                onTap: () {
+                onTap: () async {
+                  await orderContorller.fetchHoldOrders();
                   Get.to(() => OrderHoldListView(),
                       transition: Transition.rightToLeft, duration: duration);
                 },

@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connect_canteen/app/config/prefs.dart';
 import 'package:get/get.dart';
 import 'package:connect_canteen/app/config/colors.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +66,7 @@ class _TotalOrdersTabState extends State<TotalOrdersTab> {
                   scrollDirection: Axis.horizontal,
                   shrinkWrap: true,
                   physics: ScrollPhysics(),
-                  itemCount: orderRequestController.timeSlots.length,
+                  itemCount: timeSlots.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Padding(
                       padding: const EdgeInsets.all(6.0),
@@ -87,7 +88,7 @@ class _TotalOrdersTabState extends State<TotalOrdersTab> {
                           ),
                           child: Center(
                             child: Text(
-                              orderRequestController.timeSlots[index],
+                              timeSlots[index],
                               style: TextStyle(
                                   fontSize: 18.0,
                                   color: selectedIndex == index

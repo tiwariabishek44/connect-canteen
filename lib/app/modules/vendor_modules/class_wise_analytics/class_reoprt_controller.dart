@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:connect_canteen/app/config/prefs.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:connect_canteen/app/models/order_response.dart';
@@ -18,14 +19,6 @@ class ClassReportController extends GetxController {
       <String, int>{}.obs;
 
   var date = ''.obs;
-  final List<String> timeSlots = [
-    'All',
-    '8:30',
-    '9:30',
-    '11:30',
-    '12:30',
-    '1:30',
-  ];
 
   final RxBool isLoading = false.obs;
   @override

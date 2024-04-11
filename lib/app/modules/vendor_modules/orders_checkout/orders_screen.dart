@@ -88,10 +88,9 @@ class OrderCheckoutPage extends StatelessWidget {
                 color: Colors.white,
                 child: TextField(
                   onChanged: (value) {
-                    log(value);
+                    ordercontroller.groupCod.value = value;
                     ordercontroller.fetchOrders(value!);
                   },
-                  controller: ordercontroller.groupcod,
                   decoration: InputDecoration(
                     prefixIcon: IconButton(
                       icon: Icon(
@@ -197,106 +196,75 @@ class OrderCheckoutPage extends StatelessWidget {
                                     onTap: () {
                                       FocusScope.of(context).unfocus();
 
-                                      if (!ordercontroller.isgroup.value) {
-                                        // Show the dialog when the button is pressed
-                                        showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return AlertDialog(
-                                              elevation: 0,
-                                              title: Text('Order Checkout'),
-                                              content: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisSize: MainAxisSize
-                                                    .min, // Set to min to adjust height to content
-                                                children: [
-                                                  Text(
-                                                    'Customer: ${ordercontroller.orderResponse.value.response![index].customer}',
-                                                    style:
-                                                        AppStyles.listTileTitle,
-                                                  ),
-                                                  Text(
-                                                      'Item: ${ordercontroller.orderResponse.value.response![index].productName}',
-                                                      style: AppStyles
-                                                          .listTileTitle),
-                                                ],
-                                              ),
-                                              contentPadding: EdgeInsets.symmetric(
-                                                  vertical: 20,
-                                                  horizontal:
-                                                      24), // Adjust padding as needed
-                                              actions: <Widget>[
-                                                TextButton(
-                                                  onPressed: () {
-                                                    // Close the dialog
+                                      // Show the dialog when the button is pressed
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            elevation: 0,
+                                            title: Text('Order Checkout'),
+                                            content: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize
+                                                  .min, // Set to min to adjust height to content
+                                              children: [
+                                                Text(
+                                                  'Customer: ${ordercontroller.orderResponse.value.response![index].customer}',
+                                                  style:
+                                                      AppStyles.listTileTitle,
+                                                ),
+                                                Text(
+                                                    'Item: ${ordercontroller.orderResponse.value.response![index].productName}',
+                                                    style: AppStyles
+                                                        .listTileTitle),
+                                              ],
+                                            ),
+                                            contentPadding: EdgeInsets.symmetric(
+                                                vertical: 20,
+                                                horizontal:
+                                                    24), // Adjust padding as needed
+                                            actions: <Widget>[
+                                              TextButton(
+                                                onPressed: () {
+                                                  // Close the dialog
 
+                                                  ordercontroller.checkoutOrder(
                                                     ordercontroller
-                                                        .checkoutSingleOrder(
-                                                      context,
-                                                      ordercontroller
-                                                          .orderResponse
-                                                          .value
-                                                          .response![index]
-                                                          .id,
-                                                    );
-                                                    Get.back();
-                                                  },
-                                                  child: Container(
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.black,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              20.0),
-                                                    ),
-                                                    padding:
-                                                        EdgeInsets.all(12.0),
-                                                    child: const Text(
-                                                      "Checkout",
-                                                      style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 14,
-                                                      ),
+                                                            .isgroup.value
+                                                        ? ordercontroller
+                                                            .groupCod.value
+                                                        : ordercontroller
+                                                            .orderResponse
+                                                            .value
+                                                            .response![index]
+                                                            .id,
+                                                  );
+                                                  Get.back();
+                                                },
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.black,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20.0),
+                                                  ),
+                                                  padding: EdgeInsets.all(12.0),
+                                                  child: const Text(
+                                                    "Checkout",
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 14,
                                                     ),
                                                   ),
                                                 ),
-                                              ],
-                                            );
-                                          },
-                                        );
-
-                                        // showDialog(
-                                        //   context: context,
-                                        //   builder: (BuildContext context) {
-                                        //     return ConfirmationDialog(
-                                        //       isbutton: true,
-                                        //       heading: 'Order Checkout',
-                                        //       subheading:
-                                        //           "Checkout ${ordercontroller.orderResponse.value.response![index].productName}",
-                                        //       firstbutton:
-                                        //           "Checkout (${ordercontroller.orderResponse.value.response![index].customer})",
-                                        //       secondbutton: 'Cancel',
-                                        //       onConfirm: () {
-                                        //         // Perform actions when the user agrees
-                                        //         FocusScope.of(context)
-                                        //             .unfocus();
-                                        //         ordercontroller
-                                        //             .checkoutSingleOrder(
-                                        //           context,
-                                        //           ordercontroller
-                                        //               .orderResponse
-                                        //               .value
-                                        //               .response![index]
-                                        //               .id,
-                                        //         );
-                                        //         Get.back();
-                                        //       },
-                                        //     );
-                                        //   },
-                                        // );
-                                      }
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
                                     },
                                     child: Container(
                                       height: 17.h,
@@ -432,20 +400,6 @@ class OrderCheckoutPage extends StatelessWidget {
                                 );
                               },
                             ),
-                            Obx(() => ordercontroller.isgroup.value
-                                ? CustomButton(
-                                    text:
-                                        "Check Out(${ordercontroller.groupcod.text})",
-                                    onPressed: () {
-                                      FocusScope.of(context).unfocus();
-                                      ordercontroller.checkoutGroupOrder(
-                                        context,
-                                        ordercontroller.groupcod.text,
-                                      );
-                                    },
-                                    isLoading:
-                                        ordercontroller.checkoutLoading.value)
-                                : SizedBox())
                           ],
                         ),
                       );

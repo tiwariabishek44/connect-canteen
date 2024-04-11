@@ -12,8 +12,6 @@ class ApiClient {
     required T Function(dynamic json) responseType,
   }) async {
     try {
-      log("Inside the postFirebaseData method"); // Log the message
-
       // Convert the request body to JSON
       String jsonBody = jsonEncode(requestBody);
 
@@ -41,8 +39,6 @@ class ApiClient {
     Map<String, dynamic>? filters,
   }) async {
     try {
-      log("Inside the getFirebaseData method");
-
       Query collectionRef = FirebaseFirestore.instance.collection(collection);
 
       // Apply filters if provided
@@ -51,8 +47,6 @@ class ApiClient {
           collectionRef = collectionRef.where(field, isEqualTo: value);
         });
       }
-
-      log("this is inside the get method");
 
       final QuerySnapshot snapshot = await collectionRef.get();
       final List<Map<String, dynamic>> dataList = snapshot.docs
@@ -69,8 +63,6 @@ class ApiClient {
     }
   }
 
-  //--------------api call to update the data-----------
-
   Future<SingleApiResponse<void>> update<T>({
     required T Function(QuerySnapshot) responseType,
     required Map<String, dynamic> filters,
@@ -78,15 +70,11 @@ class ApiClient {
     required String collection,
   }) async {
     try {
-      log("Inside the update method");
-
-      // Construct the query based on the provided filters
       Query collectionRef = FirebaseFirestore.instance.collection(collection);
       filters.forEach((field, value) {
         collectionRef = collectionRef.where(field, isEqualTo: value);
       });
 
-      // Retrieve documents matching the filters
       QuerySnapshot documentsSnapshot = await collectionRef.get();
 
       // Update documents
@@ -95,7 +83,6 @@ class ApiClient {
         batch.update(doc.reference, updateField);
       });
       await batch.commit();
-      log(" ######## the product update is doe ----------------");
 
       // Return a successful response with completion message
       return SingleApiResponse.completed("Update successful");
