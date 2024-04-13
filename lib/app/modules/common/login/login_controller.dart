@@ -1,6 +1,8 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connect_canteen/app/config/api_end_points.dart';
+import 'package:connect_canteen/app/repository/grete_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,7 +13,6 @@ import 'package:connect_canteen/app/models/canteen_model.dart';
 import 'package:connect_canteen/app/models/users_model.dart';
 import 'package:connect_canteen/app/modules/common/loginoption/login_option_controller.dart';
 import 'package:connect_canteen/app/repository/canteen_data_repository.dart';
-import 'package:connect_canteen/app/repository/get_userdata_repository.dart';
 import 'package:connect_canteen/app/service/api_client.dart';
 import 'package:connect_canteen/app/widget/custom_snackbar.dart';
 import 'package:connect_canteen/app/widget/splash_screen.dart';
@@ -161,19 +162,18 @@ class LoginController extends GetxController {
   }
 
 //---------to fetch the user data------------
-  final UserDataRepository userDataRepository = UserDataRepository();
+  final GreatRepository userDataRepository = GreatRepository();
   final Rx<ApiResponse<UserDataResponse>> userDataResponse =
       ApiResponse<UserDataResponse>.initial().obs;
   Future<void> fetchUserData() async {
     try {
       isFetchLoading(true);
+      final filters = {
+        'userid': storage.read(userId),
+      };
       userDataResponse.value = ApiResponse<UserDataResponse>.loading();
-      final userDataResult = await userDataRepository.getUserData(
-        {
-          'userid': storage.read(userId),
-          // Add more filters as needed
-        },
-      );
+      final userDataResult = await userDataRepository.getFromDatabase(
+          filters, UserDataResponse.fromJson, ApiEndpoints.studentCollection);
       if (userDataResult.status == ApiStatus.SUCCESS) {
         userDataResponse.value =
             ApiResponse<UserDataResponse>.completed(userDataResult.response);

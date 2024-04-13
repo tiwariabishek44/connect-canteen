@@ -75,10 +75,10 @@ class TestContorller extends GetxController {
       'Non Veg Khana Set',
       'Bread Chop',
     ];
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 9; i++) {
       final int productIndex = random.nextInt(products.length);
-      final double price = prices[8];
-      final String productName = products[7];
+      final double price = prices[i];
+      final String productName = products[i];
       final String classs = options[random.nextInt(options.length)];
       final String groupcod = groupcodes[random.nextInt(options.length)];
       final FoodOrderTime foodOrderTime =
@@ -86,7 +86,7 @@ class TestContorller extends GetxController {
       final String productImageUrl = imageUrls[productIndex];
       DateTime now = DateTime.now();
       String productId =
-          '${now.year}${now.month}${now.day}${now.hour}${now.minute}${now.second}${now.millisecond}';
+          '$i+"${i * i}"+${now.year}${now.month}${now.day}${now.hour}${now.minute}${now.second}${now.millisecond}';
 
       orders.add(OrderResponse(
         id: productId,
@@ -101,7 +101,7 @@ class TestContorller extends GetxController {
         quantity: 1,
         groupcod: groupcod,
         checkout: 'false',
-        date: '29/12/2080',
+        date: '30/12/2080',
         orderType: 'regular',
         holdDate: '',
         orderTime: foodOrderTime.orderHoldTime,

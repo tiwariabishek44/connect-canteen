@@ -14,7 +14,7 @@ class PrintController extends GetxController {
       log(" ths is the order lenth ${orders.length}");
       for (var order in orders) {
         // Add order document to Firestore with auto-generated document ID
-        await Future.delayed(Duration(milliseconds: 100));
+        await Future.delayed(Duration(milliseconds: 500));
         await _firestore.collection('order').add(order.toMap());
         counter.value++;
         log("${counter.value}");

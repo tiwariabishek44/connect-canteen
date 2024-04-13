@@ -6,9 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:connect_canteen/app/models/order_response.dart';
 import 'package:connect_canteen/app/modules/common/login/login_controller.dart';
-import 'package:connect_canteen/app/repository/order_checout_repository.dart';
+import 'package:connect_canteen/app/repository/grete_repository.dart';
 import 'package:connect_canteen/app/service/api_client.dart';
-import 'package:connect_canteen/app/widget/custom_snackbar.dart';
 import 'package:intl/intl.dart';
 import 'package:nepali_utils/nepali_utils.dart';
 
@@ -48,8 +47,8 @@ class VendorOrderController extends GetxController {
         // Add more filters as needed
       };
       orderResponse.value = ApiResponse<OrderResponse>.loading();
-      final orderResult = await orderRepository.doGetFromDatabase(
-          filter, OrderResponse.fromJson);
+      final orderResult = await orderRepository.getFromDatabase(
+          filter, OrderResponse.fromJson, ApiEndpoints.orderCollection);
       if (orderResult.status == ApiStatus.SUCCESS) {
         orderResponse.value =
             ApiResponse<OrderResponse>.completed(orderResult.response);

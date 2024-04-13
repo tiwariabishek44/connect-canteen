@@ -1,4 +1,5 @@
 import 'package:connect_canteen/app/config/prefs.dart';
+import 'package:connect_canteen/app/widget/custom_loging_widget.dart';
 import 'package:get/get.dart';
 import 'package:connect_canteen/app/config/colors.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,7 @@ class OrderRequirement extends StatefulWidget {
 }
 
 class _OrderRequirementState extends State<OrderRequirement> {
-  final orderRequestController = Get.put(OrderRequestContoller());
+  final orderRequestController = Get.put(OrderRequirementContoller());
 
   int selectedIndex = -1;
 
@@ -165,7 +166,7 @@ class _OrderRequirementState extends State<OrderRequirement> {
                 child: Obx(() {
                   if (orderRequestController.isLoading.value) {
                     // Show a loading screen while data is being fetched
-                    return LoadingScreen();
+                    return LoadingWidget();
                   } else {
                     if (orderRequestController
                                 .requirmentResponse.value.response ==

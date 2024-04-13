@@ -1,3 +1,4 @@
+import 'package:connect_canteen/app/widget/custom_loging_widget.dart';
 import 'package:get/get.dart';
 import 'package:connect_canteen/app/config/colors.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +19,7 @@ class OrderRequirementReport extends StatefulWidget {
 }
 
 class _OrderRequirementReportState extends State<OrderRequirementReport> {
-  final orderRequestController = Get.put(OrderRequestContoller());
+  final orderRequestController = Get.put(OrderRequirementContoller());
 
   int selectedIndex = -1;
 
@@ -122,7 +123,7 @@ class _OrderRequirementReportState extends State<OrderRequirementReport> {
                         child: Obx(() {
                           if (orderRequestController.isLoading.value) {
                             // Show a loading screen while data is being fetched
-                            return LoadingScreen();
+                            return LoadingWidget();
                           } else {
                             if (orderRequestController
                                         .requirmentResponse.value.response ==
@@ -179,120 +180,5 @@ class _OrderRequirementReportState extends State<OrderRequirementReport> {
         ),
       ),
     );
-
-    // Scaffold(
-    //   backgroundColor: AppColors.backgroundColor,
-    //   appBar: AppBar(
-    //     scrolledUnderElevation: 0,
-    //     title: Padding(
-    //       padding: EdgeInsets.all(8.0),
-    //       child: Text("Order Requirement Report ", style: AppStyles.appbar),
-    //     ),
-    //   ),
-    //   // Add the rest of your app content here
-
-    //   body: Column(
-    //     children: [
-    //       Expanded(
-    //         flex: 1,
-    //         child: Container(
-    //           color: Colors.white,
-    //           child:
-    //
-    // ListView.builder(
-    //               scrollDirection: Axis.horizontal,
-    //               shrinkWrap: true,
-    //               physics: ScrollPhysics(),
-    //               itemCount: orderRequestController.timeSlots.length,
-    //               itemBuilder: (BuildContext context, int index) {
-    //                 return Padding(
-    //                   padding: const EdgeInsets.all(6.0),
-    //                   child: GestureDetector(
-    //                     onTap: () {
-    //                       setState(() {
-    //                         selectedIndex = index;
-    //                         orderRequestController.fetchMeal(
-    //                             selectedIndex.toInt(), dat);
-    //                       });
-    //                     },
-    //                     child: Container(
-    //                       width: 100,
-    //                       decoration: BoxDecoration(
-    //                         borderRadius: BorderRadius.circular(20),
-    //                         color: selectedIndex == index
-    //                             ? Color.fromARGB(255, 9, 9, 9)
-    //                             : const Color.fromARGB(255, 247, 245, 245),
-    //                       ),
-    //                       child: Center(
-    //                         child: Text(
-    //                           orderRequestController.timeSlots[index],
-    //                           style: TextStyle(
-    //                               fontSize: 18.0,
-    //                               color: selectedIndex == index
-    //                                   ? AppColors.backgroundColor
-    //                                   : Color.fromARGB(255, 84, 82, 82)),
-    //                         ),
-    //                       ),
-    //                     ),
-    //                   ),
-    //                 );
-    //               }),
-    //         ),
-    //       ),
-    //       Expanded(
-    //           flex: 13,
-    //           child:
-    // Padding(
-    //             padding: const EdgeInsets.all(8.0),
-    //             child: Obx(() {
-    //               if (orderRequestController.isLoading.value) {
-    //                 // Show a loading screen while data is being fetched
-    //                 return LoadingScreen();
-    //               } else {
-    //                 if (orderRequestController
-    //                             .requirmentResponse.value.response ==
-    //                         null ||
-    //                     orderRequestController
-    //                         .requirmentResponse.value.response!.isEmpty) {
-    //                   // Show an empty cart page if there are no orders available
-    //                   return EmptyCartPage(
-    //                     onClick: () {},
-    //                   );
-    //                 } else {
-    //                   return Obx(() {
-    //                     if (orderRequestController.isLoading.value) {
-    //                       return Center(
-    //                         child: CircularProgressIndicator(),
-    //                       );
-    //                     } else {
-    //                       if (orderRequestController
-    //                               .requirmentResponse.value.response!.length ==
-    //                           0) {
-    //                         return Container(
-    //                           color: AppColors.iconColors,
-    //                         );
-    //                       } else {
-    //                         return ListView.builder(
-    //                           itemCount: orderRequestController
-    //                               .productQuantities.length,
-    //                           itemBuilder: (context, index) {
-    //                             final productQuantity = orderRequestController
-    //                                 .productQuantities[index];
-    //                             return ListTileContainer(
-    //                               name: productQuantity.productName,
-    //                               quantit: productQuantity.totalQuantity,
-    //                             );
-    //                           },
-    //                         );
-    //                       }
-    //                     }
-    //                   });
-    //                 }
-    //               }
-    //             }),
-    //           )),
-    //     ],
-    //   ),
-    // );
   }
 }

@@ -1,8 +1,9 @@
+import 'package:connect_canteen/app/config/api_end_points.dart';
+import 'package:connect_canteen/app/repository/grete_repository.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:intl/intl.dart';
 import 'package:connect_canteen/app/models/order_response.dart';
-import 'package:connect_canteen/app/repository/grand_Total_repository.dart';
 import 'package:nepali_utils/nepali_utils.dart';
 
 import 'dart:developer';
@@ -24,7 +25,7 @@ class ProductWithQuantity {
 }
 
 class SalsesController extends GetxController {
-  final GrandTotalRepository grandTotalRepo = GrandTotalRepository();
+  final GreatRepository grandTotalRepo = GreatRepository();
 
   final Rx<ApiResponse<OrderResponse>> salseOrderResponse =
       ApiResponse<OrderResponse>.initial().obs;
@@ -56,8 +57,17 @@ class SalsesController extends GetxController {
         DateFormat('dd/MM/yyyy\'', 'en').format(nepaliDateTime);
     try {
       isLoading(true);
+
+      final filters = {
+        "date": formattedDate,
+        "checkout": "true",
+
+        'orderType': 'regular',
+        // Add more filters as needed
+      };
       salseOrderResponse.value = ApiResponse<OrderResponse>.loading();
-      final orderResult = await grandTotalRepo.getSalseReport(formattedDate);
+      final orderResult = await grandTotalRepo.getFromDatabase(
+          filters, OrderResponse.fromJson, ApiEndpoints.orderCollection);
       if (orderResult.status == ApiStatus.SUCCESS) {
         salseOrderResponse.value =
             ApiResponse<OrderResponse>.completed(orderResult.response);
@@ -145,8 +155,17 @@ class SalsesController extends GetxController {
         DateFormat('dd/MM/yyyy\'', 'en').format(nepaliDateTime);
     try {
       isLoading(true);
+
+      final filters = {
+        "date": formattedDate,
+
+        'orderType': 'regular',
+
+        // Add more filters as needed
+      };
       totalOrderResponse.value = ApiResponse<OrderResponse>.loading();
-      final orderResult = await grandTotalRepo.getTotalOrders(formattedDate);
+      final orderResult = await grandTotalRepo.getFromDatabase(
+          filters, OrderResponse.fromJson, ApiEndpoints.orderCollection);
       if (orderResult.status == ApiStatus.SUCCESS) {
         totalOrderResponse.value =
             ApiResponse<OrderResponse>.completed(orderResult.response);

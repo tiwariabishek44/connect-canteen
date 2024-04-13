@@ -183,7 +183,7 @@ class HoldPage extends StatelessWidget {
                                   secondbutton: 'Cancel',
                                   onConfirm: () {
                                     orderContorller.holdUserOrder(
-                                        context, order.id, order.date);
+                                        order.id, order.date);
                                     // Perform actions when the user agrees
                                   },
                                 );

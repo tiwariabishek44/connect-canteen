@@ -20,7 +20,7 @@ class TotalOrdersTab extends StatefulWidget {
 }
 
 class _TotalOrdersTabState extends State<TotalOrdersTab> {
-  final orderRequestController = Get.put(OrderRequestContoller());
+  final orderRequestController = Get.put(OrderRequirementContoller());
 
   int selectedIndex = -1;
 

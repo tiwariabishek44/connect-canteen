@@ -14,7 +14,7 @@ class ListTileContainer extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(bottom: 1.h),
       child: Container(
-        height: 9.h,
+        height: 6.h,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: AppColors.greyColor,

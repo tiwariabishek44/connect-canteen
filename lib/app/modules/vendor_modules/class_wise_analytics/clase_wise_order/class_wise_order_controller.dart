@@ -1,13 +1,13 @@
 import 'dart:developer';
 
+import 'package:connect_canteen/app/config/api_end_points.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connect_canteen/app/models/order_response.dart';
 import 'package:connect_canteen/app/modules/common/login/login_controller.dart';
-import 'package:connect_canteen/app/repository/get_user_order_repository.dart';
-import 'package:connect_canteen/app/repository/order_checout_repository.dart';
+import 'package:connect_canteen/app/repository/grete_repository.dart';
 import 'package:connect_canteen/app/service/api_client.dart';
 import 'package:connect_canteen/app/widget/custom_snackbar.dart';
 
@@ -55,8 +55,8 @@ class ClassWiseOrderController extends GetxController {
       };
 
       orderResponse.value = ApiResponse<OrderResponse>.loading();
-      final orderResult = await orderRepository.doGetFromDatabase(
-          filter, OrderResponse.fromJson);
+      final orderResult = await orderRepository.getFromDatabase(
+          filter, OrderResponse.fromJson, ApiEndpoints.orderCollection);
       if (orderResult.status == ApiStatus.SUCCESS) {
         orderResponse.value =
             ApiResponse<OrderResponse>.completed(orderResult.response);

@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connect_canteen/app/widget/custom_loging_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:connect_canteen/app/config/colors.dart';
@@ -30,9 +31,7 @@ class OrderHoldListView extends StatelessWidget {
               child: Obx(() {
                 if (orderContorller.holdLoading.value ||
                     orderContorller.isloading.value) {
-                  return Center(
-                    child: CircularProgressIndicator(color: Colors.orange),
-                  );
+                  return LoadingWidget();
                 } else {
                   if (orderContorller.holdOrderResponse.value.response ==
                           null ||

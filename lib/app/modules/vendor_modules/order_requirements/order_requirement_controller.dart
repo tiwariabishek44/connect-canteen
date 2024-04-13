@@ -7,7 +7,7 @@ import 'package:connect_canteen/app/models/order_response.dart';
 import 'package:connect_canteen/app/repository/order_requirement_repository.dart';
 import 'package:connect_canteen/app/service/api_client.dart';
 
-class OrderRequestContoller extends GetxController {
+class OrderRequirementContoller extends GetxController {
   final OrderRequirementRepository orderRequirementRepository =
       OrderRequirementRepository();
 

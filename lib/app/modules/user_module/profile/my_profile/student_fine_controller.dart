@@ -1,20 +1,19 @@
 import 'dart:developer';
 
+import 'package:connect_canteen/app/config/api_end_points.dart';
 import 'package:connect_canteen/app/config/style.dart';
 import 'package:connect_canteen/app/repository/ger_fine_repository.dart';
+import 'package:connect_canteen/app/repository/grete_repository.dart';
 import 'package:connect_canteen/app/widget/payment_succesfull.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:connect_canteen/app/config/prefs.dart';
-import 'package:connect_canteen/app/models/order_response.dart';
 import 'package:connect_canteen/app/models/student_fine_Response.dart';
 import 'package:connect_canteen/app/modules/common/login/login_controller.dart';
-import 'package:connect_canteen/app/repository/get_userdata_repository.dart';
 import 'package:connect_canteen/app/repository/pay_fine_repository.dart';
 import 'package:connect_canteen/app/service/api_client.dart';
-import 'package:connect_canteen/app/widget/custom_snackbar.dart';
 import 'package:nepali_utils/nepali_utils.dart';
 
 class FineController extends GetxController {
@@ -90,15 +89,19 @@ class FineController extends GetxController {
 
 // //-------student fine update ------------//
   final userDataRepository =
-      UserDataRepository(); // Instantiate AddFriendRepository
+      GreatRepository(); // Instantiate AddFriendRepository
 
   Future<void> stateUpdate(
     BuildContext context,
     String userId,
   ) async {
     try {
+      final filters = {
+        'userid': userId,
+      };
       final newFine = {'fineAmount': 0};
-      final response = await userDataRepository.userDataUpdate(userId, newFine);
+      final response = await userDataRepository.doUpdate(
+          filters, newFine, ApiEndpoints.studentCollection);
       if (response.status == ApiStatus.SUCCESS) {
         await refreshData();
       } else {
