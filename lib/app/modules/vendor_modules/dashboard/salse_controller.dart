@@ -35,31 +35,24 @@ class SalsesController extends GetxController {
   final RxBool isLoading = false.obs;
 
   final grandTotal = 0.obs;
+  var calenderDate = ''.obs;
 
-  @override
-  void onInit() {
-    super.onInit();
+  // @override
+  // void onInit() {
+  //   super.onInit();
 
-    log("-------------salse controller is being called");
-    fetchTotalOrder();
-    fetchTotalSales();
-  }
+  //   fetchTotalOrder();
+  //   fetchTotalSales();
+  // }
 
 //-------------to fetch  the total salse of the day ------------
   Future<void> fetchTotalSales() async {
-    DateTime currentDate = DateTime.now();
-
-    // Convert the Gregorian date to Nepali date
-    NepaliDateTime nepaliDateTime = NepaliDateTime.fromDateTime(currentDate);
-
-    // Format the Nepali date as "dd/MM/yyyy("
-    String formattedDate =
-        DateFormat('dd/MM/yyyy\'', 'en').format(nepaliDateTime);
     try {
+      log(" this the the calender date ${calenderDate.value}");
       isLoading(true);
 
       final filters = {
-        "date": formattedDate,
+        "date": calenderDate.value,
         "checkout": "true",
 
         'orderType': 'regular',
@@ -158,10 +151,6 @@ class SalsesController extends GetxController {
 
       final filters = {
         "date": formattedDate,
-
-        'orderType': 'regular',
-
-        // Add more filters as needed
       };
       totalOrderResponse.value = ApiResponse<OrderResponse>.loading();
       final orderResult = await grandTotalRepo.getFromDatabase(
@@ -169,9 +158,6 @@ class SalsesController extends GetxController {
       if (orderResult.status == ApiStatus.SUCCESS) {
         totalOrderResponse.value =
             ApiResponse<OrderResponse>.completed(orderResult.response);
-        log('Orders have been fetched');
-        log("Number of products in the response: " +
-            totalOrderResponse.value.response!.length.toString());
 
         // Calculate total quantity after fetching orders
         calculateTotalOrderQuantity(orderResult.response!);

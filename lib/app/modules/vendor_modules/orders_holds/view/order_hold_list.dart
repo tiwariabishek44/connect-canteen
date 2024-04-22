@@ -18,8 +18,12 @@ class OrderHoldListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
-      appBar: CustomAppBar(
-        title: 'Orders Hold Records',
+      appBar: AppBar(
+        backgroundColor: Color(0xff06C167),
+        title: Text(
+          'Orders Hold Records',
+          style: AppStyles.appbar,
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -72,12 +76,25 @@ class OrderHoldListView extends StatelessWidget {
                             return Padding(
                               padding: EdgeInsets.only(bottom: 2.0.h),
                               child: Container(
-                                height: 20.h,
+                                decoration: BoxDecoration(
+                                  color: Colors
+                                      .white, // Background color of the container
+                                  borderRadius: BorderRadius.circular(
+                                      10), // Border radius if needed
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color.fromARGB(
+                                              255, 202, 200, 200)
+                                          .withOpacity(0.5), // Shadow color
+                                      spreadRadius: 5, // Spread radius
+                                      blurRadius: 7, // Blur radius
+                                      offset: Offset(0, 3), // Offset
+                                    ),
+                                  ],
+                                ),
                                 child: Row(
                                   children: [
                                     Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
                                       mainAxisAlignment:
                                           MainAxisAlignment.start,
                                       children: [
@@ -120,7 +137,7 @@ class OrderHoldListView extends StatelessWidget {
                                             ),
                                             Text(
                                               'Rs.${order.price.toStringAsFixed(2)}',
-                                              style: AppStyles.listTileTitle,
+                                              style: AppStyles.listTilesubTitle,
                                             ),
                                             Text(
                                                 '${orderContorller.holdOrderResponse.value.response![index].customer}',
@@ -133,15 +150,15 @@ class OrderHoldListView extends StatelessWidget {
                                             ),
                                             Text(
                                               '${order.quantity}-plate',
-                                              style: AppStyles.listTileTitle,
+                                              style: AppStyles.listTilesubTitle,
                                             ),
                                             Text(
                                               '(${order.orderType}) ${order.holdDate}  ',
-                                              style: AppStyles.listTileTitle,
+                                              style: AppStyles.listTilesubTitle,
                                             ),
                                             Text(
                                               'Class:-${order.classs}',
-                                              style: AppStyles.listTileTitle,
+                                              style: AppStyles.listTilesubTitle,
                                             ),
                                           ],
                                         ),

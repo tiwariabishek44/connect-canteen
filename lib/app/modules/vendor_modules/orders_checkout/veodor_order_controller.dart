@@ -23,13 +23,16 @@ class VendorOrderController extends GetxController {
   var isgroup = true.obs;
   final salseController = Get.put(SalsesController());
 
+  var isCheckoutOrder = true.obs;
+
 //------------fetch the user orders---------------
   final orderRepository = GreatRepository();
   final Rx<ApiResponse<OrderResponse>> orderResponse =
       ApiResponse<OrderResponse>.initial().obs;
   Future<void> fetchOrders(String groupCod) async {
-    log(groupCod);
     try {
+      isOrderFetch(false);
+
       DateTime currentDate = DateTime.now();
 
       NepaliDateTime nepaliDateTime = NepaliDateTime.fromDateTime(currentDate);
@@ -38,14 +41,24 @@ class VendorOrderController extends GetxController {
           DateFormat('dd/MM/yyyy\'', 'en').format(nepaliDateTime);
 
       isloading(true);
-      final filter = {
-        "groupcod": groupCod,
-        'checkout': 'false',
-        'orderType': 'regular',
-        'date': formattedDate,
+      final filter = isCheckoutOrder.value
+          ? {
+              "groupcod": groupCod,
+              'checkout': 'false',
+              'orderType': 'regular',
+              'date': formattedDate,
 
-        // Add more filters as needed
-      };
+              // Add more filters as needed
+            }
+          : {
+              "groupcod": groupCod,
+              'checkout': 'false',
+              'orderType': 'regular',
+              'date': formattedDate,
+              'checkoutVerified': 'false'
+
+              // Add more filters as needed
+            };
       orderResponse.value = ApiResponse<OrderResponse>.loading();
       final orderResult = await orderRepository.getFromDatabase(
           filter, OrderResponse.fromJson, ApiEndpoints.orderCollection);
@@ -69,12 +82,22 @@ class VendorOrderController extends GetxController {
 
   Future<void> checkoutOrder(String pin) async {
     try {
+      DateTime currentDate = DateTime.now();
+
+      NepaliDateTime nepaliDateTime = NepaliDateTime.fromDateTime(currentDate);
+
+      String formattedDate =
+          DateFormat('dd/MM/yyyy\'', 'en').format(nepaliDateTime);
+
       checkoutLoading(true);
       final filters = {
         '${isgroup.value ? "groupcod" : 'id'}': pin,
         'orderType': 'regular',
+        'date': formattedDate,
       };
-      final updateField = {'checkout': 'true'};
+      final updateField = {
+        '${isCheckoutOrder.value ? "checkout" : "checkoutVerified"}': 'true'
+      };
 
       final response = await orderRepository.doUpdate(
           filters, updateField, ApiEndpoints.orderCollection);

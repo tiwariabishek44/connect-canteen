@@ -2,30 +2,28 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:connect_canteen/app/local_notificaiton/local_notifications.dart';
-import 'package:connect_canteen/app/models/order_response.dart';
 import 'package:connect_canteen/app/widget/splash_screen.dart';
 import 'package:connect_canteen/app_test/data%20_print_page.dart';
 import 'package:connect_canteen/app_test/test_contorller%20.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:intl/intl.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
 
 final navigatorKey = GlobalKey<NavigatorState>();
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 void main() async {
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
   // Initialize the Nepali locale data
   initializeDateFormatting('ne_NP');
   WidgetsFlutterBinding.ensureInitialized();
@@ -192,3 +190,55 @@ class OfflineScreen extends StatelessWidget {
     );
   }
 }
+
+// import 'package:flutter/material.dart';
+// import 'package:intl/intl.dart';
+// import 'package:nepali_utils/nepali_utils.dart';
+
+// void main() {
+//   runApp(MyApp());
+// }
+
+// class MyApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       title: 'This Week\'s Dates (Nepali)',
+//       theme: ThemeData(
+//         primarySwatch: Colors.blue,
+//       ),
+//       home: ThisWeekNepaliDatesPage(),
+//     );
+//   }
+// }
+
+// class ThisWeekNepaliDatesPage extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('This Week\'s Dates (Nepali)'),
+//       ),
+//       body: Center(
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: List.generate(
+//             7,
+//             (index) {
+//               NepaliDateTime currentDate = NepaliDateTime.now();
+//               int difference = index - currentDate.weekday + 1;
+//               NepaliDateTime date = currentDate.add(Duration(days: difference));
+//               String formattedDate =
+//                   NepaliDateFormat('yyyy-MM-dd').format(date);
+//               String dayOfWeek = DateFormat('EEEE').format(date.toDateTime());
+//               return Text(
+//                 '$formattedDate ($dayOfWeek)',
+//                 style: TextStyle(fontSize: 18.0),
+//               );
+//             },
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }

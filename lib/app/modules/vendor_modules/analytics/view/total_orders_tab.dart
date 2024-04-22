@@ -1,12 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connect_canteen/app/config/prefs.dart';
 import 'package:get/get.dart';
 import 'package:connect_canteen/app/config/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:connect_canteen/app/config/style.dart';
-import 'package:connect_canteen/app/modules/common/login/login_controller.dart';
 import 'package:connect_canteen/app/modules/vendor_modules/order_requirements/order_requirement_controller.dart';
-import 'package:connect_canteen/app/modules/vendor_modules/orders_checkout/veodor_order_controller.dart';
 import 'package:connect_canteen/app/modules/vendor_modules/widget/list_tile_contailer.dart';
 import 'package:connect_canteen/app/widget/empty_cart_page.dart';
 import 'package:connect_canteen/app/widget/loading_screen.dart';
@@ -58,6 +54,9 @@ class _TotalOrdersTabState extends State<TotalOrdersTab> {
       backgroundColor: AppColors.backgroundColor,
       body: Column(
         children: [
+          SizedBox(
+            height: 2.h,
+          ),
           Expanded(
             flex: 1,
             child: Container(
@@ -101,6 +100,9 @@ class _TotalOrdersTabState extends State<TotalOrdersTab> {
                     );
                   }),
             ),
+          ),
+          SizedBox(
+            height: 2.h,
           ),
           Expanded(
               flex: 13,

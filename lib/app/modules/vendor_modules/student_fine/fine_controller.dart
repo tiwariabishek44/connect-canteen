@@ -17,6 +17,7 @@ import 'package:nepali_utils/nepali_utils.dart';
 
 class StudnetFineController extends GetxController {
   var loading = false.obs;
+  var fineApply = false.obs;
 
   var isFetchLoading = false.obs;
   final storage = GetStorage();

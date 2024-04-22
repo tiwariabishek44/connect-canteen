@@ -1,16 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:connect_canteen/app/config/colors.dart';
 import 'package:connect_canteen/app/config/style.dart';
-import 'package:connect_canteen/app/modules/vendor_modules/class_wise_analytics/class_reoprt_controller.dart';
 import 'package:intl/intl.dart';
 import 'package:connect_canteen/app/modules/vendor_modules/analytics/view/total_orders_tab.dart';
 import 'package:connect_canteen/app/modules/vendor_modules/analytics/view/total_remaning_orders_tab.dart';
-import 'package:connect_canteen/app/modules/vendor_modules/dashboard/salse_controller.dart';
-import 'package:connect_canteen/app/widget/empty_cart_page.dart';
 import 'package:nepali_utils/nepali_utils.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
 
 class AnalyticsPage extends StatefulWidget {
   @override
@@ -34,6 +28,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
       child: Scaffold(
         backgroundColor: AppColors.backgroundColor,
         appBar: AppBar(
+          backgroundColor: Color(0xff06C167),
           title: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(

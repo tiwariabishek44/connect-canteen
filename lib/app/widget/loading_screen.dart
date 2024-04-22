@@ -23,7 +23,7 @@ class LoadingScreen extends StatelessWidget {
         // Loading indicator
         Center(
             child: SpinKitFadingCircle(
-          color: AppColors.primaryColor,
+          color: AppColors.secondaryColor,
         )),
       ],
     );

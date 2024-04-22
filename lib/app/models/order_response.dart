@@ -17,27 +17,34 @@ class OrderResponse {
   final String orderTime;
   final String customerImage;
   final String orderHoldTime;
+  final String checkoutVerified;
+  final String groupName;
+  final String coinCollect;
+  final String overFlowRead;
 
-  OrderResponse({
-    required this.customerImage,
-    required this.id, // Update the constructor to include id
-    required this.mealtime,
-    required this.classs,
-    required this.customer,
-    required this.groupid,
-    required this.cid,
-    required this.productName,
-    required this.productImage,
-    required this.price,
-    required this.quantity,
-    required this.groupcod,
-    required this.checkout,
-    required this.date,
-    required this.orderType, // Add orderType to the constructor
-    required this.holdDate,
-    required this.orderTime,
-    required this.orderHoldTime,
-  });
+  OrderResponse(
+      {required this.customerImage,
+      required this.id, // Update the constructor to include id
+      required this.mealtime,
+      required this.classs,
+      required this.customer,
+      required this.groupid,
+      required this.cid,
+      required this.productName,
+      required this.productImage,
+      required this.price,
+      required this.quantity,
+      required this.groupcod,
+      required this.checkout,
+      required this.date,
+      required this.orderType, // Add orderType to the constructor
+      required this.holdDate,
+      required this.orderTime,
+      required this.orderHoldTime,
+      required this.checkoutVerified,
+      required this.groupName,
+      required this.coinCollect,
+      required this.overFlowRead});
 
   Map<String, dynamic> toMap() {
     return {
@@ -59,6 +66,10 @@ class OrderResponse {
       'orderTime': orderTime,
       "customerImage": customerImage,
       'orderHoldTime': orderHoldTime,
+      "checkoutVerified": checkoutVerified,
+      'groupName': groupName,
+      'coinCollect': coinCollect,
+      'overFlowRead': overFlowRead,
     };
   }
 
@@ -93,6 +104,10 @@ class OrderResponse {
       orderTime: map['orderTime'] ?? '',
       customerImage: map['customerImage'] ?? '',
       orderHoldTime: map['orderHoldTime'] ?? '',
+      checkoutVerified: map['checkoutVerified'] ?? '',
+      groupName: map['groupName'] ?? '',
+      coinCollect: map['coinCollect'] ?? '',
+      overFlowRead: map['overFlowRead'] ?? '',
     );
   }
 }

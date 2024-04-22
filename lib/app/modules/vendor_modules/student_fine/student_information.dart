@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connect_canteen/app/widget/custom_popup.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:connect_canteen/app/config/prefs.dart';
@@ -248,24 +249,57 @@ class StudnetInformationPage extends StatelessWidget {
                               ),
                             ),
                           ),
-                          Obx(() => CustomButton(
-                              text: 'Hold the order',
-                              onPressed: () {
-                                fineController.stateUpdate(
-                                    context,
-                                    order.id,
-                                    order.cid,
-                                    fineController.userDataResponse.value
-                                        .response!.first.fineAmount,
-                                    fineController.userDataResponse.value
-                                                .response!.first.studentScore ==
-                                            0
-                                        ? (0.1 * order.price).toInt()
-                                        : 0,
-                                    fineController.userDataResponse.value
-                                        .response!.first.studentScore);
-                              },
-                              isLoading: fineController.loading.value))
+                          fineController.fineApply.value
+                              ? Container()
+                              : Obx(() => CustomButton(
+                                  text: 'Hold the order',
+                                  onPressed: () {
+                                    fineController
+                                        .stateUpdate(
+                                            context,
+                                            order.id,
+                                            order.cid,
+                                            fineController
+                                                .userDataResponse
+                                                .value
+                                                .response!
+                                                .first
+                                                .fineAmount,
+                                            fineController
+                                                        .userDataResponse
+                                                        .value
+                                                        .response!
+                                                        .first
+                                                        .studentScore ==
+                                                    0
+                                                ? (0.1 * order.price).toInt()
+                                                : 0,
+                                            fineController
+                                                .userDataResponse
+                                                .value
+                                                .response!
+                                                .first
+                                                .studentScore)
+                                        .then((value) {
+                                      fineController.fineApply(true);
+                                      showDialog(
+                                          barrierColor:
+                                              Color.fromARGB(255, 73, 72, 72)
+                                                  .withOpacity(0.5),
+                                          context: Get.context!,
+                                          builder: (BuildContext context) {
+                                            return CustomPopup(
+                                              message:
+                                                  'Succesfully  Hold Orders ',
+                                              onBack: () {
+                                                Get.back();
+                                              },
+                                            );
+                                          });
+                                    });
+                                    ;
+                                  },
+                                  isLoading: fineController.loading.value))
                         ],
                       );
                     }

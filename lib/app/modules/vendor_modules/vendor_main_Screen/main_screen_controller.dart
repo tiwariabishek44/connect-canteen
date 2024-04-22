@@ -1,4 +1,4 @@
-import 'package:connect_canteen/app/modules/user_module/home/view/homepage.dart';
+import 'package:connect_canteen/app/modules/student_modules/home/view/homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:connect_canteen/app/modules/vendor_modules/menue/view/menue_view.dart';

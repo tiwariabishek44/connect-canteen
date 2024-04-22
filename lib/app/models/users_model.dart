@@ -8,6 +8,7 @@ class UserDataResponse {
   final String profilePicture;
   final int studentScore;
   final int fineAmount;
+  final int miCoin;
 
   UserDataResponse({
     required this.classes,
@@ -19,6 +20,7 @@ class UserDataResponse {
     required this.profilePicture,
     required this.studentScore,
     required this.fineAmount,
+    required this.miCoin,
   });
 
   factory UserDataResponse.fromJson(Map<String, dynamic> json) {
@@ -32,6 +34,7 @@ class UserDataResponse {
       profilePicture: json['profilePicture'] ?? '',
       studentScore: json['studentScore'] ?? 0,
       fineAmount: json['fineAmount'] ?? 0,
+      miCoin: json['miCoin'] ?? 0,
     );
   }
 
@@ -46,6 +49,7 @@ class UserDataResponse {
       'profilePicture': profilePicture,
       'studentScore': studentScore,
       'fineAmount': fineAmount,
+      'miCoin': miCoin,
     };
   }
 }

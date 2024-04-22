@@ -1,3 +1,5 @@
+import 'package:connect_canteen/app/config/colors.dart';
+import 'package:connect_canteen/app/widget/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:connect_canteen/app/modules/common/login/login_page.dart';
@@ -12,13 +14,24 @@ class LoginOptionView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.backgroundColor,
+      appBar: CustomAppBar(
+        iconrequired: false,
+        title: '',
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
+            SizedBox(
+              height: 20.h,
+            ),
             Container(
-              color: Colors.red,
-              height: 60.h,
-              width: 200.w,
+              child: Image.asset(
+                'assets/splash1.png',
+                fit: BoxFit.cover,
+              ),
+              height: 30.h,
+              width: 100.w,
             ),
             Padding(
               padding: EdgeInsets.only(left: 3.w, right: 3.w, top: 2.h),
@@ -39,7 +52,7 @@ class LoginOptionView extends StatelessWidget {
                             transition: Transition.rightToLeft);
                       },
                       isLoading: false),
-                  SizedBox(height: 15),
+                  SizedBox(height: 0.6.h),
                   Row(
                     children: <Widget>[
                       Expanded(
@@ -49,12 +62,12 @@ class LoginOptionView extends StatelessWidget {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        padding: EdgeInsets.symmetric(horizontal: 2.w),
                         child: Text(
                           'OR',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 24,
+                            fontSize: 18.sp,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -75,7 +88,6 @@ class LoginOptionView extends StatelessWidget {
                             transition: Transition.rightToLeft);
                       },
                       isLoading: false),
-                  SizedBox(height: 10),
                 ],
               ),
             ),

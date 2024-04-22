@@ -7,11 +7,13 @@ class CustomizedTextfield extends StatelessWidget {
   final TextEditingController myController;
   final String? hintText;
   final IconData icon;
+  final TextInputType keyboardType;
   final String? Function(String?) validator; // Validator function
 
   const CustomizedTextfield(
       {Key? key,
       required this.icon,
+      required this.keyboardType,
       required this.validator,
       required this.myController,
       this.hintText})
@@ -25,7 +27,9 @@ class CustomizedTextfield extends StatelessWidget {
         validator: validator,
         controller: myController,
         enableSuggestions: true,
+        keyboardType: keyboardType,
         decoration: InputDecoration(
+          contentPadding: EdgeInsets.all(8),
           prefixIcon: IconButton(
             icon: Icon(
               icon,
@@ -46,7 +50,7 @@ class CustomizedTextfield extends StatelessWidget {
           filled: true,
           labelText: hintText,
           labelStyle:
-              TextStyle(color: AppColors.secondaryColor, fontSize: 17.sp),
+              TextStyle(color: AppColors.secondaryColor, fontSize: 16.sp),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
           ),

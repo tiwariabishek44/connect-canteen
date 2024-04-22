@@ -200,4 +200,44 @@ class RegisterController extends GetxController {
     phonenocontroller.clear();
     passwordcontroller.clear();
   }
+
+  //==========CANTEEN REGISTER =========
+
+  Future<void> helperRegister() async {
+    try {
+      isregisterloading(true);
+
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: 'helper@gmail.com',
+        password: "1234567890",
+      );
+
+      await FirebaseFirestore.instance
+          .collection('canteenHelper')
+          .doc(userCredential.user!.uid)
+          .set({
+        'userid': userCredential.user!.uid, // Saving userid
+        'name': 'Texas Canteen',
+        'phone': '9742555741',
+        'email': "helper@gmail.com",
+        'type': "helper",
+      });
+      log("User registration successful");
+
+      isregisterloading(false);
+      clearTextControllers();
+      Get.back();
+    } catch (e) {
+      isregisterloading(false);
+      log("Error during user registration: $e");
+      // Display an error message to the user
+      // You can customize this based on your UI
+      Get.snackbar(
+        "Registration Failed",
+        "An error occurred during registration.",
+        snackPosition: SnackPosition.TOP,
+      );
+    }
+  }
 }

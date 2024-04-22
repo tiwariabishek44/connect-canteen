@@ -83,6 +83,9 @@ class _OrderRequirementReportState extends State<OrderRequirementReport> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              SizedBox(
+                height: 2.h,
+              ),
               GestureDetector(
                 onTap: () {
                   selectDate(context);

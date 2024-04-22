@@ -1,3 +1,4 @@
+import 'package:connect_canteen/app/widget/custom_app_bar.dart';
 import 'package:flutter/gestures.dart';
 import 'package:connect_canteen/app/config/colors.dart';
 import 'package:connect_canteen/app/config/style.dart';
@@ -34,10 +35,8 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: AppColors.backgroundColor,
-        appBar: AppBar(
-          backgroundColor: AppColors.backgroundColor,
-          title: const Text("Account Register"),
-          scrolledUnderElevation: 0,
+        appBar: CustomAppBar(
+          title: "Account Register",
         ),
         body: Padding(
           padding: AppPadding.screenHorizontalPadding,
@@ -48,12 +47,15 @@ class _RegisterPageState extends State<RegisterPage> {
               key: registercontroller.registerFromkey,
               child: Column(
                 children: [
+                  SizedBox(
+                    height: 2.h,
+                  ),
                   GestureDetector(
                     onTap: () {
                       registercontroller.pickImages();
                     },
                     child: Obx(() => CircleAvatar(
-                          radius: 35.sp,
+                          radius: 38.sp,
                           backgroundColor: AppColors.greyColor.withOpacity(0.4),
                           child: registercontroller.image.value.path.isEmpty
                               ? Column(
@@ -62,9 +64,14 @@ class _RegisterPageState extends State<RegisterPage> {
                                     const Icon(
                                       Icons.add_a_photo,
                                     ),
+                                    SizedBox(
+                                      height: 1,
+                                    ),
                                     Text(
-                                      'Upload an Image',
-                                      style: AppStyles.listTileTitle,
+                                      'Select ProfilePicture',
+                                      style: TextStyle(
+                                          color: AppColors.secondaryColor,
+                                          fontSize: 15.sp),
                                     ),
                                   ],
                                 )
@@ -83,18 +90,21 @@ class _RegisterPageState extends State<RegisterPage> {
                     height: 5.w,
                   ),
                   CustomizedTextfield(
+                    keyboardType: TextInputType.emailAddress,
                     validator: registercontroller.usernameValidator,
                     icon: Icons.email,
                     myController: registercontroller.emailcontroller,
                     hintText: "Email",
                   ),
                   CustomizedTextfield(
+                    keyboardType: TextInputType.phone,
                     validator: registercontroller.phoneValidator,
                     icon: Icons.phone,
                     myController: registercontroller.phonenocontroller,
                     hintText: "Phone",
                   ),
                   CustomizedTextfield(
+                    keyboardType: TextInputType.name,
                     validator: registercontroller.usernameValidator,
                     icon: Icons.person,
                     myController: registercontroller.namecontroller,
@@ -125,7 +135,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               'Select a Class',
                               style: TextStyle(
                                   color: AppColors.secondaryColor,
-                                  fontSize: 17.sp),
+                                  fontSize: 16.sp),
                             ),
                           ],
                         ), // Initial hint
@@ -133,7 +143,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
                         iconSize: 20.sp,
                         elevation: 8,
-                        style: TextStyle(color: AppColors.secondaryColor),
+                        style: TextStyle(
+                            color: AppColors.secondaryColor, fontSize: 16.sp),
                         underline: SizedBox(),
                         isExpanded: true,
                         onChanged: (String? newValue) {
@@ -161,10 +172,11 @@ class _RegisterPageState extends State<RegisterPage> {
                       controller: registercontroller.passwordcontroller,
                       obscureText: !_isPasswordVisible, // Toggle the visibility
                       decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all(8),
                         prefixIcon: Icon(Icons.lock_outline),
                         labelText: 'Password',
                         labelStyle: TextStyle(
-                            color: AppColors.secondaryColor, fontSize: 17.sp),
+                            color: AppColors.secondaryColor, fontSize: 16.sp),
                         enabledBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
                                 color: AppColors.secondaryColor, width: 1),
@@ -201,10 +213,11 @@ class _RegisterPageState extends State<RegisterPage> {
                       obscureText:
                           !_isconrnformPasswordVisible, // Toggle the visibility
                       decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all(8),
                         prefixIcon: Icon(Icons.lock_outline),
                         labelText: 'Confirm Password',
                         labelStyle: TextStyle(
-                            color: AppColors.secondaryColor, fontSize: 17.sp),
+                            color: AppColors.secondaryColor, fontSize: 16.sp),
                         enabledBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
                                 color: AppColors.secondaryColor, width: 1),
@@ -294,6 +307,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         text: "Register",
                         onPressed: () {
                           FocusScope.of(context).unfocus();
+
                           registercontroller.image.value.path.isEmpty
                               ? Fluttertoast.showToast(
                                   msg: "Please select a profile picture",

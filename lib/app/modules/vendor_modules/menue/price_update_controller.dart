@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:connect_canteen/app/modules/user_module/home/product_controller.dart';
+import 'package:connect_canteen/app/modules/student_modules/home/product_controller.dart';
 import 'package:connect_canteen/app/repository/product_update_repository.dart';
 import 'package:connect_canteen/app/service/api_client.dart';
 import 'package:connect_canteen/app/widget/custom_snackbar.dart';
@@ -35,9 +35,6 @@ class PriceUpdateController extends GetxController {
       if (response.status == ApiStatus.SUCCESS) {
         isloading(false);
         homepagecontroller.fetchProducts();
-        Get.back();
-
-        CustomSnackbar.showSuccess(context, "Update Succsfully");
       } else {
         isloading(false);
         log("Failed to add friend: ${response.message}");
@@ -50,7 +47,7 @@ class PriceUpdateController extends GetxController {
     }
   }
 
-  void priceSubmit(
+  Future<void> priceSubmit(
     BuildContext context,
     String productId,
   ) async {
@@ -62,10 +59,6 @@ class PriceUpdateController extends GetxController {
         if (response.status == ApiStatus.SUCCESS) {
           isloading(false);
           homepagecontroller.fetchProducts();
-          log("checkout Succesfully");
-          Get.back();
-
-          CustomSnackbar.showSuccess(context, "CheckOut Succesfully");
         } else {
           isloading(false);
           log("Failed to add friend: ${response.message}");
@@ -81,7 +74,7 @@ class PriceUpdateController extends GetxController {
 
   String? priceValidator(String? value) {
     if (value == null || value.trim().isEmpty) {
-      return 'Please enter your Canteen Code';
+      return 'Please Enter the Amount';
     }
 
     // Return null if the entered email is valid

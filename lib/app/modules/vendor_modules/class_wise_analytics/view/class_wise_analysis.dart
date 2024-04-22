@@ -6,7 +6,6 @@ import 'package:connect_canteen/app/config/style.dart';
 import 'package:connect_canteen/app/modules/vendor_modules/class_wise_analytics/class_reoprt_controller.dart';
 import 'package:intl/intl.dart';
 import 'package:connect_canteen/app/modules/vendor_modules/class_wise_analytics/view/class_remaning_order_tab.dart';
-import 'package:connect_canteen/app/modules/vendor_modules/class_wise_analytics/view/class_total_order_tab.dart';
 import 'package:connect_canteen/app/widget/empty_cart_page.dart';
 import 'package:nepali_utils/nepali_utils.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -32,40 +31,27 @@ class _ClassanalyticsState extends State<Classanalytics> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: AppColors.backgroundColor,
-        appBar: AppBar(
           backgroundColor: AppColors.backgroundColor,
-          title: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Class Analytics",
-                  style: AppStyles.appbar,
-                ),
-                Text(
-                  formattedDate,
-                  style: AppStyles.listTilesubTitle,
-                ),
-              ],
+          appBar: AppBar(
+            backgroundColor: Color(0xff06C167),
+            title: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Penalty Charge",
+                    style: AppStyles.appbar,
+                  ),
+                  Text(
+                    formattedDate,
+                    style: AppStyles.listTilesubTitle1,
+                  ),
+                ],
+              ),
             ),
           ),
-          bottom: const TabBar(
-            indicatorColor: AppColors.iconColors,
-            labelColor: AppColors.iconColors,
-            indicatorWeight: 1,
-            automaticIndicatorColorAdjustment: true,
-            tabs: [
-              Tab(text: 'Total Order'),
-              Tab(text: 'Remaning Orders'),
-            ],
-          ),
-        ),
-        body: TabBarView(
-          children: [ClassTotalOrdersTab(), ClassRemaningOrdersTab()],
-        ),
-      ),
+          body: ClassRemaningOrdersTab()),
     );
   }
 }

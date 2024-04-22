@@ -31,6 +31,8 @@ class LoginController extends GetxController {
   final loginFromkey = GlobalKey<FormState>();
   final termsAndConditions = false.obs;
   final vendorLoginFromkey = GlobalKey<FormState>();
+  var isCanteenHelper = false.obs;
+  final helperFormKey = GlobalKey<FormState>();
 
   FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -56,8 +58,13 @@ class LoginController extends GetxController {
       await _auth.signInWithEmailAndPassword(
           email: emailcontroller.text, password: passwordcontroller.text);
 
-      bool userExits = await checkIfUserExits(_auth.currentUser!.uid,
-          loginOptionController.isUser.value ? 'students' : "canteen");
+      bool userExits = await checkIfUserExits(
+          _auth.currentUser!.uid,
+          isCanteenHelper.value
+              ? 'canteenHelper'
+              : loginOptionController.isUser.value
+                  ? 'students'
+                  : "canteen");
 
       if (userExits) {
         saveDataLocally(context);
@@ -165,11 +172,13 @@ class LoginController extends GetxController {
   final GreatRepository userDataRepository = GreatRepository();
   final Rx<ApiResponse<UserDataResponse>> userDataResponse =
       ApiResponse<UserDataResponse>.initial().obs;
+
+  var isGroupId = false.obs;
   Future<void> fetchUserData() async {
     try {
       isFetchLoading(true);
       final filters = {
-        'userid': storage.read(userId),
+        'userid': _auth.currentUser!.uid,
       };
       userDataResponse.value = ApiResponse<UserDataResponse>.loading();
       final userDataResult = await userDataRepository.getFromDatabase(
@@ -178,8 +187,13 @@ class LoginController extends GetxController {
         userDataResponse.value =
             ApiResponse<UserDataResponse>.completed(userDataResult.response);
         isFetchLoading(false);
+        userDataResponse.value.response!;
 
-        log(userDataResponse.value.response!.first.classes);
+        userDataResponse.value.response!.first.groupid.toString().length != 0
+            ? isGroupId(true)
+            : isGroupId(false);
+
+        log(" this is the user data fetcn ---------- ok ok ok ${userDataResponse.value.response!.first.groupid.toString()}");
       }
       isFetchLoading(false);
     } catch (e) {
@@ -245,11 +259,15 @@ class LoginController extends GetxController {
   void saveDataLocally(BuildContext context) {
     storage.write(userId, _auth.currentUser!.uid);
     storage.write(
-        userType, loginOptionController.isUser.value ? student : canteen);
+        userType,
+        isCanteenHelper.value
+            ? canteenhelper
+            : loginOptionController.isUser.value
+                ? student
+                : canteen);
     loginOptionController.isUser.value
         ? fetchUserData()
         : fetchCanteenData(context);
-    log("this is the user login option${storage.read(userType)}");
     Get.offAll(() => SplashScreen());
   }
 
@@ -280,51 +298,7 @@ class LoginController extends GetxController {
     }
   }
 
-//------------vendor/canteen login---------------//
-
-  void vendorloginSubmit() {
-    if (vendorLoginFromkey.currentState!.validate()) {
-      vendorLogin();
-    }
-  }
-
-  Future<void> vendorLogin() async {
-    try {
-      isloading(true);
-
-      if (vendorCode.text.trim() == '4455') {
-        storage.write(userType, "canteen");
-        Get.offAll(() => SplashScreen());
-        isloading(false);
-        vendorCode.clear();
-      } else {
-        Get.snackbar("Error", 'Enter the valid number');
-
-        isloading(false);
-      }
-    } catch (e) {
-      isloading(false);
-      // Handle login errors
-      print("Login error: $e");
-      Get.snackbar("Login Failed", e.toString());
-    }
-  }
-
 //------------vendor logout---------------//
-
-  Future<void> vendorLogOut() async {
-    try {
-      storage.remove(userType);
-      vendorCode.clear();
-
-      Get.offAll(() => SplashScreen());
-    } catch (e) {
-      isloading(false);
-      // Handle login errors
-      print("Login error: $e");
-      Get.snackbar("Login Failed", e.toString());
-    }
-  }
 
   String? emailValidator(String? value) {
     if (value == null || value.trim().isEmpty) {

@@ -46,9 +46,6 @@ class RemaningOrdersController extends GetxController {
       if (orderResult.status == ApiStatus.SUCCESS) {
         remaningOrderResponse.value =
             ApiResponse<OrderResponse>.completed(orderResult.response);
-        log('Orders have been fetched');
-        log("Number of products in the response: " +
-            remaningOrderResponse.value.response!.length.toString());
 
         // Calculate total quantity after fetching orders
         calculateTotalQuantity(orderResult.response!);

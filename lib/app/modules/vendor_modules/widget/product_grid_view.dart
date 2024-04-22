@@ -4,7 +4,7 @@ import 'package:connect_canteen/app/config/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connect_canteen/app/config/style.dart';
-import 'package:connect_canteen/app/modules/user_module/home/product_controller.dart';
+import 'package:connect_canteen/app/modules/student_modules/home/product_controller.dart';
 import 'package:connect_canteen/app/modules/vendor_modules/menue/view/price_update.dart';
 import 'package:connect_canteen/app/modules/vendor_modules/menue/view/produt_details.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -51,10 +51,9 @@ class VendorProductGrid extends StatelessWidget {
                 flex: 6,
                 child: ClipRRect(
                   borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20),
-                      bottomRight: Radius.circular(20),
-                      bottomLeft: Radius.circular(20)),
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
                   child: CachedNetworkImage(
                     progressIndicatorBuilder:
                         (context, url, downloadProgress) => SpinKitFadingCircle(
@@ -80,31 +79,37 @@ class VendorProductGrid extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                  "${productContorller.allProductResponse.value.response![index].name}",
-                                  style: AppStyles.listTileTitle),
-                              Obx(() => Container(
-                                    height: 3.h,
-                                    width: 3.h,
-                                    padding: EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: productContorller
-                                              .allProductResponse
-                                              .value
-                                              .response![index]
-                                              .active
-                                          ? Colors.green
-                                          : Colors.red,
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                  )),
+                              Expanded(
+                                flex: 8,
+                                child: Text(
+                                    "${productContorller.allProductResponse.value.response![index].name}",
+                                    style: AppStyles.listTilesubTitle),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Obx(() => Container(
+                                      height: 3.h,
+                                      width: 3.h,
+                                      padding: EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: productContorller
+                                                .allProductResponse
+                                                .value
+                                                .response![index]
+                                                .active
+                                            ? Colors.green
+                                            : Colors.red,
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                    )),
+                              ),
                             ],
                           ),
                           Text(
                               "Rs ${productContorller.allProductResponse.value.response![index].price.toInt()}/plate",
                               style: AppStyles.listTilesubTitle),
                         ]),
-                  ))
+                  )),
             ]),
           ),
         );

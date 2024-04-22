@@ -9,6 +9,7 @@ const isBankFormSkipped = 'isBankFormSkipped';
 
 const canteen = "canteen";
 const student = "student";
+const canteenhelper = 'canteenHelper';
 final List<String> timeSlots = [
   'All',
   "09:00",

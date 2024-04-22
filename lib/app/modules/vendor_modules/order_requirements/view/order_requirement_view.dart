@@ -1,4 +1,5 @@
 import 'package:connect_canteen/app/config/prefs.dart';
+import 'package:connect_canteen/app/config/style.dart';
 import 'package:connect_canteen/app/widget/custom_loging_widget.dart';
 import 'package:get/get.dart';
 import 'package:connect_canteen/app/config/colors.dart';
@@ -9,6 +10,7 @@ import 'package:connect_canteen/app/widget/empty_cart_page.dart';
 import 'package:connect_canteen/app/widget/loading_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:nepali_utils/nepali_utils.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 class OrderRequirement extends StatefulWidget {
   @override
@@ -53,6 +55,7 @@ class _OrderRequirementState extends State<OrderRequirement> {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
+        backgroundColor: Color(0xff06C167),
         scrolledUnderElevation: 0,
         title: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -78,15 +81,19 @@ class _OrderRequirementState extends State<OrderRequirement> {
         ),
         actions: [
           PopupMenuButton(
+            color: Color(0xff06C167),
             icon: Icon(Icons.more_vert),
             itemBuilder: (BuildContext context) {
               return [
                 PopupMenuItem(
-                  child: Text('Today'),
+                  child: Text(
+                    'Today',
+                    style: AppStyles.listTileTitle,
+                  ),
                   value: 'Today',
                 ),
                 PopupMenuItem(
-                  child: Text('Tomorrow'),
+                  child: Text('Tomorrow', style: AppStyles.listTileTitle),
                   value: 'Tomorrow',
                 ),
               ];
@@ -115,6 +122,9 @@ class _OrderRequirementState extends State<OrderRequirement> {
 
       body: Column(
         children: [
+          SizedBox(
+            height: 1.h,
+          ),
           Expanded(
             flex: 1,
             child: Container(

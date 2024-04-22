@@ -19,8 +19,6 @@ class LocalNotifications {
 
       log(" this is the reply action");
     } else if (notificationResponse.actionId == 'no_action') {
-      log(" this is the cancle action");
-
       LocalNotifications.showScheduleNotification(
           payload: "This is periodic data");
     } else {
@@ -37,13 +35,12 @@ class LocalNotifications {
         DarwinInitializationSettings(
       onDidReceiveLocalNotification: (id, title, body, payload) => null,
     );
-    final LinuxInitializationSettings initializationSettingsLinux =
-        LinuxInitializationSettings(defaultActionName: 'Open notification');
+
     final InitializationSettings initializationSettings =
         InitializationSettings(
-            android: initializationSettingsAndroid,
-            iOS: initializationSettingsDarwin,
-            linux: initializationSettingsLinux);
+      android: initializationSettingsAndroid,
+      iOS: initializationSettingsDarwin,
+    );
     _flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onDidReceiveNotificationResponse: onNotificationTap,
         onDidReceiveBackgroundNotificationResponse: onNotificationTap);
@@ -76,20 +73,11 @@ class LocalNotifications {
     var nepalTimeZone = tz.getLocation('Asia/Kathmandu'); // Nepali time zone
     var nowInNepal = tz.TZDateTime.now(nepalTimeZone);
 
-    int M1 = 5;
-    int M2 = 20;
-    int E1 = 30; // 4 PM
-    int E2 = 40; // 6 PM
-    int E3 = 50; // 7 PM
-    int E4 = 60; // 8 PM
-
-    // int M1 = calculateTimeRemaining(6);
-    // int M2 = calculateTimeRemaining(7);
-    // int E1 = calculateTimeRemaining(16); // 4 PM
-    // int E2 = calculateTimeRemaining(18); // 6 PM
-    // int E3 = calculateTimeRemaining(19); // 7 PM
-    // int E4 = calculateTimeRemaining(20); // 8 PM
-
+    int M1 = calculateTimeRemaining(6);
+    int M2 = calculateTimeRemaining(7);
+    int E1 = calculateTimeRemaining(16); // 4 PM
+    int E2 = calculateTimeRemaining(18); // 6 PM
+    int E3 = calculateTimeRemaining(19); // 7 PSM
     Future<void> scheduleNotification({
       required int notificationId,
       required String title,
@@ -110,9 +98,9 @@ class LocalNotifications {
             importance: Importance.max,
             priority: Priority.high,
             ticker: 'ticker',
-            playSound: false,
-            sound: RawResourceAndroidNotificationSound('notifications'),
-            largeIcon: DrawableResourceAndroidBitmap('@mipmap/logo'),
+            playSound: true,
+            sound: RawResourceAndroidNotificationSound('notification'),
+            largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
             styleInformation: BigPictureStyleInformation(
               DrawableResourceAndroidBitmap(
                   '@mipmap/food'), // Replace '@mipmap/food' with your large image asset path
@@ -167,9 +155,9 @@ class LocalNotifications {
             importance: Importance.max,
             priority: Priority.high,
             ticker: 'ticker',
-            playSound: false,
-            sound: RawResourceAndroidNotificationSound('notifications'),
-            largeIcon: DrawableResourceAndroidBitmap('@mipmap/logo'),
+            playSound: true,
+            sound: RawResourceAndroidNotificationSound('notification'),
+            largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
           ),
         ),
         androidScheduleMode: AndroidScheduleMode.exact,
@@ -179,59 +167,59 @@ class LocalNotifications {
       );
     }
 
-//-------------morning 1 notification
+// //-------------morning 1 notification
     scheduleNotifications(
       notificationId: 1,
       title: "Thank you for placing your order!",
       body: "Your meal will be ready for pickup from the counter.",
       payload: payload,
-      scheduledDateTime: nowInNepal.add(Duration(seconds: M1)),
+      scheduledDateTime: nowInNepal.add(const Duration(seconds: 1)),
     );
 
 //-------------morning 2 notificaiton
     scheduleNotification(
-      notificationId: 2, title: "Hello Student 2",
+      notificationId: 2, title: "Hello Student",
+      body:
+          "Don't forget to order your meal! Order before  hours to ensure you don't miss today's menu. Time is running out!", // Updated notification message
+      payload: payload,
+      scheduledDateTime: nowInNepal.add(Duration(hours: M1)),
+    );
+
+//-------------Evening  1 notificaiton
+    scheduleNotification(
+      notificationId: 3, title: "Hello Student",
       body:
           "Don't forget to order your meal! Order before  hours to ensure you don't miss today's menu. Time is running out!", // Updated notification message
       payload: payload,
       scheduledDateTime: nowInNepal.add(Duration(hours: M2)),
     );
 
-//-------------Evening  1 notificaiton
+//-------------Evening  2 notificaiton
     scheduleNotification(
-      notificationId: 3, title: "Hello Student 3",
+      notificationId: 4, title: "Hello Student",
       body:
           "Don't forget to order your meal! Order before  hours to ensure you don't miss today's menu. Time is running out!", // Updated notification message
       payload: payload,
       scheduledDateTime: nowInNepal.add(Duration(hours: E1)),
     );
 
-//-------------Evening  2 notificaiton
+//-------------Evening  3 notificaiton
     scheduleNotification(
-      notificationId: 4, title: "Hello Student 4",
+      notificationId: 5, title: "Hello Student",
       body:
           "Don't forget to order your meal! Order before  hours to ensure you don't miss today's menu. Time is running out!", // Updated notification message
       payload: payload,
       scheduledDateTime: nowInNepal.add(Duration(hours: E2)),
     );
 
-//-------------Evening  3 notificaiton
+//-------------Evening  4 notificaiton
+
     scheduleNotification(
-      notificationId: 5, title: "Hello Student 5",
+      notificationId: 6, title: "Hello Student",
       body:
           "Don't forget to order your meal! Order before  hours to ensure you don't miss today's menu. Time is running out!", // Updated notification message
       payload: payload,
       scheduledDateTime: nowInNepal.add(Duration(hours: E3)),
-    );
-
-//-------------Evening  4 notificaiton
-
-    scheduleNotification(
-      notificationId: 6, title: "Hello Student 6",
-      body:
-          "Don't forget to order your meal! Order before  hours to ensure you don't miss today's menu. Time is running out!", // Updated notification message
-      payload: payload,
-      scheduledDateTime: nowInNepal.add(Duration(hours: E4)),
     );
   }
 

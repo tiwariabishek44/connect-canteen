@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:connect_canteen/app/config/colors.dart';
 import 'package:connect_canteen/app/models/product_model.dart';
-import 'package:connect_canteen/app/modules/user_module/orders/orders_controller.dart';
+import 'package:connect_canteen/app/modules/student_modules/orders/orders_controller.dart';
 import 'package:connect_canteen/app/modules/vendor_modules/menue/price_update_controller.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';

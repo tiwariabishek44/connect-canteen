@@ -74,7 +74,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:connect_canteen/app/config/colors.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
-Duration duration = const Duration(milliseconds: 360);
+Duration duration = const Duration(milliseconds: 260);
 
 class AppStyles {
   static TextStyle get appbar {
@@ -167,8 +167,8 @@ class AppStyles {
   static TextStyle get topicsHeading1 {
     return GoogleFonts.lato(
         textStyle: TextStyle(
-      fontSize: 18.sp,
-      color: AppColors.backgroundColor,
+      fontSize: 22.sp,
+      color: Color.fromARGB(255, 45, 43, 43),
       fontWeight: FontWeight.w800,
     ));
   }

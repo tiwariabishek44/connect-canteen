@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get/get.dart';
 import 'package:connect_canteen/app/config/colors.dart';
@@ -7,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:connect_canteen/app/modules/vendor_modules/class_wise_analytics/clase_wise_order/class_wise_order_controller.dart';
 import 'package:connect_canteen/app/modules/vendor_modules/student_fine/fine_controller.dart';
 import 'package:connect_canteen/app/modules/vendor_modules/student_fine/student_information.dart';
-import 'package:connect_canteen/app/modules/vendor_modules/widget/empty_order.dart';
+import 'package:connect_canteen/app/modules/vendor_modules/widget/pin_entry.dart';
 import 'package:connect_canteen/app/widget/empty_cart_page.dart';
 import 'package:connect_canteen/app/widget/loading_screen.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -20,7 +22,7 @@ class ClassWiseOrder extends StatelessWidget {
     required this.classs,
   }) : super(key: key);
 
-  Future<void> _refreshData() async {}
+  Future<void> refreshData() async {}
   final ordercontroller = Get.put(ClassWiseOrderController());
   final fineController = Get.put(StudnetFineController());
 
@@ -29,7 +31,7 @@ class ClassWiseOrder extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xff06C167),
         title: Text(
           classs,
           style: AppStyles.appbar,
@@ -51,6 +53,9 @@ class ClassWiseOrder extends StatelessWidget {
                 padding: AppPadding.screenHorizontalPadding,
                 child: Column(
                   children: [
+                    SizedBox(
+                      height: 2.h,
+                    ),
                     ListView.builder(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
@@ -61,6 +66,7 @@ class ClassWiseOrder extends StatelessWidget {
                           padding: EdgeInsets.only(bottom: 2.0.h),
                           child: GestureDetector(
                             onTap: () {
+                              fineController.fineApply.value = false;
                               fineController.fetchUserData(ordercontroller
                                   .orderResponse.value.response![index].cid);
 
@@ -70,7 +76,22 @@ class ClassWiseOrder extends StatelessWidget {
                                   ));
                             },
                             child: Container(
-                              height: 17.h,
+                              decoration: BoxDecoration(
+                                color: Colors
+                                    .white, // Background color of the container
+                                borderRadius: BorderRadius.circular(
+                                    10), // Border radius if needed
+                                boxShadow: [
+                                  BoxShadow(
+                                    color:
+                                        const Color.fromARGB(255, 202, 200, 200)
+                                            .withOpacity(0.5), // Shadow color
+                                    spreadRadius: 5, // Spread radius
+                                    blurRadius: 7, // Blur radius
+                                    offset: Offset(0, 3), // Offset
+                                  ),
+                                ],
+                              ),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
@@ -110,11 +131,11 @@ class ClassWiseOrder extends StatelessWidget {
                                             .response![index].productName,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
-                                        style: AppStyles.listTileTitle,
+                                        style: AppStyles.listTilesubTitle,
                                       ),
                                       Text(
                                         'Rs.${ordercontroller.orderResponse.value.response![index].price.toStringAsFixed(2)}',
-                                        style: AppStyles.listTileTitle,
+                                        style: AppStyles.listTilesubTitle,
                                       ),
                                       Text(
                                           '${ordercontroller.orderResponse.value.response![index].customer}',

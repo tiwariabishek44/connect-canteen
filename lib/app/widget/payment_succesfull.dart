@@ -1,4 +1,5 @@
 import 'package:connect_canteen/app/config/colors.dart';
+import 'package:connect_canteen/app/widget/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
@@ -11,9 +12,7 @@ class PaymentSuccessPage extends StatelessWidget {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Payment Successful'),
-      ),
+      appBar: CustomAppBar(title: ''),
       body: Column(
         children: [
           SizedBox(

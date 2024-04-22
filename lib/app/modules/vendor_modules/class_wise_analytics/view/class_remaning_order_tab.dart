@@ -13,6 +13,7 @@ import 'package:connect_canteen/app/widget/empty_cart_page.dart';
 import 'package:connect_canteen/app/widget/loading_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:nepali_utils/nepali_utils.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 class ClassRemaningOrdersTab extends StatefulWidget {
   const ClassRemaningOrdersTab({super.key});
@@ -66,6 +67,9 @@ class _ClassRemaningOrdersTabState extends State<ClassRemaningOrdersTab> {
       backgroundColor: AppColors.backgroundColor,
       body: Column(
         children: [
+          SizedBox(
+            height: 2.h,
+          ),
           Expanded(
             flex: 1,
             child: Container(
@@ -109,6 +113,9 @@ class _ClassRemaningOrdersTabState extends State<ClassRemaningOrdersTab> {
                     );
                   }),
             ),
+          ),
+          SizedBox(
+            height: 2.h,
           ),
           Expanded(
               flex: 13,

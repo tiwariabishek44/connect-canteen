@@ -54,6 +54,9 @@ class _TotalRemaningOrdersTabState extends State<TotalRemaningOrdersTab> {
       backgroundColor: AppColors.backgroundColor,
       body: Column(
         children: [
+          SizedBox(
+            height: 2.h,
+          ),
           Expanded(
             flex: 1,
             child: Container(
@@ -97,6 +100,9 @@ class _TotalRemaningOrdersTabState extends State<TotalRemaningOrdersTab> {
                     );
                   }),
             ),
+          ),
+          SizedBox(
+            height: 2.h,
           ),
           Expanded(
               flex: 13,

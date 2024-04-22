@@ -8,12 +8,12 @@ import 'package:esewa_flutter_sdk/esewa_payment_success_result.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:connect_canteen/app/config/eSewa.dart';
-import 'package:connect_canteen/app/modules/user_module/add_order/add_product_controller.dart';
-import 'package:connect_canteen/app/modules/user_module/profile/my_profile/student_fine_controller.dart';
+import 'package:connect_canteen/app/modules/student_modules/add_order/add_product_controller.dart';
+import 'package:connect_canteen/app/modules/student_modules/profile/my_profile/student_fine_controller.dart';
 import 'package:connect_canteen/app/widget/custom_snackbar.dart';
 
 class Esewa {
-  final AddProductController addProductController;
+  final AddOrderController addProductController;
 
   Esewa(this.addProductController);
 
@@ -33,6 +33,7 @@ class Esewa {
     required String mealtime,
     required String date,
     required String orderHoldTime,
+    required String groupName,
   }) {
     try {
       EsewaFlutterSdk.initPayment(
@@ -64,7 +65,8 @@ class Esewa {
               checkout: checkout,
               mealtime: mealtime,
               date: date,
-              orderHoldTime: orderHoldTime);
+              orderHoldTime: orderHoldTime,
+              groupName: groupName);
         },
         onPaymentFailure: () {
           debugPrint('FAILURE');
@@ -95,6 +97,7 @@ class Esewa {
     required String date,
     required String customerimage,
     required String orderHoldTime,
+    required String groupName,
   }) async {
     try {
       String basicAuth =
@@ -116,6 +119,7 @@ class Esewa {
 
         addProductController.addItemToOrder(
           context,
+          groupName: groupName,
           mealtime: mealtime,
           classs: classs,
           date: date,

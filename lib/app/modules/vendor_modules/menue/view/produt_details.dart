@@ -1,4 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connect_canteen/app/widget/custom_popup.dart';
+import 'package:connect_canteen/app/widget/customized_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
@@ -132,10 +134,25 @@ class _CanteenProductEditPageState extends State<CanteenProductEditPage> {
                               value: widget.product
                                   .active, // Example value for the switch
                               onChanged: (value) {
-                                priceController.stateUpdate(
-                                    context,
-                                    widget.product.name,
-                                    !widget.product.active);
+                                priceController
+                                    .stateUpdate(context, widget.product.name,
+                                        !widget.product.active)
+                                    .then((value) {
+                                  Get.back();
+                                  showDialog(
+                                      barrierColor:
+                                          Color.fromARGB(255, 73, 72, 72)
+                                              .withOpacity(0.5),
+                                      context: Get.context!,
+                                      builder: (BuildContext context) {
+                                        return CustomPopup(
+                                          message: 'Succesfully  Update State',
+                                          onBack: () {
+                                            Get.back();
+                                          },
+                                        );
+                                      });
+                                });
                                 // Add your logic here
                               },
                             ),
@@ -148,49 +165,36 @@ class _CanteenProductEditPageState extends State<CanteenProductEditPage> {
                             children: [
                               SizedBox(height: 10),
                               Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: TextFormField(
-                                  validator: priceController.priceValidator,
-                                  controller: priceController.price,
-                                  decoration: InputDecoration(
-                                    suffixIcon: IconButton(
-                                      icon: Icon(
-                                        Icons.money,
-                                        color: AppColors.secondaryColor,
-                                        size: 30,
-                                      ),
-                                      onPressed: () {},
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                        borderSide: const BorderSide(
-                                            color: AppColors.secondaryColor,
-                                            width: 1),
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderSide: const BorderSide(
-                                            color: AppColors.secondaryColor,
-                                            width: 1),
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
-                                    fillColor:
-                                        Color.fromARGB(255, 255, 255, 255),
-                                    filled: true,
-                                    labelText: 'Enter the latest Price',
-                                    labelStyle: TextStyle(
-                                        color: AppColors.secondaryColor),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: CustomizedTextfield(
+                                      icon: Icons.money,
+                                      keyboardType: TextInputType.number,
+                                      validator: priceController.priceValidator,
+                                      myController: priceController.price)),
                               CustomButton(
                                   text: 'Update Price',
                                   onPressed: () {
                                     FocusScope.of(context).unfocus();
-                                    priceController.priceSubmit(
-                                        context, widget.product.name);
+                                    priceController
+                                        .priceSubmit(
+                                            context, widget.product.name)
+                                        .then((value) {
+                                      Get.back();
+                                      showDialog(
+                                          barrierColor:
+                                              Color.fromARGB(255, 73, 72, 72)
+                                                  .withOpacity(0.5),
+                                          context: Get.context!,
+                                          builder: (BuildContext context) {
+                                            return CustomPopup(
+                                              message:
+                                                  'Succesfully  Price Change ',
+                                              onBack: () {
+                                                Get.back();
+                                              },
+                                            );
+                                          });
+                                    });
                                   },
                                   isLoading: false)
                             ],
@@ -228,10 +232,10 @@ class _CanteenProductEditPageState extends State<CanteenProductEditPage> {
                     left: 35.w,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.orange,
+                        color: Colors.green,
 
                         borderRadius: BorderRadius.circular(
-                            20), // Adjust the border radius here
+                            4), // Adjust the border radius here
                       ),
                       height: 15.h,
                       width: 30.w,

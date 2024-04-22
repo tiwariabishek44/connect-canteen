@@ -87,27 +87,6 @@ class TestContorller extends GetxController {
       DateTime now = DateTime.now();
       String productId =
           '$i+"${i * i}"+${now.year}${now.month}${now.day}${now.hour}${now.minute}${now.second}${now.millisecond}';
-
-      orders.add(OrderResponse(
-        id: productId,
-        mealtime: foodOrderTime.mealTime,
-        classs: classs,
-        customer: 'Abishek Tiwari',
-        groupid: "5O6xYxq3UnOBErm6WPxGK2tQXSR2",
-        cid: '5O6xYxq3UnOBErm6WPxGK2tQXSR2',
-        productName: productName,
-        productImage: productImageUrl,
-        price: price,
-        quantity: 1,
-        groupcod: groupcod,
-        checkout: 'false',
-        date: '30/12/2080',
-        orderType: 'regular',
-        holdDate: '',
-        orderTime: foodOrderTime.orderHoldTime,
-        customerImage: customerImage,
-        orderHoldTime: foodOrderTime.orderHoldTime,
-      ));
     }
 
     return orders;
