@@ -6,7 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connect_canteen/app/config/style.dart';
 import 'package:connect_canteen/app/modules/student_modules/home/product_controller.dart';
 import 'package:connect_canteen/app/modules/vendor_modules/menue/view/price_update.dart';
-import 'package:connect_canteen/app/modules/vendor_modules/menue/view/produt_details.dart';
+import 'package:connect_canteen/app/modules/vendor_modules/menue/view/product_edit.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 // Define the reusable product grid widget

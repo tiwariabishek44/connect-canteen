@@ -2,9 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:connect_canteen/app/local_notificaiton/local_notifications.dart';
-import 'package:connect_canteen/app/widget/splash_screen.dart';
-import 'package:connect_canteen/app_test/data%20_print_page.dart';
-import 'package:connect_canteen/app_test/test_contorller%20.dart';
+import 'package:connect_canteen/app1/modules/common/logoin_option/login_option.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,9 +19,6 @@ final navigatorKey = GlobalKey<NavigatorState>();
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 void main() async {
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-  ]);
   // Initialize the Nepali locale data
   initializeDateFormatting('ne_NP');
   WidgetsFlutterBinding.ensureInitialized();
@@ -121,7 +116,7 @@ class _MyAppState extends State<MyApp> {
               // Check connectivity status to determine which screen to show
               home: _connectionStatus == ConnectivityResult.none
                   ? OfflineScreen()
-                  : SplashScreen(),
+                  : OnboardingScreen(),
             );
           },
         );
@@ -131,8 +126,6 @@ class _MyAppState extends State<MyApp> {
 }
 
 class OfflineScreen extends StatelessWidget {
-  final printController = Get.put(PrintController());
-  final testcontorller = Get.put(TestContorller());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -168,7 +161,7 @@ class OfflineScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(
-                primary: Colors.blue,
+                backgroundColor: Colors.blue,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
@@ -190,55 +183,3 @@ class OfflineScreen extends StatelessWidget {
     );
   }
 }
-
-// import 'package:flutter/material.dart';
-// import 'package:intl/intl.dart';
-// import 'package:nepali_utils/nepali_utils.dart';
-
-// void main() {
-//   runApp(MyApp());
-// }
-
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'This Week\'s Dates (Nepali)',
-//       theme: ThemeData(
-//         primarySwatch: Colors.blue,
-//       ),
-//       home: ThisWeekNepaliDatesPage(),
-//     );
-//   }
-// }
-
-// class ThisWeekNepaliDatesPage extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('This Week\'s Dates (Nepali)'),
-//       ),
-//       body: Center(
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: List.generate(
-//             7,
-//             (index) {
-//               NepaliDateTime currentDate = NepaliDateTime.now();
-//               int difference = index - currentDate.weekday + 1;
-//               NepaliDateTime date = currentDate.add(Duration(days: difference));
-//               String formattedDate =
-//                   NepaliDateFormat('yyyy-MM-dd').format(date);
-//               String dayOfWeek = DateFormat('EEEE').format(date.toDateTime());
-//               return Text(
-//                 '$formattedDate ($dayOfWeek)',
-//                 style: TextStyle(fontSize: 18.0),
-//               );
-//             },
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }

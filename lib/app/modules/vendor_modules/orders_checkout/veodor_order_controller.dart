@@ -67,9 +67,12 @@ class VendorOrderController extends GetxController {
             ApiResponse<OrderResponse>.completed(orderResult.response);
         isloading(false);
 
-        orderResponse.value.response!.length != 0
-            ? isOrderFetch(true)
-            : isOrderFetch(false);
+        if (orderResponse.value.response!.length != 0) {
+          isOrderFetch(true);
+          calculateTotalAmount(orderResponse.value.response!);
+        } else {
+          isOrderFetch(false);
+        }
       }
     } catch (e) {
       isloading(false);
@@ -78,6 +81,18 @@ class VendorOrderController extends GetxController {
     } finally {
       isloading(false);
     }
+  }
+
+  var totalprice = 0.0.obs;
+  // Method to calculate total amount (total price of the order)
+  double calculateTotalAmount(List<OrderResponse> orders) {
+    double totalAmount = 0;
+    for (OrderResponse order in orders) {
+      totalAmount += (order.price * order.quantity);
+    }
+
+    totalprice.value = totalAmount;
+    return totalAmount;
   }
 
   Future<void> checkoutOrder(String pin) async {

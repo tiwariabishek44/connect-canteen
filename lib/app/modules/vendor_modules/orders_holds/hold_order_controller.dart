@@ -94,12 +94,14 @@ class CanteenHoldOrders extends GetxController {
       final filters = mealtime == 'All'
           ? {
               'holdDate': dates,
+              "orderType": 'hold'
 
               // Add more filters as needed
             }
           : {
               'holdDate': dates,
               "mealtime": mealtime,
+              "orderType": 'hold'
 
               // Add more filters as needed
             };
@@ -141,16 +143,5 @@ class CanteenHoldOrders extends GetxController {
               totalQuantity: entry.value,
             ))
         .toList();
-  }
-}
-
-class OrderRequirementContoller extends GetxController {
-  final RxMap<String, int> totalQuantityPerProduct = <String, int>{}.obs;
-  var date = ''.obs;
-
-  final RxBool isLoading = false.obs;
-  @override
-  void onInit() {
-    super.onInit();
   }
 }

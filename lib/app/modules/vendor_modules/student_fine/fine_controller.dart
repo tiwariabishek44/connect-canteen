@@ -34,54 +34,22 @@ class StudnetFineController extends GetxController {
   Future<void> stateUpdate(
     BuildContext context,
     String orderId,
-    String userId,
-    int oldFine,
-    int newFine,
-    int score,
   ) async {
     try {
+      log("ti is the order hold");
       loading(true);
+
       DateTime now = DateTime.now();
 
       NepaliDateTime nepaliDateTime = NepaliDateTime.fromDateTime(now);
       final dat = DateFormat('dd/MM/yyyy\'', 'en').format(nepaliDateTime);
 
-      int finalScore = score; // Initialize finalScore with the provided score
-
-      // Check if score is greater than 0
-      if (score > 0) {
-        finalScore--; // Decrement finalScore by 1
-      } else {
-        finalScore = 0; // Set finalScore to 0 if score is already 0
-      }
-
-      // Perform further operations with finalScore as needed
-      final filters = {
-        'userid': userId,
-      };
-
-      final newUpdate = {
-        "studentScore": finalScore,
-        'fineAmount': oldFine + newFine
-      };
-      final response = await userDataRepository.doUpdate(
-          filters, newUpdate, ApiEndpoints.studentCollection);
-      if (response.status == ApiStatus.SUCCESS) {
+      holdOrderController.holdUserOrder(context, orderId, dat).then((value) {
         loading(false);
-
-        holdOrderController.holdUserOrder(context, orderId, dat);
-
-        fetchUserData(userId);
-      } else {
-        loading(false);
-        log("Failed to add friend: ${response.message}");
-      }
+      });
     } catch (e) {
       loading(false);
       log('Error while adding friend: $e');
-    } finally {
-      loading(false);
-      // Any cleanup code can be placed here
     }
   }
 

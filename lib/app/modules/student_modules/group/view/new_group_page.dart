@@ -58,7 +58,6 @@ class NewGroupCreate extends StatelessWidget {
                     },
                     onCompleted: (pin) {
                       groupController.groupCode.value = pin;
-                      log(" Otp pin ${pin}");
                     },
                     onChanged: (String? value) {
                       if (value!.isEmpty || value.length < 4) {

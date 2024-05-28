@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:connect_canteen/app/config/colors.dart';
 import 'package:connect_canteen/app/config/style.dart';
-import 'package:connect_canteen/app/modules/vendor_modules/class_wise_analytics/class_reoprt_controller.dart';
+import 'package:connect_canteen/app/modules/vendor_modules/penalty/class_reoprt_controller.dart';
 import 'package:connect_canteen/app/modules/vendor_modules/dashboard/salse_controller.dart';
 import 'package:connect_canteen/app/widget/empty_cart_page.dart';
 import 'package:connect_canteen/app/widget/loading_screen.dart';
@@ -25,28 +25,26 @@ class SalseReport extends StatelessWidget {
               if (salesController.isLoading.value) {
                 return LoadingWidget();
               } else {
+                // ignore: invalid_use_of_protected_member
                 if (salesController.productWithQuantity.value.isEmpty) {
                   return Center(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 7.h),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.shopping_cart_outlined,
-                            size: 100.0,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.sell_outlined,
+                          size: 100.0,
+                          color: Colors.grey,
+                        ),
+                        SizedBox(height: 20.0),
+                        Text(
+                          'No sales till now.',
+                          style: TextStyle(
                             color: Colors.grey,
+                            fontSize: 20.0,
                           ),
-                          SizedBox(height: 20.0),
-                          Text(
-                            'No sales till now.',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 20.0,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   );
                 } else {

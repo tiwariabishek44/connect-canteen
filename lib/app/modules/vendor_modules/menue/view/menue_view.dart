@@ -2,6 +2,7 @@ import 'package:connect_canteen/app/config/colors.dart';
 import 'package:connect_canteen/app/config/style.dart';
 import 'package:connect_canteen/app/modules/common/login/login_controller.dart';
 import 'package:connect_canteen/app/modules/student_modules/home/product_controller.dart';
+import 'package:connect_canteen/app/modules/student_modules/home/product_upload.dart';
 import 'package:connect_canteen/app/modules/vendor_modules/widget/product_grid_view.dart';
 import 'package:connect_canteen/app/widget/custom_app_bar.dart';
 import 'package:connect_canteen/app/widget/custom_loging_widget.dart';
@@ -26,6 +27,11 @@ class Menue extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.greyColor,
       appBar: CustomAppBar(title: "Canteen Menue"),
+      // floatingActionButton: FloatingActionButton(
+      //     child: Icon(Icons.add),
+      //     onPressed: () {
+      //       Get.to(() => ProductUploadPage());
+      //     }),
       body: RefreshIndicator(
         onRefresh: () => _refreshData(),
         child: Stack(

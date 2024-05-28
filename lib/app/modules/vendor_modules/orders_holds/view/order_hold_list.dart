@@ -18,12 +18,9 @@ class OrderHoldListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: Color(0xff06C167),
-        title: Text(
-          'Orders Hold Records',
-          style: AppStyles.appbar,
-        ),
+      appBar: CustomAppBar(
+        title: 'Orders Hold Records',
+        iconrequired: true,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -67,7 +64,7 @@ class OrderHoldListView extends StatelessWidget {
                             vertical: 1.h), // Adjust vertical padding as needed
                         child: ListView.builder(
                           shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
+                          physics: const BouncingScrollPhysics(),
                           itemCount: orderContorller
                               .holdOrderResponse.value.response!.length,
                           itemBuilder: (context, index) {

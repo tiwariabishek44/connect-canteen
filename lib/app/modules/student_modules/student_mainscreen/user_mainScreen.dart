@@ -1,4 +1,7 @@
-import 'package:connect_canteen/app/modules/student_modules/store/store_dart.dart';
+import 'package:connect_canteen/app/config/colors.dart';
+import 'package:connect_canteen/app/modules/common/login/login_controller.dart';
+import 'package:connect_canteen/app/modules/student_modules/home/product_controller.dart';
+import 'package:connect_canteen/app/widget/custom_loging_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:connect_canteen/app/modules/student_modules/home/view/homepage.dart';
@@ -13,63 +16,136 @@ class UserMainScreenView extends StatelessWidget {
 
   final userController = Get.put(UserScreenController());
   final orderController = Get.put(OrderController()); // Add this line
-
+  final productcontroller = Get.put(ProductController());
+  final loginController = Get.put(LoginController());
   final List<Widget> pages = [
     MyHomePage(),
     OrderPage(),
-    StorePage(),
+    // StorePage(),
     ProfilePage(),
   ];
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Obx(
-        () => PageStorage(
-          bucket: userController.bucket,
-          child: userController.currentScreen.value,
-        ),
-      ),
-      bottomNavigationBar: Obx(
-        () => Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            border: Border(
-              top: BorderSide(
-                color: Color.fromARGB(
-                    255, 210, 207, 207), // Specify your desired border color
-                width: 0.50, // Specify the border width
+    return Stack(
+      children: [
+        Scaffold(
+          body: WillPopScope(
+            onWillPop: () async {
+              return await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    elevation: 0,
+                    backgroundColor: AppColors.backgroundColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                          12.0), // Adjust border radius as needed
+                    ),
+                    title: Text(
+                      'Exit App?',
+                      style: TextStyle(
+                        fontSize: 17.5.sp,
+                        color: Color.fromARGB(221, 37, 36, 36),
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    content: Text(
+                      'Are you sure you want to exit the app?',
+                      style: TextStyle(
+                        color: const Color.fromARGB(221, 72, 71, 71),
+                        fontSize: 16.0.sp,
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          // Close the dialog
+
+                          Get.back();
+                        },
+                        child: Text(
+                          'Cancel',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16.sp,
+                              color: Colors.purple),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pop(true);
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(12.0),
+                          child: Text(
+                            "Exit",
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 225, 6, 6),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 17.sp,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              );
+              ; // Allow back navigation
+            },
+            child: Obx(
+              () => PageStorage(
+                bucket: userController.bucket,
+                child: userController.currentScreen.value,
               ),
             ),
           ),
-          height: 7.5.h,
-          child: MyBottomNavigationBar(
-            currentIndex: userController.currentTab.value,
-            onTap: (index) {
-              userController.currentTab.value = index;
-              userController.currentScreen.value = pages[index];
-            },
-            items: [
-              MyBottomNavigationBarItem(
-                  nonSelectedicon: Icons.home_outlined,
-                  icon: Icons.home,
-                  label: 'Home'),
-              MyBottomNavigationBarItem(
-                  nonSelectedicon: Icons.shopping_cart_outlined,
-                  icon: Icons.shopping_cart,
-                  label: 'MyOrders'),
-              MyBottomNavigationBarItem(
-                  nonSelectedicon: Icons.shopping_cart_outlined,
-                  icon: Icons.shopping_cart,
-                  label: 'Store'),
-              MyBottomNavigationBarItem(
-                  nonSelectedicon: Icons.settings_outlined,
-                  icon: Icons.settings,
-                  label: 'Settings'),
-            ],
+          bottomNavigationBar: Obx(
+            () => Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  top: BorderSide(
+                    color: Color.fromARGB(255, 210, 207,
+                        207), // Specify your desired border color
+                    width: 0.50, // Specify the border width
+                  ),
+                ),
+              ),
+              height: 7.5.h,
+              child: MyBottomNavigationBar(
+                currentIndex: userController.currentTab.value,
+                onTap: (index) {
+                  userController.currentTab.value = index;
+                  userController.currentScreen.value = pages[index];
+                },
+                items: [
+                  MyBottomNavigationBarItem(
+                      nonSelectedicon: Icons.home_outlined,
+                      icon: Icons.home,
+                      label: 'Home'),
+                  MyBottomNavigationBarItem(
+                      nonSelectedicon: Icons.shopping_cart_outlined,
+                      icon: Icons.shopping_cart,
+                      label: 'MyOrders'),
+                  // MyBottomNavigationBarItem(
+                  //     nonSelectedicon: Icons.shopping_cart_outlined,
+                  //     icon: Icons.shopping_cart,
+                  //     label: 'Store'),
+                  MyBottomNavigationBarItem(
+                      nonSelectedicon: Icons.settings_outlined,
+                      icon: Icons.settings,
+                      label: 'Settings'),
+                ],
+              ),
+            ),
           ),
         ),
-      ),
+        Obx(() => productcontroller.isLoading.value == true
+            ? LoadingWidget()
+            : SizedBox.shrink())
+      ],
     );
   }
 }

@@ -56,15 +56,17 @@ class _OrderHOldReportState extends State<OrderHOldReport> {
 
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
-      appBar: AppBar(
-          title: Text(
-        "Daily Order Hold",
-        style: AppStyles.appbar,
-      )),
+      appBar: const CustomAppBar(
+        title: 'Daily Order Hold',
+        iconrequired: true,
+      ),
       body: Padding(
         padding: AppPadding.screenHorizontalPadding,
         child: Column(
           children: [
+            SizedBox(
+              height: 1.h,
+            ),
             Expanded(
               flex: 1,
               child: Container(
@@ -123,8 +125,22 @@ class _OrderHOldReportState extends State<OrderHOldReport> {
                         orderholdController
                             .holdOrderReportResponse.value.response!.isEmpty) {
                       // Show an empty cart page if there are no orders available
-                      return EmptyCartPage(
-                        onClick: () {},
+                      return Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 7.h),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'No OrderHold Today',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 20.0,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       );
                     } else {
                       return SingleChildScrollView(

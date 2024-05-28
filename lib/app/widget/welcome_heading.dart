@@ -25,7 +25,7 @@ class WelcomeHeading extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                mainHeading,
+                'Welcom to ConnectCanteen',
                 textAlign:
                     TextAlign.center, // Centers text within the container
                 style: AppStyles.appbar,

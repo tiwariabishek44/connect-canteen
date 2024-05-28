@@ -1,47 +1,95 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connect_canteen/app/config/style.dart';
+import 'package:connect_canteen/app/models/wallet_model.dart';
 import 'package:connect_canteen/app/modules/common/login/login_controller.dart';
+import 'package:connect_canteen/app/modules/common/wallet/controller.dart';
+import 'package:connect_canteen/app/modules/common/wallet/page.dart';
+import 'package:connect_canteen/app/widget/custom_loging_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:connect_canteen/app/widget/custom_loging_widget.dart';
+import 'package:intl/intl.dart';
+import 'package:nepali_utils/nepali_utils.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:shimmer/shimmer.dart';
 
 class CustomTopBar extends StatelessWidget implements PreferredSizeWidget {
   final logincontroller = Get.put(LoginController());
+  final WalletController walletController = Get.put(WalletController());
 
   @override
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
 
   @override
   Widget build(BuildContext context) {
+    DateTime now = DateTime.now();
+
+    NepaliDateTime nepaliDateTime = NepaliDateTime.fromDateTime(now);
+    final date = DateFormat('dd/MM/yyyy\'', 'en').format(nepaliDateTime);
+
     return Container(
-        color: Color(0xff06C167),
-        child: Obx(() {
-          if (logincontroller.isFetchLoading.value) {
-            return LoadingWidget();
-          } else {
-            double percentage = (logincontroller
-                    .userDataResponse.value.response!.first.studentScore /
-                3);
-            Color indicatorColor = percentage > 0.5 ? Colors.green : Colors.red;
-            return Column(
-              children: [
-                SizedBox(
-                  height: 5.h,
-                ),
-                Padding(
-                  padding: AppPadding.screenHorizontalPadding,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(40)),
+        boxShadow: [
+          BoxShadow(
+            color: Color.fromARGB(66, 178, 176, 176),
+            blurRadius: 10,
+            offset: Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Obx(() {
+        if (logincontroller.isFetchLoading.value) {
+          return LoadingWidget();
+        } else {
+          String fullName =
+              logincontroller.userDataResponse.value.response!.first.name;
+          String firstName = fullName.split(' ').first;
+
+          return GestureDetector(
+            onTap: () {
+              Get.to(() => WalletPage(
+                  userId: logincontroller
+                      .userDataResponse.value.response!.first.userid,
+                  isStudent: true,
+                  name: logincontroller
+                      .userDataResponse.value.response!.first.name,
+                  image: logincontroller
+                      .userDataResponse.value.response!.first.profilePicture));
+            },
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Welcome back, $firstName! 👋',
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            date,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
                       Container(
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
                           color: Color.fromARGB(255, 134, 29, 29),
                         ),
                         child: CircleAvatar(
-                          radius: 22.sp,
+                          radius: 21.sp,
                           backgroundColor: Colors.white,
                           child: CachedNetworkImage(
                             progressIndicatorBuilder:
@@ -79,96 +127,53 @@ class CustomTopBar extends StatelessWidget implements PreferredSizeWidget {
                           ),
                         ),
                       ),
-                      SizedBox(
-                        width: 3.w,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Hi,${logincontroller.userDataResponse.value.response!.first.name}",
-                            textAlign: TextAlign
-                                .center, // Centers text within the container
-                            style: AppStyles.appbar,
-                          ),
-                          Text(
-                            logincontroller
-                                .userDataResponse.value.response!.first.classes,
-                            textAlign: TextAlign
-                                .center, // Centers text within the container
-                            style: AppStyles.listTilesubTitle1,
-                          )
-                        ],
-                      ),
                     ],
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    height: 8.h,
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(
-                          255, 84, 84, 83), // Deep dark blue color
-                      borderRadius: BorderRadius.circular(
-                          20), // Adjust this value for curved edges
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Your Score ',
-                          style: AppStyles.listTileTitle1,
-                        ),
-                        SizedBox(width: 20),
-                        Stack(
-                          alignment: Alignment.center,
+                  SizedBox(height: 0.8.h),
+
+                  // Balance
+                  StreamBuilder<Wallet?>(
+                    stream: walletController.getWallet(logincontroller
+                        .userDataResponse.value.response!.first.userid),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator();
+                      } else if (snapshot.hasError || snapshot.data == null) {
+                        return SizedBox.shrink();
+                      } else {
+                        Wallet wallet = snapshot.data!;
+                        Map<String, double> totals = walletController
+                            .calculateTotals(wallet.transactions);
+                        double totalBalance = totals['totalBalance'] ?? 0.0;
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              width: 6.h,
-                              height: 6.h,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.grey[300],
+                            Text(
+                              '\Rs.${totalBalance}',
+                              style: TextStyle(
+                                fontSize: 24.sp,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
-                            Container(
-                              width: 5.h,
-                              height: 5.h,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.transparent,
-                                border: Border.all(
-                                  color: indicatorColor,
-                                  width: 4,
-                                ),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  logincontroller.userDataResponse.value
-                                      .response!.first.studentScore
-                                      .toString(),
-                                  style: TextStyle(
-                                    color: indicatorColor,
-                                    fontSize: 16.sp,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
+                            Text(
+                              'ACCOUNT BALANCE',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
                               ),
                             ),
                           ],
-                        ),
-                      ],
-                    ),
+                        );
+                      }
+                    },
                   ),
-                ),
-                SizedBox(
-                  height: 1.h,
-                )
-              ],
-            );
-          }
-        }));
+                ],
+              ),
+            ),
+          );
+        }
+      }),
+    );
   }
 }

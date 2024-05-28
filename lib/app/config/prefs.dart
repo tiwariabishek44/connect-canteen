@@ -12,7 +12,13 @@ const student = "student";
 const canteenhelper = 'canteenHelper';
 final List<String> timeSlots = [
   'All',
-  "09:00",
-  '10:30',
-  '11:00',
+  "12:30",
+  "1:15",
+  "2:00",
+];
+
+final List<String> options = [
+  'BHM-2nd-sem',
+  'BHM-4th-sem',
+  'BHM-5th-sem',
 ];

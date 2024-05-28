@@ -15,8 +15,9 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ProductGrid extends StatelessWidget {
-  final String dat;
-  ProductGrid({Key? key, required this.dat}) : super(key: key);
+  ProductGrid({
+    Key? key,all
+  }) : super(key: key);
 
   final logincontroller = Get.put(LoginController());
   final productContorller = Get.put(ProductController());
@@ -26,106 +27,103 @@ class ProductGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      if (productContorller.isLoading.value) {
-        return LoadingWidget();
-      } else {
-        return productContorller.productLoaded.value == false
-            ? const NoDataWidget(
-                message: "There is no items", iconData: Icons.error_outline)
-            : Padding(
-                padding: EdgeInsets.only(bottom: 5.0.h),
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2, // number of items in each row
-                      mainAxisSpacing: 15.0, // spacing between rows
-                      crossAxisSpacing: 20.0, // spacing between columns
-                      childAspectRatio: 0.72),
-                  itemCount: productContorller.allProductResponse.value
-                      .response!.length, // total number of items
-                  itemBuilder: (context, index) {
-                    final product = productContorller
-                        .allProductResponse.value.response![index];
-                    if (product.active == true) {
-                      // Added condition to check if product is active
-                      return GestureDetector(
-                        onTap: () async {
-                          addproductController.checkTimeAndSetVisibility();
-                          groupcontroller.fetchGroupData();
-                          Get.to(
-                              () => ProductDetailsPage(
-                                    dat: dat,
-                                    product: product,
-                                    user: logincontroller
-                                        .userDataResponse.value.response!.first,
-                                  ),
-                              transition: Transition.rightToLeft,
-                              duration: duration);
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8.0),
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: 1,
-                                    blurRadius: 3,
-                                    offset: const Offset(2, 2))
-                              ]),
+      if (productContorller.productLoaded.value) {
+        return Padding(
+          padding: EdgeInsets.only(bottom: 5.0.h),
+          child: GridView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2, // number of items in each row
+                mainAxisSpacing: 15.0, // spacing between rows
+                crossAxisSpacing: 20.0, // spacing between columns
+                childAspectRatio: 0.72),
+            itemCount: productContorller.allProductResponse.value.response!
+                .length, // total number of items
+            itemBuilder: (context, index) {
+              final product =
+                  productContorller.allProductResponse.value.response![index];
+              if (product.active == true) {
+                // Added condition to check if product is active
+                return GestureDetector(
+                  onTap: () async {
+                    addproductController.checkTimeAndSetVisibility();
+                    groupcontroller.fetchGroupData().then((value) {
+                      Get.to(
+                          () => ProductDetailsPage(
+                                product: product,
+                                user: logincontroller
+                                    .userDataResponse.value.response!.first,
+                              ),
+                          transition: Transition.rightToLeft,
+                          duration: duration);
+                    });
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8.0),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 1,
+                              blurRadius: 3,
+                              offset: const Offset(2, 2))
+                        ]),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AspectRatio(
+                          aspectRatio: 1.11,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: CachedNetworkImage(
+                              progressIndicatorBuilder:
+                                  (context, url, downloadProgress) => Opacity(
+                                opacity: 0.8,
+                                child: Shimmer.fromColors(
+                                  baseColor: Colors.black12,
+                                  highlightColor: Colors.red,
+                                  child: Container(),
+                                ),
+                              ),
+                              imageUrl: product.image ?? '',
+                              fit: BoxFit.fill,
+                              width: double.infinity,
+                              errorWidget: (context, url, error) =>
+                                  Icon(Icons.error_outline, size: 40),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              AspectRatio(
-                                aspectRatio: 1.11,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: CachedNetworkImage(
-                                    progressIndicatorBuilder:
-                                        (context, url, downloadProgress) =>
-                                            Opacity(
-                                      opacity: 0.8,
-                                      child: Shimmer.fromColors(
-                                        baseColor: Colors.black12,
-                                        highlightColor: Colors.red,
-                                        child: Container(),
-                                      ),
-                                    ),
-                                    imageUrl: product.image ?? '',
-                                    fit: BoxFit.fill,
-                                    width: double.infinity,
-                                    errorWidget: (context, url, error) =>
-                                        Icon(Icons.error_outline, size: 40),
-                                  ),
-                                ),
+                              Text(
+                                "${product.name}",
+                                style: AppStyles.listTilesubTitle,
                               ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "${product.name}",
-                                      style: AppStyles.listTilesubTitle,
-                                    ),
-                                    Text(
-                                      "Rs ${product.price.toInt()}/plate",
-                                      style: AppStyles.listTilesubTitle,
-                                    ),
-                                  ],
-                                ),
+                              Text(
+                                "Rs ${product.price.toInt()}/plate",
+                                style: AppStyles.listTilesubTitle,
                               ),
                             ],
                           ),
                         ),
-                      );
-                    } else {
-                      return SizedBox(); // If the product is not active, return an empty SizedBox
-                    }
-                  },
-                ),
-              );
+                      ],
+                    ),
+                  ),
+                );
+              } else {
+                return SizedBox(); // If the product is not active, return an empty SizedBox
+              }
+            },
+          ),
+        );
+      } else {
+        return const NoDataWidget(
+            message: "There is no items", iconData: Icons.error_outline);
       }
     });
   }

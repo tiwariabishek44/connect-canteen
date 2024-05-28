@@ -6,4 +6,6 @@ class UserScreenController extends GetxController {
   var currentTab = 0.obs;
   final PageStorageBucket bucket = PageStorageBucket();
   Rx<Widget> currentScreen = Rx<Widget>(MyHomePage());
+
+  var isloading = false.obs;
 }

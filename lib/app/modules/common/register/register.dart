@@ -1,3 +1,4 @@
+import 'package:connect_canteen/app/config/prefs.dart';
 import 'package:connect_canteen/app/widget/custom_app_bar.dart';
 import 'package:flutter/gestures.dart';
 import 'package:connect_canteen/app/config/colors.dart';
@@ -20,12 +21,7 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final registercontroller = Get.put(RegisterController());
   String? _selectedOption;
-  final List<String> options = [
-    'BscCSIT-1st Sem',
-    'BscCSIT-2nd Sem',
-    'BscCSIT-3rd Sem',
-    'BscCSIT-4th Sem',
-  ];
+
   // Replace with your own options
 
   bool _isPasswordVisible = false;
@@ -151,7 +147,6 @@ class _RegisterPageState extends State<RegisterPage> {
                           setState(() {
                             _selectedOption = newValue;
                           });
-                          print('Selected: $_selectedOption');
                         },
                         items: options
                             .map<DropdownMenuItem<String>>((String value) {

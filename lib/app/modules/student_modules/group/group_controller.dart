@@ -113,9 +113,12 @@ class GroupController extends GetxController {
         final FirebaseFirestore firestore = FirebaseFirestore.instance;
         final studentDocRef = firestore.collection('students').doc(userId);
         await studentDocRef.update({'groupid': userId});
-        logincontroller.fetchUserData();
-        fetchGroupedData();
-        exit(0);
+        logincontroller.fetchUserData().then((value) {
+          fetchGroupData();
+          fecthGroupMember();
+          Get.back();
+        });
+        groupCreateLoading(false);
       }
     } catch (e) {
       groupCreateLoading(false);
@@ -232,9 +235,9 @@ class GroupController extends GetxController {
       final DocumentSnapshot<Map<String, dynamic>> studentDocSnapshot =
           await firestore.collection('students').doc(studentid).get();
       await studentDocSnapshot.reference.update({'groupid': userId});
-      fecthGroupMember();
-
-      isloading(false);
+      fecthGroupMember().then((value) {
+        isloading(false);
+      });
     } catch (e) {
       // Document for the user doesn't exist, handle this case
 
@@ -259,8 +262,6 @@ class GroupController extends GetxController {
         deleteMemberLoading(false);
       }
     } catch (e) {
-      deleteMemberLoading(false);
-    } finally {
       deleteMemberLoading(false);
     }
   }

@@ -2,14 +2,19 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connect_canteen/app/modules/common/login/login_page.dart';
+import 'package:connect_canteen/app/modules/common/wallet/controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 class RegisterController extends GetxController {
+  final WalletController walletController = Get.put(WalletController());
+
   final storage = GetStorage();
   // TextEditingController for the email field
   final emailcontroller = TextEditingController();
@@ -113,14 +118,52 @@ class RegisterController extends GetxController {
           'groupid': '',
           'classes': classes,
           'profilePicture': imageURL,
-          'studentScore': 3,
+          'studentScore': 0,
           "fineAmount": 0,
         });
         log("User registration successful");
 
-        isregisterloading(false);
-        clearTextControllers();
-        Get.back();
+        await walletController
+            .createWallet(userCredential.user!.uid, namecontroller.text)
+            .then((value) {
+          isregisterloading(false);
+
+          clearTextControllers();
+
+          Get.offAll(LoginScreen());
+          showDialog(
+              context: Get.context!,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(0.0), // No border radius
+                  ),
+                  scrollable: false,
+                  elevation: 0,
+                  title: Text('Success!'),
+                  content: const Text('Account created successfully.'),
+                  actions: [
+                    GestureDetector(
+                      onTap: () {
+                        Get.back();
+                      },
+                      child: Container(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 10.0.w, vertical: 2.h),
+                          child: Text(
+                            "OK",
+                            style:
+                                TextStyle(fontSize: 19.sp, color: Colors.red),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              });
+        });
       }
     } catch (e) {
       isregisterloading(false);
@@ -221,7 +264,7 @@ class RegisterController extends GetxController {
         'name': 'Texas Canteen',
         'phone': '9742555741',
         'email': "helper@gmail.com",
-        'type': "helper",
+        'type': "owner",
       });
       log("User registration successful");
 

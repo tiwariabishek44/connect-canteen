@@ -25,8 +25,6 @@ class _MyHomePageState extends State<MyHomePage> {
     loginController.fetchUserData();
   }
 
-  String dat = '';
-
   @override
   void initState() {
     super.initState();
@@ -35,61 +33,52 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     LoginController().fetchUserData();
-    return Stack(
-      children: [
-        Scaffold(
-          backgroundColor:
-              AppColors.greyColor, // Make scaffold background transparent
+    return Scaffold(
+      backgroundColor:
+          AppColors.greyColor, // Make scaffold background transparent
 
-          body: RefreshIndicator(
-            onRefresh: () => _refreshData(),
-            child: Obx(() {
-              if (homepagecontroller.isLoading.value) {
-                return Container(
-                  height: 100.h,
-                  width: 100.h,
-                  color: Color(0xff06C167),
-                );
-              } else {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CustomTopBar(),
-                            SizedBox(
-                              height: 2.h,
-                            ),
-                            Padding(
-                              padding: AppPadding.screenHorizontalPadding,
-                              child: Text(
-                                "Popular Food Items",
-                                style: AppStyles.appbar,
-                              ),
-                            ),
-                            Padding(
-                              padding: AppPadding.screenHorizontalPadding,
-                              child: ProductGrid(
-                                dat: dat,
-                              ),
-                            ),
-                          ],
+      body: RefreshIndicator(
+        onRefresh: () => _refreshData(),
+        child: Obx(() {
+          if (homepagecontroller.isLoading.value) {
+            return Container(
+              height: 100.h,
+              width: 100.h,
+              color: Color(0xff06C167),
+            );
+          } else {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomTopBar(),
+                        SizedBox(
+                          height: 2.h,
                         ),
-                      ),
+                        Padding(
+                          padding: AppPadding.screenHorizontalPadding,
+                          child: Text(
+                            "Popular Food Items",
+                            style: AppStyles.appbar,
+                          ),
+                        ),
+                        Padding(
+                          padding: AppPadding.screenHorizontalPadding,
+                          child: ProductGrid(),
+                        ),
+                      ],
                     ),
-                  ],
-                );
-              }
-            }),
-          ),
-        ),
-        Obx(() => homepagecontroller.isLoading.value
-            ? Positioned(child: LoadingWidget())
-            : SizedBox())
-      ],
+                  ),
+                ),
+              ],
+            );
+          }
+        }),
+      ),
     );
   }
 }

@@ -25,10 +25,26 @@ class FriendList extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           elevation: 0,
-          contentTextStyle: AppStyles.listTileTitle,
           backgroundColor: AppColors.backgroundColor,
-          title: Text("Sorry"),
-          content: Text("User is already involved in a group."),
+          shape: RoundedRectangleBorder(
+            borderRadius:
+                BorderRadius.circular(12.0), // Adjust border radius as needed
+          ),
+          title: Text(
+            'Sorry',
+            style: TextStyle(
+              fontSize: 17.5.sp,
+              color: Color.fromARGB(221, 37, 36, 36),
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          content: Text(
+            'User is already involved in a group.',
+            style: TextStyle(
+              color: const Color.fromARGB(221, 72, 71, 71),
+              fontSize: 16.0.sp,
+            ),
+          ),
         );
       },
     );
@@ -39,72 +55,38 @@ class FriendList extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       appBar: const CustomAppBar(title: "Friend List"),
-      body: Obx(() {
-        if (friendListController.fetchLoading.value ||
-            friendListController.addFriendLoading.value) {
-          return const LoadingWidget();
-        } else {
-          return Padding(
-            padding: EdgeInsets.symmetric(vertical: 20.0),
-            child: ListView.builder(
-              itemCount: friendListController
-                  .friendListResponse.value.response!.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 0.5.h),
-                    child: ListTile(
-                      leading: Stack(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.5),
-                                  spreadRadius: 2,
-                                  blurRadius: 5,
-                                  offset: Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: CircleAvatar(
-                              radius: 22.sp,
-                              backgroundColor: Colors.white,
-                              child: CachedNetworkImage(
-                                progressIndicatorBuilder:
-                                    (context, url, downloadProgress) =>
-                                        CircleAvatar(
-                                  radius: 21.4.sp,
-                                  child: Icon(
-                                    Icons.person,
-                                    color: Colors.white,
-                                  ),
-                                  backgroundColor:
-                                      const Color.fromARGB(255, 224, 218, 218),
-                                ),
-                                imageUrl: friendListController
-                                        .friendListResponse
-                                        .value
-                                        .response![index]
-                                        .profilePicture ??
-                                    '',
-                                imageBuilder: (context, imageProvider) =>
-                                    Container(
-                                  decoration: BoxDecoration(
-                                    shape:
-                                        BoxShape.circle, // Apply circular shape
-                                    image: DecorationImage(
-                                      image: imageProvider,
-                                      fit: BoxFit.cover,
+      body: Stack(
+        children: [
+          Obx(() {
+            if (friendListController.fetchLoading.value) {
+              return LoadingWidget();
+            } else {
+              return Padding(
+                padding: EdgeInsets.symmetric(vertical: 20.0),
+                child: ListView.builder(
+                  itemCount: friendListController
+                      .friendListResponse.value.response!.length,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 0.5.h),
+                        child: ListTile(
+                          leading: Stack(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      spreadRadius: 2,
+                                      blurRadius: 5,
+                                      offset: Offset(0, 3),
                                     ),
-                                  ),
+                                  ],
                                 ),
-                                fit: BoxFit.fill,
-                                width: double.infinity,
-                                errorWidget: (context, url, error) =>
-                                    CircleAvatar(
+                                child: CircleAvatar(
                                   radius: 21.4.sp,
                                   child: Icon(
                                     Icons.person,
@@ -114,64 +96,72 @@ class FriendList extends StatelessWidget {
                                       const Color.fromARGB(255, 224, 218, 218),
                                 ),
                               ),
-                            ),
+                              Obx(() {
+                                if (friendListController
+                                    .friendListResponse
+                                    .value
+                                    .response![index]
+                                    .groupid
+                                    .isNotEmpty) {
+                                  return Positioned(
+                                    bottom: 0,
+                                    right: 0,
+                                    child: CircleAvatar(
+                                      radius: 7.5,
+                                      backgroundColor: Color.fromARGB(255, 0, 0,
+                                          0), // Adjust color as needed
+                                      child: Icon(
+                                        Icons.check,
+                                        color: Colors.white,
+                                        size: 9,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  return Positioned(
+                                    bottom: 0,
+                                    right: 0,
+                                    child: CircleAvatar(
+                                      radius: 7,
+                                      backgroundColor: Colors
+                                          .transparent, // Adjust color as needed
+                                    ),
+                                  );
+                                }
+                              })
+                            ],
                           ),
-                          Obx(() {
-                            if (friendListController.friendListResponse.value
-                                .response![index].groupid.isNotEmpty) {
-                              return Positioned(
-                                bottom: 0,
-                                right: 0,
-                                child: CircleAvatar(
-                                  radius: 7.5,
-                                  backgroundColor: Color.fromARGB(
-                                      255, 0, 0, 0), // Adjust color as needed
-                                  child: Icon(
-                                    Icons.check,
-                                    color: Colors.white,
-                                    size: 9,
-                                  ),
-                                ),
-                              );
-                            } else {
-                              return Positioned(
-                                bottom: 0,
-                                right: 0,
-                                child: CircleAvatar(
-                                  radius: 7,
-                                  backgroundColor: Colors
-                                      .transparent, // Adjust color as needed
-                                ),
-                              );
-                            }
-                          })
-                        ],
+                          title: Text(
+                              '${friendListController.friendListResponse.value.response![index].name}'),
+                          onTap: () {
+                            friendListController.friendListResponse.value
+                                    .response![index].groupid.isNotEmpty
+                                ? showAlreadyInGroupDialog(context)
+                                : friendListController.addFriend(
+                                    context,
+                                    friendListController.friendListResponse
+                                        .value.response![index].userid,
+                                    groupId);
+                          },
+                          trailing: friendListController.friendListResponse
+                                      .value.response![index].groupid ==
+                                  null
+                              ? Icon(Icons.add)
+                              : Text("."),
+                        ),
                       ),
-                      title: Text(
-                          '${friendListController.friendListResponse.value.response![index].name}'),
-                      onTap: () {
-                        friendListController.friendListResponse.value
-                                .response![index].groupid.isNotEmpty
-                            ? showAlreadyInGroupDialog(context)
-                            : friendListController.addFriend(
-                                context,
-                                friendListController.friendListResponse.value
-                                    .response![index].userid,
-                                groupId);
-                      },
-                      trailing: friendListController.friendListResponse.value
-                                  .response![index].groupid ==
-                              null
-                          ? Icon(Icons.add)
-                          : Text("."),
-                    ),
-                  ),
-                );
-              },
-            ),
-          );
-        }
-      }),
+                    );
+                  },
+                ),
+              );
+            }
+          }),
+          Positioned(
+              child: Obx(() => friendListController.addFriendLoading.value
+                  ? LoadingWidget()
+                  : SizedBox.shrink()))
+        ],
+      ),
     );
   }
 }

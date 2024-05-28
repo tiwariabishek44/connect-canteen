@@ -4,18 +4,14 @@ import 'package:intl/intl.dart';
 import 'package:connect_canteen/app/config/colors.dart';
 import 'package:connect_canteen/app/config/style.dart';
 import 'package:connect_canteen/app/models/order_response.dart';
-import 'package:connect_canteen/app/modules/common/login/login_controller.dart';
 import 'package:connect_canteen/app/modules/student_modules/order_history/order_history_controller.dart';
 import 'package:connect_canteen/app/widget/custom_loging_widget.dart';
-import 'package:connect_canteen/app/widget/empty_cart_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class OrderHistoryPage extends StatelessWidget {
   final historyController = Get.put(HistoryController());
-  final storage = GetStorage();
-  final logincontroller = Get.put(LoginController());
 
   Future<void> _refreshData() async {
     historyController.fetchGroupHistoryOrders();
@@ -24,11 +20,29 @@ class OrderHistoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.greyColor,
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       appBar: AppBar(
-        backgroundColor: Color(0xff06C167),
+        leading: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Container(
+            child: Center(
+              child: IconButton(
+                icon: Icon(
+                  Icons.chevron_left,
+                  size: 26.sp,
+                ),
+                onPressed: () {
+                  Get.back();
+                },
+              ),
+            ),
+          ),
+        ),
+        centerTitle: false,
+        scrolledUnderElevation: 0,
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
         title: Text(
-          'Order History ',
+          'Order History',
           style: AppStyles.appbar,
         ),
       ),
@@ -163,7 +177,7 @@ class OrderHistoryPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(7),
                         color: Colors.white, // Add a background color
                       ),
-                      height: 15.h,
+                      height: 12.h,
                       width: 30.w,
                       child: ClipRRect(
                         // Use ClipRRect to ensure that the curved corners are applied
@@ -196,16 +210,14 @@ class OrderHistoryPage extends StatelessWidget {
                           ),
                           Text(
                             'Rs.${item.price.toStringAsFixed(2)}',
-                            style: AppStyles.listTilesubTitle,
+                            style: AppStyles.listTilesubTitle1,
                           ),
                           Text('${item.customer}',
-                              style: AppStyles.listTilesubTitle),
+                              style: AppStyles.listTilesubTitle1),
                           Text(
-                            '${item.date}',
-                            style: AppStyles.listTilesubTitle,
+                            '${item.date} (${item.mealtime})',
+                            style: AppStyles.listTilesubTitle1,
                           ),
-                          Text('${item.mealtime}',
-                              style: AppStyles.listTilesubTitle),
                           item.holdDate != '' || item.holdDate.isNotEmpty
                               ? Container(
                                   decoration: BoxDecoration(

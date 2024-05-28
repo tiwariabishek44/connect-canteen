@@ -1,14 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connect_canteen/app/config/colors.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:connect_canteen/app/config/style.dart';
 import 'package:connect_canteen/app/models/order_response.dart';
 import 'package:connect_canteen/app/modules/canteen_helper/verified%20orders/get_group_order.dart';
 import 'package:connect_canteen/app/modules/canteen_helper/verified%20orders/verify_controller.dart';
-import 'package:connect_canteen/app/modules/vendor_modules/orders_checkout/veodor_order_controller.dart';
-import 'package:connect_canteen/app/repository/order_requirement_repository.dart';
-import 'package:connect_canteen/app/service/api_client.dart';
 import 'package:connect_canteen/app/widget/custom_app_bar.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class CanteenHelper extends StatelessWidget {
   final verifyController = Get.put(VerifyController());
@@ -16,8 +13,9 @@ class CanteenHelper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.backgroundColor,
       appBar: const CustomAppBar(
-        iconrequired: true,
+        iconrequired: false,
         title: 'Verify Order',
       ),
       body: Padding(

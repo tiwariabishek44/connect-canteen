@@ -1,7 +1,6 @@
-import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connect_canteen/app/widget/custom_snackbar.dart';
+import 'package:connect_canteen/app/modules/student_modules/friend_list/friend_list_controller.dart';
+import 'package:connect_canteen/app/modules/student_modules/group/view/new_group_page.dart';
 import 'package:connect_canteen/app/widget/no_data_widget.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:connect_canteen/app/config/colors.dart';
@@ -20,6 +19,7 @@ class GroupPage extends StatelessWidget {
   final logincontroller = Get.put(LoginController());
   final groupcontroller = Get.put(GroupController());
   final storage = GetStorage();
+  final friendlistcontroller = Get.put(FriendListController());
 
   void _showGroupNameDialog(BuildContext context, String name, String userid) {
     showDialog(
@@ -82,7 +82,7 @@ class GroupPage extends StatelessWidget {
                   );
                 } else {
                   groupcontroller.deleteMember(userid);
-                  Navigator.of(context).pop();
+                  Get.back();
                 }
               },
               child: Container(
@@ -151,18 +151,25 @@ class GroupPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(
-            Icons.chevron_left,
-            size: 26.sp,
+        leading: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Container(
+            child: Center(
+              child: IconButton(
+                icon: Icon(
+                  Icons.chevron_left,
+                  size: 26.sp,
+                ),
+                onPressed: () {
+                  Get.back();
+                },
+              ),
+            ),
           ),
-          onPressed: () {
-            Get.back();
-          },
         ),
         centerTitle: false,
         scrolledUnderElevation: 0,
-        backgroundColor: Color(0xff06C167),
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
         title: Text(
           'Group',
           style: AppStyles.appbar,
@@ -170,7 +177,8 @@ class GroupPage extends StatelessWidget {
       ),
       body: Obx(() {
         if (logincontroller.isGroupId.value) {
-          if (groupcontroller.isloading.value) {
+          if (groupcontroller.isloading.value ||
+              logincontroller.isFetchLoading.value) {
             return LoadingWidget();
           } else if (groupcontroller.fetchGroupedData.value) {
             return SingleChildScrollView(
@@ -194,10 +202,14 @@ class GroupPage extends StatelessWidget {
                                     .userDataResponse.value.response!.first.name
                             ? GestureDetector(
                                 onTap: () {
-                                  Get.to(() => FriendList(
-                                        groupId: groupcontroller.groupResponse
-                                            .value.response!.first.groupId,
-                                      ));
+                                  friendlistcontroller
+                                      .fetchFrields()
+                                      .then((value) {
+                                    Get.to(() => FriendList(
+                                          groupId: groupcontroller.groupResponse
+                                              .value.response!.first.groupId,
+                                        ));
+                                  });
                                 },
                                 child: Container(
                                   decoration: BoxDecoration(
@@ -235,176 +247,314 @@ class GroupPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Obx(() {
-                    if (groupcontroller.grouMemberFetch.value) {
-                      return Padding(
-                        padding: EdgeInsets.symmetric(vertical: 0.5.h),
-                        child: ListView.builder(
-                          itemCount: groupcontroller
-                              .groupMemberResponse.value.response!.length,
-                          shrinkWrap: true,
-                          physics: ScrollPhysics(),
-                          itemBuilder: (BuildContext context, int index) {
-                            return Padding(
-                              padding: EdgeInsets.symmetric(vertical: 0.4.h),
-                              child: Container(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 8.0),
-                                  child: ListTile(
-                                    title: Text(
-                                      '  ${groupcontroller.groupMemberResponse.value.response![index].name}',
-                                      style: AppStyles.listTilesubTitle,
-                                    ),
-                                    leading: Stack(
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: Colors.white,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.grey
-                                                    .withOpacity(0.5),
-                                                spreadRadius: 2,
-                                                blurRadius: 5,
-                                                offset: Offset(0, 3),
+                  Stack(
+                    children: [
+                      Obx(() {
+                        if (groupcontroller.grouMemberFetch.value) {
+                          return Padding(
+                            padding: EdgeInsets.symmetric(vertical: 0.5.h),
+                            child: ListView.builder(
+                              itemCount: groupcontroller
+                                  .groupMemberResponse.value.response!.length,
+                              shrinkWrap: true,
+                              physics: ScrollPhysics(),
+                              itemBuilder: (BuildContext context, int index) {
+                                return Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(vertical: 0.4.h),
+                                  child: Container(
+                                    child: Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 8.0),
+                                      child: ListTile(
+                                        title: Text(
+                                          '  ${groupcontroller.groupMemberResponse.value.response![index].name}',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18.sp,
+                                              color: Color.fromARGB(
+                                                  255, 84, 84, 84)),
+                                        ),
+                                        subtitle: Text(
+                                          '  ${groupcontroller.groupMemberResponse.value.response![index].phone}',
+                                          style: AppStyles.listTilesubTitle,
+                                        ),
+                                        leading: Stack(
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: Colors.white,
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey
+                                                        .withOpacity(0.5),
+                                                    spreadRadius: 2,
+                                                    blurRadius: 5,
+                                                    offset: Offset(0, 3),
+                                                  ),
+                                                ],
                                               ),
-                                            ],
-                                          ),
-                                          child: CircleAvatar(
-                                            radius: 22.sp,
-                                            backgroundColor: Colors.white,
-                                            child: CachedNetworkImage(
-                                              progressIndicatorBuilder:
-                                                  (context, url,
-                                                          downloadProgress) =>
-                                                      Opacity(
-                                                opacity: 0.8,
-                                                child: Shimmer.fromColors(
-                                                  baseColor: Colors.black12,
-                                                  highlightColor: Colors.red,
-                                                  child: Container(),
-                                                ),
-                                              ),
-                                              imageUrl: groupcontroller
-                                                      .groupMemberResponse
-                                                      .value
-                                                      .response![index]
-                                                      .profilePicture ??
-                                                  '',
-                                              imageBuilder:
-                                                  (context, imageProvider) =>
+                                              child: CircleAvatar(
+                                                radius: 22.sp,
+                                                backgroundColor: Colors.white,
+                                                child: CachedNetworkImage(
+                                                  progressIndicatorBuilder:
+                                                      (context, url,
+                                                              downloadProgress) =>
+                                                          CircleAvatar(
+                                                    radius: 21.4.sp,
+                                                    child: Icon(
+                                                      Icons.person,
+                                                      color: Colors.white,
+                                                    ),
+                                                    backgroundColor:
+                                                        const Color.fromARGB(
+                                                            255, 224, 218, 218),
+                                                  ),
+                                                  imageUrl: groupcontroller
+                                                          .groupMemberResponse
+                                                          .value
+                                                          .response![index]
+                                                          .profilePicture ??
+                                                      '',
+                                                  imageBuilder: (context,
+                                                          imageProvider) =>
                                                       Container(
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape
-                                                      .circle, // Apply circular shape
-                                                  image: DecorationImage(
-                                                    image: imageProvider,
-                                                    fit: BoxFit.cover,
+                                                    decoration: BoxDecoration(
+                                                      shape: BoxShape
+                                                          .circle, // Apply circular shape
+                                                      image: DecorationImage(
+                                                        image: imageProvider,
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  fit: BoxFit.fill,
+                                                  width: double.infinity,
+                                                  errorWidget:
+                                                      (context, url, error) =>
+                                                          CircleAvatar(
+                                                    radius: 21.4.sp,
+                                                    child: Icon(
+                                                      Icons.person,
+                                                      color: Colors.white,
+                                                    ),
+                                                    backgroundColor:
+                                                        const Color.fromARGB(
+                                                            255, 224, 218, 218),
                                                   ),
                                                 ),
                                               ),
-                                              fit: BoxFit.fill,
-                                              width: double.infinity,
-                                              errorWidget:
-                                                  (context, url, error) =>
-                                                      CircleAvatar(
-                                                radius: 21.4.sp,
-                                                child: Icon(
-                                                  Icons.person,
-                                                  color: Colors.white,
-                                                ),
-                                                backgroundColor:
-                                                    const Color.fromARGB(
-                                                        255, 224, 218, 218),
-                                              ),
                                             ),
-                                          ),
+                                            Obx(() {
+                                              if (groupcontroller
+                                                      .groupResponse
+                                                      .value
+                                                      .response!
+                                                      .first
+                                                      .groupId ==
+                                                  groupcontroller
+                                                      .groupMemberResponse
+                                                      .value
+                                                      .response![index]
+                                                      .userid) {
+                                                return Positioned(
+                                                  bottom: 0,
+                                                  right: 0,
+                                                  child: CircleAvatar(
+                                                    radius: 7.5,
+                                                    backgroundColor: Color.fromARGB(
+                                                        255,
+                                                        72,
+                                                        2,
+                                                        129), // Adjust color as needed
+                                                    child: Icon(
+                                                      Icons.shield_outlined,
+                                                      color: Colors.white,
+                                                      size: 15,
+                                                    ),
+                                                  ),
+                                                );
+                                              } else {
+                                                return Positioned(
+                                                  bottom: 0,
+                                                  right: 0,
+                                                  child: CircleAvatar(
+                                                    radius: 7,
+                                                    backgroundColor: Colors
+                                                        .transparent, // Adjust color as needed
+                                                  ),
+                                                );
+                                              }
+                                            })
+                                          ],
                                         ),
-                                        Obx(() {
+                                        onTap: () {
                                           if (groupcontroller
                                                   .groupResponse
                                                   .value
                                                   .response!
                                                   .first
                                                   .groupId ==
-                                              groupcontroller
-                                                  .groupMemberResponse
+                                              logincontroller
+                                                  .userDataResponse
                                                   .value
-                                                  .response![index]
+                                                  .response!
+                                                  .first
                                                   .userid) {
-                                            return Positioned(
-                                              bottom: 0,
-                                              right: 0,
-                                              child: CircleAvatar(
-                                                radius: 7.5,
-                                                backgroundColor: Color.fromARGB(
-                                                    255,
-                                                    72,
-                                                    2,
-                                                    129), // Adjust color as needed
-                                                child: Icon(
-                                                  Icons.shield_outlined,
-                                                  color: Colors.white,
-                                                  size: 15,
-                                                ),
-                                              ),
-                                            );
-                                          } else {
-                                            return Positioned(
-                                              bottom: 0,
-                                              right: 0,
-                                              child: CircleAvatar(
-                                                radius: 7,
-                                                backgroundColor: Colors
-                                                    .transparent, // Adjust color as needed
-                                              ),
-                                            );
+                                            groupcontroller
+                                                        .groupResponse
+                                                        .value
+                                                        .response!
+                                                        .first
+                                                        .groupId ==
+                                                    groupcontroller
+                                                        .groupMemberResponse
+                                                        .value
+                                                        .response![index]
+                                                        .userid
+                                                ? null
+                                                : _showGroupNameDialog(
+                                                    context,
+                                                    "${groupcontroller.groupMemberResponse.value.response![index].name}",
+                                                    "${groupcontroller.groupMemberResponse.value.response![index].userid}");
                                           }
-                                        })
-                                      ],
-                                    ),
-                                    onTap: () {
-                                      if (groupcontroller.groupResponse.value
-                                              .response!.first.groupId ==
-                                          logincontroller.userDataResponse.value
-                                              .response!.first.userid) {
-                                        groupcontroller.groupResponse.value
-                                                    .response!.first.groupId ==
-                                                groupcontroller
-                                                    .groupMemberResponse
-                                                    .value
-                                                    .response![index]
-                                                    .userid
-                                            ? null
-                                            : _showGroupNameDialog(
-                                                context,
-                                                "${groupcontroller.groupMemberResponse.value.response![index].name}",
-                                                "${groupcontroller.groupMemberResponse.value.response![index].userid}");
-                                      }
 
-                                      // Action when the item is tapped
-                                    },
+                                          // Action when the item is tapped
+                                        },
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      );
-                    } else {
-                      return Container();
-                    }
-                  })
+                                );
+                              },
+                            ),
+                          );
+                        } else {
+                          return Container();
+                        }
+                      }),
+                      Obx(() => groupcontroller.deleteMemberLoading.value
+                          ? LoadingWidget()
+                          : SizedBox.shrink())
+                    ],
+                  )
                 ],
               ),
             );
           } else {
-            return const NoDataWidget(
-                message: 'Something Went wrong', iconData: Icons.warning);
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Obx(() {
+                    return GestureDetector(
+                      onTap: () {
+                        logincontroller.fetchUserData();
+                      },
+                      child: logincontroller.isFetchLoading.value
+                          ? CircularProgressIndicator()
+                          : Icon(
+                              Icons.refresh,
+                              size: 40,
+                              color: Colors.grey,
+                            ),
+                    );
+                  }),
+                  SizedBox(height: 16),
+                  Text(
+                    "Something Went wrong",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                    ),
+                  )
+                ],
+              ),
+            );
           }
         } else {
-          return GroupCreation();
+          return Stack(
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "Start your group or join in a group",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 34,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Padding(
+                    padding: EdgeInsets.all(9.0),
+                    child: Text(
+                      'Start ordering food in a group.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              // Show dialog for entering group name
+                              Get.to(() => NewGroupCreate());
+                            },
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(vertical: 16.0),
+                              backgroundColor: Colors.black,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20.0),
+                              ),
+                            ),
+                            child: Text(
+                              "Start",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 2.w),
+                        IconButton(
+                          icon: Icon(Icons.refresh),
+                          color: Colors.black,
+                          onPressed: () {
+                            // Call the refresh method or handle the refresh action
+                            logincontroller.fetchUserData();
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              Obx(() {
+                if (logincontroller.isFetchLoading.value) {
+                  groupcontroller.fetchGroupData();
+                  groupcontroller.fecthGroupMember();
+                  return LoadingWidget();
+                } else {
+                  return SizedBox.shrink();
+                }
+              })
+            ],
+          );
         }
       }),
     );

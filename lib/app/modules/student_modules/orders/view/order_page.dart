@@ -24,39 +24,85 @@ class OrderPage extends StatelessWidget {
         ),
       ),
       body: Padding(
-          padding: AppPadding.screenHorizontalPadding,
-          child: Obx(
-            () {
-              if (groupController.fetchGroupedData.value == false) {
-                return EmptyCartPage(onClick: () {});
-              } else {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Expanded(
-                        child: SingleChildScrollView(
+        padding: AppPadding.screenHorizontalPadding,
+        child: Obx(
+          () {
+            if (groupController.fetchGroupedData.value == false) {
+              return EmptyCartPage(onClick: () {});
+            } else {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      "Group Code: ${groupController.groupResponse.value.response!.first.groupCode}",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 7,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    padding: EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Total Price:',
+                          style: TextStyle(
+                            fontSize: 18,
+                          ),
+                        ),
+                        Text(
+                          'Rs.${orderContorller.totalprice.value}', // Replace with actual total price value
+                          style: TextStyle(
+                            color: Colors.orange,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Expanded(
+                    child: SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(
-                            height: 1.h,
+                          Text(
+                            'Order Products:',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          Obx(() => Text(
-                                "GroupCode : ${groupController.groupResponse.value.response!.first.groupCode}",
-                                style: AppStyles.titleStyle,
-                              )),
-                          SizedBox(
-                            height: 1.h,
-                          ),
+                          SizedBox(height: 10),
                           OrderPRoductList(),
                         ],
                       ),
-                    )),
-                  ],
-                );
-              }
-            },
-          )),
+                    ),
+                  ),
+                ],
+              );
+            }
+          },
+        ),
+      ),
     );
   }
 }

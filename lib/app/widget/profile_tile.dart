@@ -26,11 +26,14 @@ class ProfileTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
         ),
         leading: leadingIcon,
-        tileColor: AppColors.lightColor,
+        tileColor: Color.fromARGB(255, 248, 251, 251),
         visualDensity: VisualDensity.adaptivePlatformDensity,
         title: Text(
           title,
-          style: AppStyles.listTileTitle,
+          style: TextStyle(
+              fontSize: 17.sp,
+              fontWeight: FontWeight.bold,
+              color: Color.fromARGB(255, 105, 102, 102)),
         ),
         onTap: onTap,
       ),

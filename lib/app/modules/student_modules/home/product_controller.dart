@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:connect_canteen/app/config/prefs.dart';
@@ -43,6 +44,21 @@ class ProductController extends GetxController {
       log('Error while getting data: $e');
     } finally {
       isLoading(false);
+    }
+  }
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<void> uploadProduct(Product product) async {
+    try {
+      await _firestore
+          .collection('products')
+          .doc(product.productId)
+          .set(product.toJson());
+      Get.snackbar('Success', 'Product uploaded successfully');
+      fetchProducts();
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to upload product: $e');
     }
   }
 }

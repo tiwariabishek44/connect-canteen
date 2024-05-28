@@ -27,6 +27,7 @@ class OrderRequirementContoller extends GetxController {
     fetchRequirement(timeSlots[index], date);
   }
 
+  var orderRequirementLoded = false.obs;
   Future<void> fetchRequirement(String mealtime, String dates) async {
     try {
       isLoading(true);
@@ -36,17 +37,15 @@ class OrderRequirementContoller extends GetxController {
       if (orderResult.status == ApiStatus.SUCCESS) {
         requirmentResponse.value =
             ApiResponse<OrderResponse>.completed(orderResult.response);
-        log('Orders have been fetched');
-        log("Number of products in the response: " +
-            requirmentResponse.value.response!.length.toString());
 
         // Calculate total quantity after fetching orders
         calculateTotalQuantity(orderResult.response!);
+        isLoading(false);
       }
-    } catch (e) {
-      log('Error while getting data: $e');
-    } finally {
       isLoading(false);
+    } catch (e) {
+      isLoading(false);
+      log('Error while getting data: $e');
     }
   }
 
@@ -54,6 +53,7 @@ class OrderRequirementContoller extends GetxController {
 
   void calculateTotalQuantity(List<OrderResponse> orders) {
     totalQuantityPerProduct.clear();
+    orderRequirementLoded(false);
 
     orders.forEach((order) {
       totalQuantityPerProduct.update(
@@ -70,6 +70,10 @@ class OrderRequirementContoller extends GetxController {
               totalQuantity: entry.value,
             ))
         .toList();
+
+    if (productQuantities.length > 0) {
+      orderRequirementLoded(true);
+    }
   }
 }
 

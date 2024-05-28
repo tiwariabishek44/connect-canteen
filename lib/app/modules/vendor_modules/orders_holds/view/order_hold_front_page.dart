@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:connect_canteen/app/config/colors.dart';
 import 'package:connect_canteen/app/modules/vendor_modules/orders_checkout/veodor_order_controller.dart';
 import 'package:connect_canteen/app/widget/custom_loging_widget.dart';

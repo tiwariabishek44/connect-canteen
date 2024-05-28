@@ -65,6 +65,8 @@ class LocalNotifications {
   }
 
   static Future<void> showScheduleNotification({
+    String? title,
+    String? body,
     required String payload,
   }) async {
     tz.initializeTimeZones();
@@ -170,57 +172,57 @@ class LocalNotifications {
 // //-------------morning 1 notification
     scheduleNotifications(
       notificationId: 1,
-      title: "Thank you for placing your order!",
-      body: "Your meal will be ready for pickup from the counter.",
+      title: title!,
+      body: body!,
       payload: payload,
       scheduledDateTime: nowInNepal.add(const Duration(seconds: 1)),
     );
 
-//-------------morning 2 notificaiton
-    scheduleNotification(
-      notificationId: 2, title: "Hello Student",
-      body:
-          "Don't forget to order your meal! Order before  hours to ensure you don't miss today's menu. Time is running out!", // Updated notification message
-      payload: payload,
-      scheduledDateTime: nowInNepal.add(Duration(hours: M1)),
-    );
+// //-------------morning 2 notificaiton
+//     scheduleNotification(
+//       notificationId: 2, title: "Hello Student",
+//       body:
+//           "Don't forget to order your meal! Order before  hours to ensure you don't miss today's menu. Time is running out!", // Updated notification message
+//       payload: payload,
+//       scheduledDateTime: nowInNepal.add(Duration(hours: M1)),
+//     );
 
-//-------------Evening  1 notificaiton
-    scheduleNotification(
-      notificationId: 3, title: "Hello Student",
-      body:
-          "Don't forget to order your meal! Order before  hours to ensure you don't miss today's menu. Time is running out!", // Updated notification message
-      payload: payload,
-      scheduledDateTime: nowInNepal.add(Duration(hours: M2)),
-    );
+// //-------------Evening  1 notificaiton
+//     scheduleNotification(
+//       notificationId: 3, title: "Hello Student",
+//       body:
+//           "Don't forget to order your meal! Order before  hours to ensure you don't miss today's menu. Time is running out!", // Updated notification message
+//       payload: payload,
+//       scheduledDateTime: nowInNepal.add(Duration(hours: M2)),
+//     );
 
-//-------------Evening  2 notificaiton
-    scheduleNotification(
-      notificationId: 4, title: "Hello Student",
-      body:
-          "Don't forget to order your meal! Order before  hours to ensure you don't miss today's menu. Time is running out!", // Updated notification message
-      payload: payload,
-      scheduledDateTime: nowInNepal.add(Duration(hours: E1)),
-    );
+// //-------------Evening  2 notificaiton
+//     scheduleNotification(
+//       notificationId: 4, title: "Hello Student",
+//       body:
+//           "Don't forget to order your meal! Order before  hours to ensure you don't miss today's menu. Time is running out!", // Updated notification message
+//       payload: payload,
+//       scheduledDateTime: nowInNepal.add(Duration(hours: E1)),
+//     );
 
-//-------------Evening  3 notificaiton
-    scheduleNotification(
-      notificationId: 5, title: "Hello Student",
-      body:
-          "Don't forget to order your meal! Order before  hours to ensure you don't miss today's menu. Time is running out!", // Updated notification message
-      payload: payload,
-      scheduledDateTime: nowInNepal.add(Duration(hours: E2)),
-    );
+// //-------------Evening  3 notificaiton
+//     scheduleNotification(
+//       notificationId: 5, title: "Hello Student",
+//       body:
+//           "Don't forget to order your meal! Order before  hours to ensure you don't miss today's menu. Time is running out!", // Updated notification message
+//       payload: payload,
+//       scheduledDateTime: nowInNepal.add(Duration(hours: E2)),
+//     );
 
-//-------------Evening  4 notificaiton
+// //-------------Evening  4 notificaiton
 
-    scheduleNotification(
-      notificationId: 6, title: "Hello Student",
-      body:
-          "Don't forget to order your meal! Order before  hours to ensure you don't miss today's menu. Time is running out!", // Updated notification message
-      payload: payload,
-      scheduledDateTime: nowInNepal.add(Duration(hours: E3)),
-    );
+//     scheduleNotification(
+//       notificationId: 6, title: "Hello Student",
+//       body:
+//           "Don't forget to order your meal! Order before  hours to ensure you don't miss today's menu. Time is running out!", // Updated notification message
+//       payload: payload,
+//       scheduledDateTime: nowInNepal.add(Duration(hours: E3)),
+//     );
   }
 
   // close all the notifications available

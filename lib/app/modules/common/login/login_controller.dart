@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connect_canteen/app/config/api_end_points.dart';
+import 'package:connect_canteen/app/local_notificaiton/local_notifications.dart';
 import 'package:connect_canteen/app/repository/grete_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +41,14 @@ class LoginController extends GetxController {
 
   @override
   void onInit() {
+    log(" login controller init");
     super.onInit();
+    clearTextControllers();
+  }
+
+  void clearTextControllers() {
+    emailcontroller.clear();
+    passwordcontroller.clear();
   }
 
   void loginSubmit(BuildContext context) {
@@ -67,10 +75,20 @@ class LoginController extends GetxController {
                   : "canteen");
 
       if (userExits) {
+        loginOptionController.isUser.value
+            ? LocalNotifications.showScheduleNotification(
+                title: "Login Succesfull",
+                body: "Have a greate Day!",
+                payload: "This is periodic data")
+            : log(" this is not user");
         saveDataLocally(context);
+        clearTextControllers();
       } else {
+        clearTextControllers();
+
         // Perform both sign-out and display the login failure dialog
         await _auth.signOut();
+        clearTextControllers();
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -115,6 +133,8 @@ class LoginController extends GetxController {
 
       isloading(false);
     } on FirebaseAuthException catch (e) {
+      clearTextControllers();
+
       isloading(false);
 
       // Handle FirebaseAuthException (Firebase authentication errors)
@@ -128,6 +148,8 @@ class LoginController extends GetxController {
       }
       CustomSnackbar.authShowFailure(context, errorMessage);
     } on PlatformException catch (e) {
+      clearTextControllers();
+
       isloading(false);
 
       // Handle platform exceptions (e.g., no internet connection)
@@ -137,14 +159,13 @@ class LoginController extends GetxController {
         CustomSnackbar.authShowFailure(context, "An error occurred");
       }
     } catch (e) {
+      clearTextControllers();
+
       isloading(false);
 
       // Handle other errors
       print("Login error: $e");
       CustomSnackbar.authShowFailure(context, "An unexpected error occurred");
-    } finally {
-      // Turn off loading indicator regardless of success or failure
-      isloading(false);
     }
   }
 
@@ -187,21 +208,21 @@ class LoginController extends GetxController {
         userDataResponse.value =
             ApiResponse<UserDataResponse>.completed(userDataResult.response);
         isFetchLoading(false);
-        userDataResponse.value.response!;
+        log(" the user data is fetching ");
 
         userDataResponse.value.response!.first.groupid.toString().length != 0
             ? isGroupId(true)
             : isGroupId(false);
-
-        log(" this is the user data fetcn ---------- ok ok ok ${userDataResponse.value.response!.first.groupid.toString()}");
+      } else {
+        log(" the user data faillerd");
       }
+
+      log(" thosos");
       isFetchLoading(false);
     } catch (e) {
       isFetchLoading(false);
 
       log('Error while getting data: $e');
-    } finally {
-      isFetchLoading(false);
     }
   }
 

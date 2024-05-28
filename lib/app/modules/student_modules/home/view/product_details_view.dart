@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connect_canteen/app/models/food_order_time_model.dart';
+import 'package:connect_canteen/app/modules/common/wallet/controller.dart';
 import 'package:connect_canteen/app/widget/custom_loging_widget.dart';
 import 'package:connect_canteen/app/widget/customized_button.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:connect_canteen/app/config/colors.dart';
 import 'package:connect_canteen/app/config/style.dart';
-import 'package:connect_canteen/app/eSewa/esewa_function.dart';
 import 'package:connect_canteen/app/models/product_model.dart';
 import 'package:connect_canteen/app/models/users_model.dart';
 import 'package:connect_canteen/app/modules/common/login/login_controller.dart';
@@ -15,17 +15,17 @@ import 'package:connect_canteen/app/modules/student_modules/add_order/add_produc
 import 'package:connect_canteen/app/modules/student_modules/group/group_controller.dart';
 import 'package:connect_canteen/app/widget/confirmation_dialog.dart';
 import 'package:connect_canteen/app/widget/loading_screen.dart';
+import 'package:intl/intl.dart';
+import 'package:nepali_utils/nepali_utils.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ProductDetailsPage extends StatefulWidget {
   final Product product;
   final UserDataResponse user;
-  final String dat;
 
   ProductDetailsPage({
     Key? key,
-    required this.dat,
     required this.product,
     required this.user,
   }) : super(key: key);
@@ -37,38 +37,34 @@ class ProductDetailsPage extends StatefulWidget {
 class _ProductDetailsPageState extends State<ProductDetailsPage> {
   final groupcontroller = Get.put(GroupController());
   final logincontroller = Get.put(LoginController());
-
+  final walletcontorller = Get.put(WalletController());
   final addproductController = Get.put(AddOrderController());
 
-  late final Esewa esewa;
   final List<FoodOrderTime> foodOrdersTime = [
-    FoodOrderTime(mealTime: "09:00", orderHoldTime: "8:00"),
-    FoodOrderTime(mealTime: "10:30", orderHoldTime: "9:30"),
-    FoodOrderTime(mealTime: "11:00", orderHoldTime: "10:00"),
+    FoodOrderTime(mealTime: "12:30", orderHoldTime: "8:00"),
+    FoodOrderTime(mealTime: "1:15", orderHoldTime: "8:00"),
+    FoodOrderTime(mealTime: "2:00", orderHoldTime: "8:00"),
   ];
 
-  // Add this variable
   int selectedIndex = -1;
 
-  @override
-  void initState() {
-    super.initState();
-    esewa = Esewa(addproductController);
-  }
-
   void showNoSelectionMessage() {
-    Get.snackbar(
-      'No Time Slot Selected',
-      'Please select a time slot',
-      backgroundColor: Color.fromARGB(
-          255, 229, 226, 226), // Set your desired background color here
-      colorText: Color.fromARGB(255, 6, 6, 6), // Set the text color
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.green,
+        content: Text('Select Time Slots'),
+        duration: Duration(seconds: 2),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    addproductController.checkTimeAndSetVisibility();
+    DateTime now = DateTime.now();
+
+    NepaliDateTime nepaliDateTime = NepaliDateTime.fromDateTime(now);
+    final date = DateFormat('dd/MM/yyyy\'', 'en').format(nepaliDateTime);
+
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       body: Stack(
@@ -276,115 +272,174 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   ),
                                 ),
                                 SizedBox(height: 3.h),
-                                topicRow('Order For ',
-                                    addproductController.orderDate.value),
-                                topicRow('Subtotal',
-                                    "Rs. ${widget.product.price.toInt()}"),
-                                topicRow('Platform Fee', 'Rs.1'),
-                                topicRow('Grand Total',
-                                    'Rs. ${widget.product.price.toInt() + 1}'),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: AppColors.backgroundColor,
+                                    borderRadius: BorderRadius.circular(
+                                        10.0), // Adjust the value for the desired curve
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color:
+                                            Color.fromARGB(255, 189, 187, 187)
+                                                .withOpacity(0.5),
+                                        spreadRadius: 1,
+                                        blurRadius: 5,
+                                        offset: Offset(0,
+                                            2), // Adjust the values to control the shadow appearance
+                                      ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(12.0),
+                                        child: Column(
+                                          children: [
+                                            topicRow('Order For ', date),
+                                            topicRow('Subtotal',
+                                                "Rs. ${widget.product.price.toInt()}"),
+                                            topicRow('Grand Total',
+                                                'Rs. ${widget.product.price.toInt()}'),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                                 SizedBox(
                                   height: 2.h,
                                 ),
+                                // KhaltiButton(
+                                //   config: config,
+                                //   preferences: const [
+                                //     // Not providing this will enable all the payment methods.
+                                //     PaymentPreference.khalti,
+                                //     PaymentPreference.eBanking,
+                                //     PaymentPreference.connectIPS
+                                //   ],
+                                //   onSuccess: (successModel) {
+                                //     Get.to(
+                                //       () => PaymentSuccessPage(
+                                //         amountPaid: 100.toString(),
+                                //       ),
+                                //     );
+                                //   },
+                                //   onFailure: (failureModel) {
+                                //     // What to do on failure?
+                                //   },
+                                //   onCancel: () {
+                                //     // User manually cancelled the transaction
+                                //   },
+                                // ),
                                 CustomButton(
                                   text: 'Order',
                                   onPressed: () {
-                                    addproductController.mealtime.value.isEmpty
-                                        ? showNoSelectionMessage()
-                                        : logincontroller
-                                                .userDataResponse
-                                                .value
-                                                .response!
-                                                .first
-                                                .groupid
-                                                .isNotEmpty
-                                            ?
+                                    if (walletcontorller.totalbalances.value <=
+                                        widget.product.price.toInt()) {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return InfoDialog();
+                                        },
+                                      );
+                                    } else {
+                                      addproductController
+                                              .mealtime.value.isEmpty
+                                          ? showNoSelectionMessage()
+                                          : logincontroller
+                                                  .userDataResponse
+                                                  .value
+                                                  .response!
+                                                  .first
+                                                  .groupid
+                                                  .isNotEmpty
+                                              ? addproductController.addItemToOrder(
+                                                  context,
+                                                  groupName: groupcontroller
+                                                      .groupResponse
+                                                      .value
+                                                      .response!
+                                                      .first
+                                                      .groupName,
+                                                  customerImage: widget
+                                                      .user.profilePicture,
+                                                  orderHoldTime:
+                                                      addproductController
+                                                          .orderHoldTime.value,
+                                                  mealtime: addproductController
+                                                      .mealtime.value,
+                                                  classs: widget.user.classes,
+                                                  date: date,
+                                                  checkout: 'false',
+                                                  customer: widget.user.name,
+                                                  groupcod: groupcontroller
+                                                      .groupResponse
+                                                      .value
+                                                      .response!
+                                                      .first
+                                                      .groupCode,
+                                                  groupid: widget.user.groupid,
+                                                  cid: widget.user.userid,
+                                                  productName:
+                                                      widget.product.name,
+                                                  price: widget.product.price,
+                                                  quantity: 1,
+                                                  productImage:
+                                                      widget.product.image)
 
-                                            // addproductController.addItemToOrder(
-                                            //     context,
-                                            //     groupName: groupcontroller
-                                            //         .groupResponse
-                                            //         .value
-                                            //         .response!
-                                            //         .first
-                                            //         .groupName,
-                                            //     customerImage:
-                                            //         widget.user.profilePicture,
-                                            //     orderHoldTime:
-                                            //         addproductController
-                                            //             .orderHoldTime.value,
-                                            //     mealtime: addproductController
-                                            //         .mealtime.value,
-                                            //     classs: widget.user.classes,
-                                            //     date: addproductController
-                                            //         .orderDate.value,
-                                            //     checkout: 'false',
-                                            //     customer: widget.user.name,
-                                            //     groupcod: groupcontroller
-                                            //         .groupResponse
-                                            //         .value
-                                            //         .response!
-                                            //         .first
-                                            //         .groupCode,
-                                            //     groupid: widget.user.groupid,
-                                            //     cid: widget.user.userid,
-                                            //     productName:
-                                            //         widget.product.name,
-                                            //     price: widget.product.price + 1,
-                                            //     quantity: 1,
-                                            //     productImage:
-                                            //         widget.product.image)
-
-                                            esewa.pay(context,
-                                                groupName: groupcontroller
-                                                    .groupResponse
-                                                    .value
-                                                    .response!
-                                                    .first
-                                                    .groupName,
-                                                customerImage:
-                                                    widget.user.profilePicture,
-                                                orderHoldTime:
-                                                    addproductController
-                                                        .orderHoldTime.value,
-                                                mealtime: addproductController
-                                                    .mealtime.value,
-                                                classs: widget.user.classes,
-                                                date: addproductController
-                                                    .orderDate.value,
-                                                checkout: 'false',
-                                                customer: widget.user.name,
-                                                groupcod: groupcontroller
-                                                    .groupResponse
-                                                    .value
-                                                    .response!
-                                                    .first
-                                                    .groupCode,
-                                                groupid: widget.user.groupid,
-                                                cid: widget.user.userid,
-                                                productName:
-                                                    widget.product.name,
-                                                price: widget.product.price + 1,
-                                                quantity: 1,
-                                                productImage:
-                                                    widget.product.image)
-                                            : showDialog(
-                                                context: context,
-                                                builder:
-                                                    (BuildContext context) {
-                                                  return ConfirmationDialog(
-                                                    isbutton: false,
-                                                    heading:
-                                                        'You are not in any group',
-                                                    subheading:
-                                                        "Make a group or join a group",
-                                                    firstbutton:
-                                                        "Create A group",
-                                                    secondbutton: 'Cancle',
-                                                    onConfirm: () {},
-                                                  );
-                                                },
-                                              );
+                                              // esewa.pay(context,
+                                              //     groupName: groupcontroller
+                                              //         .groupResponse
+                                              //         .value
+                                              //         .response!
+                                              //         .first
+                                              //         .groupName,
+                                              //     customerImage:
+                                              //         widget.user.profilePicture,
+                                              //     orderHoldTime:
+                                              //         addproductController
+                                              //             .orderHoldTime.value,
+                                              //     mealtime: addproductController
+                                              //         .mealtime.value,
+                                              //     classs: widget.user.classes,
+                                              //     date: addproductController
+                                              //         .orderDate.value,
+                                              //     checkout: 'false',
+                                              //     customer: widget.user.name,
+                                              //     groupcod: groupcontroller
+                                              //         .groupResponse
+                                              //         .value
+                                              //         .response!
+                                              //         .first
+                                              //         .groupCode,
+                                              //     groupid: widget.user.groupid,
+                                              //     cid: widget.user.userid,
+                                              //     productName:
+                                              //         widget.product.name,
+                                              //     price: widget.product.price + 1,
+                                              //     quantity: 1,
+                                              //     productImage:
+                                              //         widget.product.image)
+                                              : showDialog(
+                                                  context: context,
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return ConfirmationDialog(
+                                                      isbutton: false,
+                                                      heading:
+                                                          'You are not in any group',
+                                                      subheading:
+                                                          "Make a group or join a group",
+                                                      firstbutton:
+                                                          "Create A group",
+                                                      secondbutton: 'Cancle',
+                                                      onConfirm: () {},
+                                                    );
+                                                  },
+                                                );
+                                    }
                                   },
                                   isLoading: false,
                                 ),
@@ -393,7 +448,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                           : Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                "Order Time is scheduled from 4 PM to 8 AM",
+                                "Order Time is scheduled from 4 PM to 6  AM",
                                 style: TextStyle(
                                   fontSize: 18.0,
                                   fontWeight: FontWeight.bold,
@@ -462,11 +517,48 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
         children: [
           Text(
             topic,
-            style: AppStyles.topicsHeading,
+            style: AppStyles.listTileTitle,
           ),
           SizedBox(width: 8), //  Add spacing between topic and subtopic
           Text(subtopic, style: AppStyles.listTilesubTitle1),
         ],
+      ),
+    );
+  }
+}
+
+class InfoDialog extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8.0),
+      ),
+      elevation: 16,
+      child: Container(
+        color: Colors.white,
+        padding: EdgeInsets.all(16.0),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.error_outline,
+              color: Colors.red,
+              size: 40.0,
+            ),
+            SizedBox(width: 16.0),
+            Expanded(
+              child: Text(
+                'You do not have sufficient balance. Please contact the administration.',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

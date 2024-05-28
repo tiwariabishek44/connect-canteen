@@ -54,9 +54,13 @@ class OrderController extends GetxController {
         orderResponse.value =
             ApiResponse<OrderResponse>.completed(orderResult.response);
 
-        orderResponse.value.response!.length != 0
-            ? orderLoded(true)
-            : orderLoded(false);
+        if (orderResponse.value.response!.length != 0) {
+          orderLoded(true);
+          calculateTotalAmount(orderResponse.value.response!);
+        } else {
+          totalprice.value = 0.0;
+          orderLoded(false);
+        }
       }
     } catch (e) {
       orderLoded(false);
@@ -66,6 +70,18 @@ class OrderController extends GetxController {
     } finally {
       isLoading(false);
     }
+  }
+
+  var totalprice = 0.0.obs;
+  // Method to calculate total amount (total price of the order)
+  double calculateTotalAmount(List<OrderResponse> orders) {
+    double totalAmount = 0;
+    for (OrderResponse order in orders) {
+      totalAmount += (order.price * order.quantity);
+    }
+
+    totalprice.value = totalAmount;
+    return totalAmount;
   }
 
 //-----------------hold the user orders-----------

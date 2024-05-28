@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -21,6 +22,8 @@ class VerifyController extends GetxController {
 
   final RxBool isLoading = false.obs;
 
+  StreamSubscription? _streamSubscription;
+
   @override
   void onInit() {
     super.onInit();
@@ -40,9 +43,7 @@ class VerifyController extends GetxController {
 
   Stream<Map<String, List<OrderResponse>>> groupOrdersStream() {
     DateTime currentDate = DateTime.now();
-
     NepaliDateTime nepaliDateTime = NepaliDateTime.fromDateTime(currentDate);
-
     String formattedDate =
         DateFormat('dd/MM/yyyy\'', 'en').format(nepaliDateTime);
 
@@ -58,7 +59,7 @@ class VerifyController extends GetxController {
           .map((doc) => OrderResponse.fromJson(doc.data()))
           .toList();
       calculateTotalQuantity(orders);
-      return groupOrdersByGroupCode(orders); // Modify this line
+      return groupOrdersByGroupCode(orders);
     });
   }
 
@@ -68,13 +69,16 @@ class VerifyController extends GetxController {
 
     orders.forEach((order) {
       if (!groupedOrders.containsKey(order.groupcod)) {
-        // Change to groupCode
         groupedOrders[order.groupcod] = [];
       }
       groupedOrders[order.groupcod]!.add(order);
     });
 
     return groupedOrders;
+  }
+
+  void closeStream() {
+    _streamSubscription?.cancel();
   }
 
   var isloading = false.obs;
@@ -91,6 +95,8 @@ class VerifyController extends GetxController {
       ApiResponse<OrderResponse>.initial().obs;
   Future<void> fetchOrders() async {
     try {
+      isloading(true);
+
       isOrderFetch(false);
 
       DateTime currentDate = DateTime.now();
@@ -100,7 +106,6 @@ class VerifyController extends GetxController {
       String formattedDate =
           DateFormat('dd/MM/yyyy\'', 'en').format(nepaliDateTime);
 
-      isloading(true);
       final filter = {
         "groupcod": groupCod.value,
         'checkout': 'false',

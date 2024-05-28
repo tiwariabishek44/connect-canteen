@@ -2,6 +2,8 @@ import 'dart:developer';
 
 import 'package:connect_canteen/app/config/style.dart';
 import 'package:connect_canteen/app/local_notificaiton/local_notifications.dart';
+import 'package:connect_canteen/app/models/wallet_model.dart';
+import 'package:connect_canteen/app/modules/common/wallet/controller.dart';
 import 'package:connect_canteen/app/widget/payment_succesfull.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -20,10 +22,12 @@ class AddOrderController extends GetxController {
       ApiResponse<OrderResponse>.initial().obs;
   var isLoading = false.obs;
 
+  final walletCotnroller = Get.put(WalletController());
+
   var orderDate = ''.obs;
   var mealtime = ''.obs;
   var orderHoldTime = ''.obs;
-  var isorderStart = false.obs;
+  var isorderStart = true.obs;
 
   @override
   void onInit() {
@@ -34,24 +38,22 @@ class AddOrderController extends GetxController {
 //---------to find the date --------
 
   void checkTimeAndSetVisibility() {
-    isorderStart.value = false;
+    // isorderStart.value = false;
     mealtime.value = '';
     DateTime currentDate = DateTime.now();
     // ignore: deprecated_member_use
     NepaliDateTime nepaliDateTime = NepaliDateTime.fromDateTime(currentDate);
     int currentHour = currentDate.hour;
 
-    if ((currentHour >= 12 && currentHour <= 23)) {
+    if ((currentHour >= 15 && currentHour <= 23)) {
       // After 4 pm but not after 1 am (next day)
       NepaliDateTime tomorrow = nepaliDateTime.add(Duration(days: 1));
-      isorderStart.value = true;
+      // isorderStart.value = true;
 
       orderDate.value = DateFormat('dd/MM/yyyy\'', 'en').format(tomorrow);
-
-      log("this is he date " + orderDate.value);
-    } else if (currentHour >= 0 && currentHour <= 8) {
+    } else if (currentHour >= 0 && currentHour <= 6) {
       // 1 am or later
-      isorderStart.value = true;
+      // isorderStart.value = true;
 
       orderDate.value = DateFormat('dd/MM/yyyy\'', 'en').format(nepaliDateTime);
 
@@ -85,7 +87,8 @@ class AddOrderController extends GetxController {
       log("--------------this is the order time ${now}");
 
       NepaliDateTime nepaliDateTime = NepaliDateTime.fromDateTime(now);
-      final dat = DateFormat('HH:mm/dd/MM/yyyy\'', 'en').format(nepaliDateTime);
+      final orderTime =
+          DateFormat('HH:mm/dd/MM/yyyy\'', 'en').format(nepaliDateTime);
 
       final newItem = {
         "id": '${productId + customer + productName}',
@@ -103,7 +106,7 @@ class AddOrderController extends GetxController {
         "productImage": productImage,
         "orderType": 'regular',
         "holdDate": '',
-        'orderTime': dat,
+        'orderTime': orderTime,
         "customerImage": customerImage,
         "orderHoldTime": orderHoldTime,
         'checkoutVerified': 'false',
@@ -119,17 +122,54 @@ class AddOrderController extends GetxController {
       if (addOrderResult.status == ApiStatus.SUCCESS) {
         orderResponse.value =
             ApiResponse<OrderResponse>.completed(addOrderResult.response);
-        log("the order has been placed");
-        orderController.fetchOrders();
-        isLoading(false);
-        Get.to(
-            () => PaymentSuccessPage(
-                  amountPaid: price.toInt().toString(),
-                ),
-            transition: Transition.rightToLeft,
-            duration: duration);
         LocalNotifications.showScheduleNotification(
+            title: "Thank for placing your order!",
+            body: "Your meal will be ready for pickup from the counter.",
             payload: "This is periodic data");
+
+        orderController.fetchOrders();
+        await walletCotnroller.addTransaction(
+          cid,
+          Transactions(
+            date: nepaliDateTime,
+            name: 'Purchase', // or penalty
+            amount: price,
+            remarks: productName.toString(),
+          ),
+        );
+        isLoading(false);
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius:
+                    BorderRadius.circular(10.0), // rectangular corners
+              ),
+              title: Row(
+                children: [
+                  Icon(Icons.check_circle, color: Colors.green),
+                  SizedBox(width: 10),
+                  Text(
+                    'Order Successful',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(
+                    'Close',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ),
+              ],
+            );
+          },
+        );
 
         // Navigate to home page or perform necessary actions upon successful login
       } else {

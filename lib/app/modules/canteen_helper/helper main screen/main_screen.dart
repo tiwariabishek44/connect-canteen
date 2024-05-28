@@ -1,6 +1,8 @@
+import 'package:connect_canteen/app/config/colors.dart';
 import 'package:connect_canteen/app/modules/canteen_helper/profile/profile.dart';
 import 'package:connect_canteen/app/modules/canteen_helper/verified%20orders/get_verified_orders.dart';
 import 'package:connect_canteen/app/modules/canteen_helper/helper%20main%20screen/main_screen_controller.dart';
+import 'package:connect_canteen/app/modules/canteen_helper/verified%20orders/verify_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -9,6 +11,7 @@ class HelperMainScreen extends StatelessWidget {
   HelperMainScreen({Key? key});
 
   final userController = Get.put(MainScreenController());
+  final verifyController = Get.put(VerifyController());
 
   final List<Widget> pages = [
     CanteenHelper(),
@@ -18,10 +21,77 @@ class HelperMainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Obx(
-        () => PageStorage(
-          bucket: userController.bucket,
-          child: userController.currentScreen.value,
+      body: WillPopScope(
+        onWillPop: () async {
+          verifyController.closeStream();
+          return await showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                elevation: 0,
+                backgroundColor: AppColors.backgroundColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(
+                      12.0), // Adjust border radius as needed
+                ),
+                title: Text(
+                  'Exit App?',
+                  style: TextStyle(
+                    fontSize: 17.5.sp,
+                    color: Color.fromARGB(221, 37, 36, 36),
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                content: Text(
+                  'Are you sure you want to exit the app?',
+                  style: TextStyle(
+                    color: const Color.fromARGB(221, 72, 71, 71),
+                    fontSize: 16.0.sp,
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      // Close the dialog
+
+                      Get.back();
+                    },
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16.sp,
+                          color: Colors.purple),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      verifyController.closeStream();
+                      Navigator.of(context).pop(true);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(12.0),
+                      child: Text(
+                        "Exit",
+                        style: TextStyle(
+                          color: Color.fromARGB(255, 225, 6, 6),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 17.sp,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          );
+          // Allow back navigation
+        },
+        child: Obx(
+          () => PageStorage(
+            bucket: userController.bucket,
+            child: userController.currentScreen.value,
+          ),
         ),
       ),
       bottomNavigationBar: Obx(
