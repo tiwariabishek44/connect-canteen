@@ -33,21 +33,18 @@ class Transactions {
 class Wallet {
   final String userId;
   final String userName;
-  final String schoolId; // Added schoolId field
   final List<Transactions> transactions;
 
   Wallet({
     required this.userId,
     required this.userName,
-    required this.schoolId, // Added schoolId parameter
-    required this.transactions,
+    required this.transactions, 
   });
 
   Map<String, dynamic> toJson() {
     return {
       'userId': userId,
       'userName': userName,
-      'schoolId': schoolId, // Added schoolId to JSON
       'transactions':
           transactions.map((transaction) => transaction.toJson()).toList(),
     };
@@ -57,7 +54,6 @@ class Wallet {
     return Wallet(
       userId: json['userId'],
       userName: json['userName'],
-      schoolId: json['schoolId'], // Parsing schoolId from JSON
       transactions: (json['transactions'] as List<dynamic>)
           .map((transactionJson) => Transactions.fromJson(transactionJson))
           .toList(),

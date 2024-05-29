@@ -59,7 +59,7 @@ class OnboardingScreen extends StatelessWidget {
                   SizedBox(
                     height: 2.h,
                   ),
-                  GestureDetector(
+                  GestureDetector( 
                     onTap: () {
                       loginOptionController.isStudent.value = true;
 
@@ -67,7 +67,7 @@ class OnboardingScreen extends StatelessWidget {
                     },
                     child: Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: AppColors.primaryColor,
                         borderRadius: BorderRadius.circular(10),
@@ -76,7 +76,7 @@ class OnboardingScreen extends StatelessWidget {
                         child: Text(
                           "As Student",
                           style: TextStyle(
-                            fontSize: 20.sp,
+                            fontSize: 18.sp,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
                           ),
@@ -104,7 +104,7 @@ class OnboardingScreen extends StatelessWidget {
                         child: Text(
                           "As Canteen ",
                           style: TextStyle(
-                            fontSize: 20.sp,
+                            fontSize: 18.sp,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
                           ),

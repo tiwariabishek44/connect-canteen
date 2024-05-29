@@ -1,30 +1,19 @@
-import 'package:connect_canteen/app1/cons/colors.dart';
-import 'package:connect_canteen/app1/cons/style.dart';
-import 'package:connect_canteen/app1/modules/common/logoin_option/login_option_controller.dart';
-import 'package:connect_canteen/app1/widget/custom_button.dart';
-import 'package:connect_canteen/app1/widget/welcome_heading.dart';
+import 'package:connect_canteen/app1/cons/api_end_points.dart';
+import 'package:connect_canteen/app1/modules/common/registration/registration_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connect_canteen/app1/modules/common/registration/view/registration_view.dart';
+import 'package:connect_canteen/app1/cons/colors.dart';
+import 'package:connect_canteen/app1/widget/welcome_heading.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:shimmer/shimmer.dart';
 
 class SchoolChoose extends StatelessWidget {
-  SchoolChoose({super.key});
+  SchoolChoose({Key? key}) : super(key: key);
 
-  final loginOptionController = Get.put(LoginOptionController());
-
-  final List<String> dummySchools = [
-    "School 1",
-    "School 2",
-    "School 3",
-    "School 4",
-    "School 5",
-    "School 6",
-    "School 7",
-    "School 8",
-    "School 9",
-    "School 10",
-  ];
-
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final registerController = Get.put(RegisterController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,51 +29,120 @@ class SchoolChoose extends StatelessWidget {
           },
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: AppPadding.screenHorizontalPadding,
-          child: Column(
-            children: [
-              SizedBox(
-                height: 4.h,
-              ),
-              WelcomeHeading(
-                  mainHeading: "Choose your School/College", subHeading: " "),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: ScrollPhysics(),
-                itemCount: dummySchools.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      child: ListTile(
-                        title: Text(dummySchools[index]),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 5.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            WelcomeHeading(
+                mainHeading: "Choose your School/College", subHeading: ""),
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: _firestore
+                    .collection(ApiEndpoints.productionSchoolcollection)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return ListView.builder(
+                      itemCount: 4,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: 3.h),
+                          child: Shimmer.fromColors(
+                            baseColor: Colors.grey[300]!,
+                            highlightColor: Colors.grey[100]!,
+                            child: Container(
+                              padding: EdgeInsets.all(2.h),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12.0),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 8.0,
+                                    offset: Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: ListTile(
+                                title: Container(
+                                  height:
+                                      20.0, // Adjust the height of the title container
+                                  color: Colors.grey[
+                                      200], // Light grey color for shimmer effect
+                                ),
+                                subtitle: Container(
+                                  height:
+                                      16.0, // Adjust the height of the subtitle container
+                                  color: Colors.grey[
+                                      200], // Light grey color for shimmer effect
+                                ),
+                                trailing: Icon(Icons.arrow_forward_ios,
+                                    color: AppColors.primaryColor),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  }
+                  final schools = snapshot.data!.docs;
+                  return ListView.builder(
+                    itemCount: schools.length,
+                    itemBuilder: (context, index) {
+                      final schoolData =
+                          schools[index].data() as Map<String, dynamic>;
+                      return GestureDetector(
                         onTap: () {
-                          // Handle school selection
+                          registerController.schoolname.value =
+                              schoolData["name"];
+                          registerController.schoolId.value =
+                              schoolData["schoolId"];
+                          Get.to(() => RegisterView());
                         },
-                      ),
-                    ),
+                        child: Padding(
+                          padding: EdgeInsets.only(bottom: 3.h),
+                          child: Container(
+                            padding: EdgeInsets.all(2.h),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12.0),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 8.0,
+                                  offset: Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: ListTile(
+                              title: Text(
+                                schoolData["name"] ?? '',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18.sp),
+                              ),
+                              subtitle: Text(
+                                schoolData["address"] ?? '',
+                                style: TextStyle(
+                                    fontSize: 16.sp, color: Colors.grey[600]),
+                              ),
+                              trailing: Icon(Icons.arrow_forward_ios,
+                                  color: AppColors.primaryColor),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   );
                 },
               ),
-              CustomButton(
-                text: "Cotinue",
-                onPressed: () {
-                  FocusScope.of(context).unfocus();
-                },
-                isLoading: false,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-            ],
-          ),
+            ),
+            SizedBox(height: 3.h),
+          ],
         ),
       ),
     );

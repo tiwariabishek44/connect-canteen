@@ -1,4 +1,4 @@
-class UserDataResponse {
+class StudentDataResponse {
   final String userid;
   final String name;
   final String email;
@@ -9,9 +9,10 @@ class UserDataResponse {
   final int studentScore;
   final int fineAmount;
   final int miCoin;
-  final String schoolId; // Added school id field
+  final String schoolId;
+  final String schoolName; // Added school name field
 
-  UserDataResponse({
+  StudentDataResponse({
     required this.userid,
     required this.name,
     required this.email,
@@ -22,11 +23,12 @@ class UserDataResponse {
     required this.studentScore,
     required this.fineAmount,
     required this.miCoin,
-    required this.schoolId, // Included in the constructor
+    required this.schoolId,
+    required this.schoolName, // Included in the constructor
   });
 
-  factory UserDataResponse.fromJson(Map<String, dynamic> json) {
-    return UserDataResponse(
+  factory StudentDataResponse.fromJson(Map<String, dynamic> json) {
+    return StudentDataResponse(
       userid: json['userid'] ?? '',
       name: json['name'] ?? '',
       email: json['email'] ?? '',
@@ -37,7 +39,8 @@ class UserDataResponse {
       studentScore: json['studentScore'] ?? 0,
       fineAmount: json['fineAmount'] ?? 0,
       miCoin: json['miCoin'] ?? 0,
-      schoolId: json['schoolId'] ?? '', // Parsing school id
+      schoolId: json['schoolId'] ?? '',
+      schoolName: json['schoolName'] ?? '', // Parsing school name
     );
   }
 
@@ -53,7 +56,8 @@ class UserDataResponse {
       'studentScore': studentScore,
       'fineAmount': fineAmount,
       'miCoin': miCoin,
-      'schoolId': schoolId, // Adding school id to the map
+      'schoolId': schoolId,
+      'schoolName': schoolName, // Adding school name to the map
     };
   }
 }

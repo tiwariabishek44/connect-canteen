@@ -2,6 +2,11 @@ import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:connect_canteen/app1/cons/style.dart';
 import 'package:connect_canteen/app1/model/food_order_time_model.dart';
 import 'package:connect_canteen/app1/model/product_model.dart';
+import 'package:connect_canteen/app1/modules/common/login/login_controller.dart';
+import 'package:connect_canteen/app1/modules/common/wallet/wallet_controller.dart';
+import 'package:connect_canteen/app1/modules/student_modules/product_detail/utils/info_widget.dart';
+import 'package:connect_canteen/app1/modules/student_modules/product_detail/utils/no_group.dart';
+import 'package:connect_canteen/app1/modules/student_modules/product_detail/utils/update_profile_popup.dart';
 import 'package:connect_canteen/app1/widget/order_cornfirmation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,6 +22,9 @@ class ProductDetailPage extends StatefulWidget {
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
+  final loignController = Get.put(LoginController());
+  final walletController = Get.put(WalletController());
+
   int quantity = 1; // Initial quantity
   final List<FoodOrderTime> foodOrdersTime = [
     FoodOrderTime(mealTime: "12:30", orderHoldTime: "8:00"),
@@ -345,12 +353,42 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 height: 6.h,
                 child: ElevatedButton(
                   onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return ConfirmationDialog();
-                      },
-                    );
+                    if (walletController.totalbalances.value <=
+                        widget.product.price.toInt()) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return InfoDialog();
+                        },
+                      );
+                    } else if (loignController
+                                .studentDataResponse.value!.classes !=
+                            '' ||
+                        loignController
+                                .studentDataResponse.value!.profilePicture !=
+                            '') {
+                      showUpdateProfileDialog(Get.context!);
+                    } else if (loignController
+                            .studentDataResponse.value!.groupid ==
+                        '') {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return NoGroup(
+                            heading: 'You are not in any group',
+                            subheading: "Make a group or join a group",
+                          );
+                        },
+                      );
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return ConfirmationDialog();
+                        },
+                      );
+                    }
+
                     // Add to cart logic
                   },
                   child: Text(

@@ -1,30 +1,28 @@
-import 'dart:async';
 import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connect_canteen/app1/cons/api_end_points.dart';
 import 'package:connect_canteen/app1/cons/prefs.dart';
-import 'package:connect_canteen/app1/modules/student_modules/homepage/homepage.dart';
+import 'package:connect_canteen/app1/model/student_model.dart';
+import 'package:connect_canteen/app1/modules/common/logoin_option/login_option.dart';
 import 'package:connect_canteen/app1/modules/student_modules/student_mainscreen/student_main_screen.dart';
+import 'package:connect_canteen/app1/widget/custom_sncak_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-
-import '../../../data/api_models/login_api_response.dart';
-import '../../../services/api_client.dart';
-import '../../../widget/snackbar_widget.dart';
-import '../../student_modules/splash screen/splash_screen.dart';
-import 'view/login_view.dart';
 
 class LoginController extends GetxController {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   var termsAndConditions = false.obs;
   var isPasswordVisible = false.obs;
-  var isGuestLogin = false.obs;
   final GlobalKey<FormState> loginFormKey = GlobalKey<FormState>();
   final storage = GetStorage();
-  String? token;
-  var userId;
-  String? formattedTokenExpiryDate;
-  Timer? timer;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  // Observable for student data response
+  final studentDataResponse = Rxn<StudentDataResponse?>();
 
   @override
   void onClose() {
@@ -36,99 +34,86 @@ class LoginController extends GetxController {
 
   void userLogin() {
     if (loginFormKey.currentState!.validate()) {
-      // dologin();
-      Get.offAll(() => StudentMainScreenView());
+      dologin();
     }
   }
 
   var isLoginLoading = false.obs;
-  var loginApiResponse = ApiResponse<LoginResponse>.initial().obs;
+
   void dologin() async {
-    isLoginLoading.value = true;
-    final reqbody = {
-      "email": emailController.text,
-      "password": passwordController.text,
-    };
-    log("req body $reqbody");
+    try {
+      isLoginLoading.value = true;
+      // Attempt to sign in with email and password
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+      // Save user ID to local storage
+      storage.write(userId, _auth.currentUser!.uid);
+      isLoginLoading.value = false;
 
-    //==============Observe the API Response ===========
-    // if (response.status == ApiStatus.SUCCESS) {
-    //   log("lOGIN SUCCESSS:::::");
-    //   isLoginLoading.value = false;
-    //   // Call the article Controller for getting category list and navigation
-    //   Get.off(() => SplashScreen());
-    //   log(response.response.toString());
-    //   token = loginApiResponse.value.response!.token.toString();
-    //   userId = loginApiResponse.value.response!.userId;
-    //   formattedTokenExpiryDate =
-    //       loginApiResponse.value.response!.formattedTokenExpiryDate.toString();
-    //   saveUserData(
-    //     loginApiResponse.value.response!.token.toString(),
-    //     loginApiResponse.value.response!.userId,
-    //     loginApiResponse.value.response!.formattedTokenExpiryDate.toString(),
-    //   );
-    //   checkAutoLogout(); //set the duration value for logout immediately after login
-    // } else {
-    //   isLoginLoading.value = false;
-    //   log("Login Failed: Error:${response.status}");
-    //   getSnackBar(message: response.message);
-    // }
-  }
+      Get.offAll(() => StudentMainScreenView());
+    } on FirebaseAuthException catch (e) {
+      // Handle FirebaseAuthException
+      isLoginLoading.value = false;
 
-  void saveUserData(String token, var userId, String formattedTokenExpiryDate) {
-    log("user data saved");
-    storage.write(Prefs.userId, userId);
-    storage.write(Prefs.formattedTokenExpiryDate, formattedTokenExpiryDate);
-  }
-
-  // -------------checks whether the access token has expire for autoLogout---------//
-  void checkAutoLogout() {
-    log('autologout function called');
-    if (token == null) {
-      log("from checkAutoLogout token is null");
-      return; // No authentication data, do nothing
-    }
-    final currentDateTime = DateTime.now();
-    final expiryTime = DateTime.parse(formattedTokenExpiryDate!)
-        .difference(currentDateTime)
-        .inSeconds;
-    log('Expiry Date:::::::$formattedTokenExpiryDate');
-    log('Date Time now:::::${DateTime.now()}');
-    log('Time Remaining::::::$expiryTime');
-    if (currentDateTime.isAfter(DateTime.parse(formattedTokenExpiryDate!))) {
-      log('autoLogout1');
-      clearUserData();
-    } else {
-      log('no autoLogout');
-      timer = Timer(Duration(seconds: expiryTime), () {
-        log("this is logout from timer");
-        logout();
-      });
+      if (e.code == 'user-not-found') {
+        CustomSnackbar.error(Get.context!, 'User Not Fount');
+      } else if (e.code == 'wrong-password') {
+        CustomSnackbar.error(Get.context!, 'Wrong Password');
+      } else if (e.code == 'invalid-credential') {
+        log(e.code);
+        CustomSnackbar.error(Get.context!, 'User is not Register ');
+      }
+    } catch (e) {
+      CustomSnackbar.error(Get.context!, 'Something went wrong');
+      // Handle other errors
     }
   }
 
-  void logout() {
-    clearUserData();
-    // timer!.cancel();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Timer(const Duration(seconds: 0), () {
-        Get.offAll(() => const LoginView());
-        getSnackBar(message: 'You have been Log Out');
-      });
+//----------- TO FETCH THE STUDETN DATA
+
+
+  Stream<StudentDataResponse?> getStudetnData() {
+    return _firestore
+        .collection(ApiEndpoints.prodcutionStudentCollection)
+        .where('userid', isEqualTo: storage.read(userId))
+        .snapshots()
+        .map((snapshot) {
+      if (snapshot.docs.isNotEmpty) {
+        studentDataResponse.value = StudentDataResponse.fromJson(
+            snapshot.docs.first.data() as Map<String, dynamic>);
+
+        // Assuming that userId is unique and there will be only one document
+        return StudentDataResponse.fromJson(
+            snapshot.docs.first.data() as Map<String, dynamic>);
+      } else {
+        return null;
+      }
     });
-
-    // You can navigate to the login screen using Get's navigation system
-    // Get.offAllNamed('/login');
   }
 
-  void clearUserData() async {
-    log('--------logout--------');
-    token = null;
-    userId = null;
-    formattedTokenExpiryDate = null;
-    // clear stored authentication data, navigate to the login screen
-    storage.remove('token');
-    storage.remove('userId');
-    storage.remove('formattedTokenExpiryDate');
+//-------to do auto login---------
+  bool autoLogin() {
+    if (storage.read(userId) != null) {
+      // set a periodic timer to refresh token
+      return true;
+    }
+    return false;
+  }
+
+//--to do logout------------------
+  Future<void> logout() async {
+    try {
+      await _auth.signOut();
+      storage.remove(
+        userId,
+      );
+
+      Get.offAll(() => OnboardingScreen());
+    } catch (e) {
+      // Handle logout errors
+      Get.snackbar("Logout Failed", e.toString());
+    }
   }
 }
