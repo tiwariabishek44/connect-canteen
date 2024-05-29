@@ -4,6 +4,7 @@ class StudentDataResponse {
   final String email;
   final String phone;
   final String groupid;
+  final String groupcod; // Added groupcod field
   final String classes;
   final String profilePicture;
   final int studentScore;
@@ -18,6 +19,7 @@ class StudentDataResponse {
     required this.email,
     required this.phone,
     required this.groupid,
+    required this.groupcod, // Included in the constructor
     required this.classes,
     required this.profilePicture,
     required this.studentScore,
@@ -34,6 +36,7 @@ class StudentDataResponse {
       email: json['email'] ?? '',
       phone: json['phone']?.toString() ?? '',
       groupid: json['groupid'] ?? '',
+      groupcod: json['groupcod'] ?? '', // Parsing groupcod
       classes: json['classes'] ?? '',
       profilePicture: json['profilePicture'] ?? '',
       studentScore: json['studentScore'] ?? 0,
@@ -51,6 +54,7 @@ class StudentDataResponse {
       'email': email,
       'phone': phone,
       'groupid': groupid,
+      'groupcod': groupcod, // Adding groupcod to the map
       'classes': classes,
       'profilePicture': profilePicture,
       'studentScore': studentScore,

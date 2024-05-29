@@ -40,10 +40,7 @@ class WalletPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const CustomAppBar(
-        isLeadingBack: false,
-        title: 'Profile',
-      ),
+    
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(20.0),

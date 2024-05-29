@@ -1,4 +1,3 @@
-import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
@@ -6,16 +5,23 @@ class CustomButton extends StatelessWidget {
   final VoidCallback onPressed;
   final bool isLoading;
   final String text;
+  final Color? buttonColor;
+  final Color? textColor;
 
   const CustomButton({
     Key? key,
     required this.text,
     required this.onPressed,
     required this.isLoading,
+    this.buttonColor,
+    this.textColor,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    Color defaultButtonColor = Colors.green; // Default button color
+    Color defaultTextColor = Colors.white; // Default text color
+
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: InkWell(
@@ -24,7 +30,7 @@ class CustomButton extends StatelessWidget {
           height: 5.5.h,
           width: 100.w,
           decoration: BoxDecoration(
-            color: AppColors.secondaryColor,
+            color: buttonColor ?? defaultButtonColor,
             borderRadius: BorderRadius.circular(5),
           ),
           child: Center(
@@ -34,9 +40,9 @@ class CustomButton extends StatelessWidget {
                   )
                 : Text(
                     text,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
+                    style: TextStyle(
+                      color: textColor ?? defaultTextColor,
+                      fontSize: 20.sp,
                     ),
                   ),
           ),

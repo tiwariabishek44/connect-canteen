@@ -9,7 +9,7 @@ import 'package:connect_canteen/app1/cons/style.dart';
 import 'package:connect_canteen/app1/data/api_models/register_api_response.dart';
 import 'package:connect_canteen/app1/modules/common/login/view/login_view.dart';
 import 'package:connect_canteen/app1/modules/common/wallet/wallet_controller.dart';
-import 'package:connect_canteen/app1/services/api_client.dart';
+ 
 import 'package:connect_canteen/app1/widget/custom_sncak_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';

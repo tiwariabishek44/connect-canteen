@@ -1,128 +1,142 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connect_canteen/app1/cons/colors.dart';
+import 'package:connect_canteen/app1/modules/common/login/login_controller.dart';
+import 'package:connect_canteen/app1/modules/student_modules/order/all_order_tab.dart';
+import 'package:connect_canteen/app1/modules/student_modules/order/order_history_tab.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
-class OrderPage extends StatelessWidget {
+class OrderPage extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
-      appBar: AppBar(
-        scrolledUnderElevation: 0,
-        backgroundColor: AppColors.backgroundColor,
-        title: Text('Order Details'),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Header Section
-          SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              "Group Code: 1429",
-              style: TextStyle(
-                fontSize: 20.0.sp,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          // Order List Section
-          Expanded(
-            child: ListView.builder(
-              itemCount: 5, // Replace with actual order count
-              itemBuilder: (context, index) {
-                return _buildOrderCard();
-              },
-            ),
-          ),
-        ],
-      ),
-    );
+  _OrderPageState createState() => _OrderPageState();
+}
+
+class _OrderPageState extends State<OrderPage>
+    with SingleTickerProviderStateMixin {
+  final loignController = Get.put(LoginController());
+  late TabController _tabController;
+  bool _isAllOrdersTabActive = true;
+  bool _isHistoryTabActive = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) {
+        setState(() {
+          if (_tabController.index == 0) {
+            _isAllOrdersTabActive = true;
+            _isHistoryTabActive = false;
+          } else {
+            _isAllOrdersTabActive = false;
+            _isHistoryTabActive = true;
+          }
+        });
+      }
+    });
   }
 
-  Widget _buildOrderCard() {
-    return Padding(
-      padding: const EdgeInsets.all(1.0),
-      child: Container(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(2),
-                  color: Colors.white, // Add a background color
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          titleSpacing: 24.0,
+          title: Padding(
+            padding: EdgeInsets.only(top: 16.0),
+            child: Text(
+              'Orders',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.sp),
+            ),
+          ),
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(50.0),
+            child: TabBar(
+              controller: _tabController,
+              tabs: [
+                Tab(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.receipt, size: 24.sp, color: Colors.black),
+                      SizedBox(width: 8),
+                      Text('All orders',
+                          style:
+                              TextStyle(color: Colors.black, fontSize: 18.sp)),
+                    ],
+                  ),
                 ),
-                height: 13.h,
-                width: 25.w,
-                child: ClipRRect(
-                  // Use ClipRRect to ensure that the curved corners are applied
-                  borderRadius: BorderRadius.circular(15),
-                  child: CachedNetworkImage(
-                    imageUrl:
-                        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWHfWUUM6yRcofKabUwmIJH2lhUCMpWuP_9h7TprNY9A&s' ??
-                            '',
-                    fit: BoxFit.cover,
-                    errorWidget: (context, url, error) =>
-                        Icon(Icons.error_outline, size: 40),
+                Tab(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.history, size: 24.sp, color: Colors.black),
+                      SizedBox(width: 8),
+                      Text('History',
+                          style:
+                              TextStyle(color: Colors.black, fontSize: 18.sp)),
+                    ],
+                  ),
+                ),
+              ],
+              indicator: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: Colors.black,
+                    width: 4.0,
                   ),
                 ),
               ),
-              SizedBox(width: 5.w),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Samosa with achar',
-                      style: TextStyle(
-                        color: Color.fromARGB(255, 80, 79, 79),
-                        fontSize: 19.0.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 0.3.h),
-                    Text(
-                      'Customer Name',
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 16.0,
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Rs.100',
-                          style: TextStyle(
-                              fontSize: 17.0.sp,
-                              fontStyle: FontStyle.values[0],
-                              fontWeight: FontWeight.bold,
-                              color: Color.fromARGB(255, 227, 106, 97)),
-                        ),
-                        Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 4.w, vertical: 1.h),
-                            decoration: BoxDecoration(
-                              color: Color.fromARGB(255, 110, 209, 114),
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            child: Text(
-                              '10-Plate',
-                              style: TextStyle(
-                                color: Colors.grey[100],
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16.0.sp,
-                              ),
-                            )),
-                      ],
-                    ),
-                  ],
-                ),
+              indicatorSize: TabBarIndicatorSize.tab,
+              indicatorWeight: 4.0,
+              labelColor: Colors.black,
+              splashFactory: NoSplash.splashFactory,
+              overlayColor: MaterialStateProperty.resolveWith<Color?>(
+                (Set<MaterialState> states) {
+                  if (states.contains(MaterialState.pressed) ||
+                      states.contains(MaterialState.focused) ||
+                      states.contains(MaterialState.hovered)) {
+                    return Colors.grey.withOpacity(0.2);
+                  }
+                  return null;
+                },
               ),
+            ),
+          ),
+        ),
+        body: NotificationListener<ScrollNotification>(
+          onNotification: (scrollNotification) => true,
+          child: TabBarView(
+            controller: _tabController,
+            physics: NeverScrollableScrollPhysics(),
+            children: [
+              _isAllOrdersTabActive
+                  ? AllOrdersTab(
+                      groupcod:
+                          '${loignController.studentDataResponse.value!.groupcod}',
+                      schoolrefrenceId:
+                          '${loignController.studentDataResponse.value!.schoolId}',
+                    )
+                  : SizedBox.shrink(),
+              _isHistoryTabActive
+                  ? HistoryTab(
+                      groupcod:
+                          '${loignController.studentDataResponse.value!.groupcod}',
+                      schoolrefrenceId:
+                          '${loignController.studentDataResponse.value!.schoolId}',
+                    )
+                  : SizedBox.shrink(),
             ],
           ),
         ),

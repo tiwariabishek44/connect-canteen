@@ -1,10 +1,14 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connect_canteen/app/config/colors.dart';
 import 'package:connect_canteen/app/config/style.dart';
 import 'package:connect_canteen/app1/model/student_model.dart';
 import 'package:connect_canteen/app1/modules/common/login/login_controller.dart';
+import 'package:connect_canteen/app1/modules/student_modules/acount_info/acount_info.dart';
 import 'package:connect_canteen/app1/modules/student_modules/group/group.dart';
 import 'package:connect_canteen/app1/modules/common/wallet/wallet_page.dart';
+import 'package:connect_canteen/app1/modules/student_modules/order_hold/order_hold.dart';
 import 'package:connect_canteen/app1/widget/logout_cornfiration.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -40,148 +44,214 @@ class ProfilePage extends StatelessWidget {
                           return SizedBox.shrink();
                         } else {
                           StudentDataResponse studetnData = snapshot.data!;
+                          log(studetnData.profilePicture);
 
-                          return Column(
+                          return Stack(
                             children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  GestureDetector(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.white,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.grey.withOpacity(0.5),
-                                            spreadRadius: 2,
-                                            blurRadius: 5,
-                                            offset: Offset(0, 3),
+                              Container(
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        GestureDetector(
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              Get.to(() => AccountInfo(),
+                                                  transition:
+                                                      Transition.cupertino);
+                                            },
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: Colors.white,
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.grey
+                                                        .withOpacity(0.5),
+                                                    spreadRadius: 2,
+                                                    blurRadius: 5,
+                                                    offset: Offset(0, 3),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: CircleAvatar(
+                                                  radius: 31.sp,
+                                                  backgroundColor: Colors.white,
+                                                  child: studetnData
+                                                              .profilePicture ==
+                                                          ''
+                                                      ? CircleAvatar(
+                                                          radius: 21.4.sp,
+                                                          child: Icon(
+                                                            Icons.person,
+                                                            color: Colors.white,
+                                                          ),
+                                                          backgroundColor:
+                                                              const Color
+                                                                  .fromARGB(
+                                                                  255,
+                                                                  224,
+                                                                  218,
+                                                                  218),
+                                                        )
+                                                      : CachedNetworkImage(
+                                                          progressIndicatorBuilder:
+                                                              (context, url,
+                                                                      downloadProgress) =>
+                                                                  Opacity(
+                                                            opacity: 0.8,
+                                                            child: Shimmer
+                                                                .fromColors(
+                                                              baseColor: Colors
+                                                                  .black12,
+                                                              highlightColor:
+                                                                  Colors.red,
+                                                              child:
+                                                                  Container(),
+                                                            ),
+                                                          ),
+                                                          imageUrl: studetnData
+                                                                  .profilePicture ??
+                                                              '',
+                                                          imageBuilder: (context,
+                                                                  imageProvider) =>
+                                                              Container(
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              shape: BoxShape
+                                                                  .circle, // Apply circular shape
+                                                              image:
+                                                                  DecorationImage(
+                                                                image:
+                                                                    imageProvider,
+                                                                fit: BoxFit
+                                                                    .cover,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          fit: BoxFit.fill,
+                                                          width:
+                                                              double.infinity,
+                                                          errorWidget: (context,
+                                                                  url, error) =>
+                                                              CircleAvatar(
+                                                            radius: 21.4.sp,
+                                                            child: Icon(
+                                                              Icons.person,
+                                                              color:
+                                                                  Colors.white,
+                                                            ),
+                                                            backgroundColor:
+                                                                const Color
+                                                                    .fromARGB(
+                                                                    255,
+                                                                    224,
+                                                                    218,
+                                                                    218),
+                                                          ),
+                                                        )),
+                                            ),
                                           ),
-                                        ],
-                                      ),
-                                      child: CircleAvatar(
-                                          radius: 31.sp,
-                                          backgroundColor: Colors.white,
-                                          child: studetnData.profilePicture ==
-                                                  ''
-                                              ? CircleAvatar(
-                                                  radius: 21.4.sp,
-                                                  child: Icon(
-                                                    Icons.person,
-                                                    color: Colors.white,
-                                                  ),
-                                                  backgroundColor:
-                                                      const Color.fromARGB(
-                                                          255, 224, 218, 218),
-                                                )
-                                              : CachedNetworkImage(
-                                                  progressIndicatorBuilder:
-                                                      (context, url,
-                                                              downloadProgress) =>
-                                                          Opacity(
-                                                    opacity: 0.8,
-                                                    child: Shimmer.fromColors(
-                                                      baseColor: Colors.black12,
-                                                      highlightColor:
-                                                          Colors.red,
-                                                      child: Container(),
-                                                    ),
-                                                  ),
-                                                  imageUrl: studetnData
-                                                          .profilePicture ??
-                                                      '',
-                                                  imageBuilder: (context,
-                                                          imageProvider) =>
-                                                      Container(
-                                                    decoration: BoxDecoration(
-                                                      shape: BoxShape
-                                                          .circle, // Apply circular shape
-                                                      image: DecorationImage(
-                                                        image: imageProvider,
-                                                        fit: BoxFit.cover,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  fit: BoxFit.fill,
-                                                  width: double.infinity,
-                                                  errorWidget:
-                                                      (context, url, error) =>
-                                                          CircleAvatar(
-                                                    radius: 21.4.sp,
-                                                    child: Icon(
-                                                      Icons.person,
-                                                      color: Colors.white,
-                                                    ),
-                                                    backgroundColor:
-                                                        const Color.fromARGB(
-                                                            255, 224, 218, 218),
-                                                  ),
-                                                )),
+                                        ),
+                                        SizedBox(
+                                          width: 5.w,
+                                        ),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "${studetnData.name}",
+                                              style: AppStyles.listTileTitle,
+                                            ),
+                                            Text(
+                                              studetnData.classes == ''
+                                                  ? "N/A"
+                                                  : studetnData.classes,
+                                              style: TextStyle(
+                                                  fontSize: 17.sp,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Color.fromARGB(
+                                                      255, 78, 78, 78)),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                  SizedBox(
-                                    width: 5.w,
-                                  ),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "${studetnData.name}",
-                                        style: AppStyles.listTileTitle,
-                                      ),
-                                      Text(
-                                        "${studetnData.classes}",
-                                        style: TextStyle(
-                                            fontSize: 17.sp,
-                                            fontWeight: FontWeight.w500,
+                                    SizedBox(
+                                      height: 4.h,
+                                    ),
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Icon(Icons.phone,
                                             color: Color.fromARGB(
                                                 255, 78, 78, 78)),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                        SizedBox(
+                                          width: 5.w,
+                                        ),
+                                        Text(
+                                          '${studetnData.phone}',
+                                          style: TextStyle(
+                                              fontSize: 17.sp,
+                                              fontWeight: FontWeight.w500,
+                                              color: Color.fromARGB(
+                                                  255, 78, 78, 78)),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 2.h,
+                                    ),
+                                    Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Icon(Icons.email,
+                                            color: Color.fromARGB(
+                                                255, 78, 78, 78)),
+                                        SizedBox(
+                                          width: 5.w,
+                                        ),
+                                        Text(
+                                          '${studetnData.email}',
+                                          style: TextStyle(
+                                              fontSize: 17.sp,
+                                              fontWeight: FontWeight.w500,
+                                              color: Color.fromARGB(
+                                                  255, 78, 78, 78)),
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
                               ),
-                              SizedBox(
-                                height: 4.h,
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Icon(Icons.phone,
-                                      color: Color.fromARGB(255, 78, 78, 78)),
-                                  SizedBox(
-                                    width: 5.w,
+                              Positioned(
+                                right: 10,
+                                bottom: 10,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Get.to(() => AccountInfo(),
+                                        transition: Transition.cupertino);
+                                  },
+                                  child: Container(
+                                    width: 9.w,
+                                    height: 5.h,
+                                    decoration: BoxDecoration(
+                                      color: Color.fromARGB(255, 6, 6, 6),
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    child: Center(
+                                      child: Icon(Icons.edit,
+                                          size: 20.sp,
+                                          color: Color.fromARGB(
+                                              255, 255, 255, 255)),
+                                    ),
                                   ),
-                                  Text(
-                                    '${studetnData.phone}',
-                                    style: TextStyle(
-                                        fontSize: 17.sp,
-                                        fontWeight: FontWeight.w500,
-                                        color: Color.fromARGB(255, 78, 78, 78)),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(
-                                height: 2.h,
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Icon(Icons.email,
-                                      color: Color.fromARGB(255, 78, 78, 78)),
-                                  SizedBox(
-                                    width: 5.w,
-                                  ),
-                                  Text(
-                                    '${studetnData.email}',
-                                    style: TextStyle(
-                                        fontSize: 17.sp,
-                                        fontWeight: FontWeight.w500,
-                                        color: Color.fromARGB(255, 78, 78, 78)),
-                                  ),
-                                ],
+                                ),
                               )
                             ],
                           );
@@ -200,13 +270,14 @@ class ProfilePage extends StatelessWidget {
               onTap: () {
                 Get.to(
                     () => WalletPage(
-                          userId: 'this is the user id file 1',
+                          userId:
+                              loignController.studentDataResponse.value!.userid,
                           isStudent: true,
                           name: 'Abishek Tiwari',
                           image:
                               'https://res.cloudinary.com/dndtiooiy/image/upload/v1694107077/jcqp06eon60nd99g5i4v.png',
                         ),
-                    transition: Transition.cupertino,
+                    transition: Transition.cupertinoDialog,
                     duration: duration);
               },
               title: "Wallet",
@@ -215,21 +286,26 @@ class ProfilePage extends StatelessWidget {
             ProfileTile(
               onTap: () {
                 Get.to(() => GroupPage(),
-                    transition: Transition.cupertino, duration: duration);
+                    transition: Transition.cupertinoDialog, duration: duration);
               },
               title: "Groups",
               leadingIcon: const Icon(Icons.group),
             ),
             ProfileTile(
-              onTap: () {},
-              title: "Order History",
+              onTap: () {
+                Get.to(
+                    () => OrderHoldPage(
+                          cid:
+                              loignController.studentDataResponse.value!.userid,
+                          schoolrefrenceId: loignController
+                              .studentDataResponse.value!.schoolId,
+                        ),
+                    transition: Transition.cupertinoDialog);
+              },
+              title: "Order Holds",
               leadingIcon: const Icon(Icons.shopping_cart_checkout_sharp),
             ),
-            ProfileTile(
-              onTap: () {},
-              title: "Order Holds ",
-              leadingIcon: const Icon(Icons.stop_circle_outlined),
-            ),
+         
             ProfileTile(
               onTap: () {
                 showDialog(

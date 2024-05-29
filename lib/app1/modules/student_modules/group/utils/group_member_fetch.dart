@@ -149,14 +149,13 @@ class GroupMemberField extends StatelessWidget {
       stream: groupController.getMemberStream(groupid),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Expanded(
-            child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: 5,
-                itemBuilder: ((context, index) {
-                  return ListtileShrimmer();
-                })),
-          );
+          return ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: 5,
+              itemBuilder: ((context, index) {
+                return ListtileShrimmer();
+              }));
         } else if (snapshot.hasError) {
           return Center(
             child: Text('Error: ${snapshot.error}'),
@@ -164,36 +163,49 @@ class GroupMemberField extends StatelessWidget {
         } else {
           final students = snapshot.data!;
 
-          return Expanded(
-            child: ListView.builder(
-              itemCount: students.length,
-              itemBuilder: (context, index) {
-                StudentDataResponse student = students[index]!;
+          return ListView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: students.length,
+            itemBuilder: (context, index) {
+              StudentDataResponse student = students[index]!;
 
-                return ListTile(
-                  onTap: () {
-                    _showGroupNameDialog(context, student.name, student.userid);
-                  },
-                  leading: Stack(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 2,
-                              blurRadius: 5,
-                              offset: Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        child: CircleAvatar(
-                          radius: 22.sp,
-                          backgroundColor: Colors.white,
-                          child: student?.profilePicture == ''
-                              ? CircleAvatar(
+              return ListTile(
+                onTap: () {
+                  _showGroupNameDialog(context, student.name, student.userid);
+                },
+                leading: Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: CircleAvatar(
+                        radius: 22.sp,
+                        backgroundColor: Colors.white,
+                        child: student?.profilePicture == ''
+                            ? CircleAvatar(
+                                radius: 21.4.sp,
+                                child: Icon(
+                                  Icons.person,
+                                  color: Colors.white,
+                                ),
+                                backgroundColor:
+                                    const Color.fromARGB(255, 224, 218, 218),
+                              )
+                            : CachedNetworkImage(
+                                progressIndicatorBuilder:
+                                    (context, url, downloadProgress) =>
+                                        CircleAvatar(
                                   radius: 21.4.sp,
                                   child: Icon(
                                     Icons.person,
@@ -201,81 +213,68 @@ class GroupMemberField extends StatelessWidget {
                                   ),
                                   backgroundColor:
                                       const Color.fromARGB(255, 224, 218, 218),
-                                )
-                              : CachedNetworkImage(
-                                  progressIndicatorBuilder:
-                                      (context, url, downloadProgress) =>
-                                          CircleAvatar(
-                                    radius: 21.4.sp,
-                                    child: Icon(
-                                      Icons.person,
-                                      color: Colors.white,
+                                ),
+                                imageUrl: student?.profilePicture ?? '',
+                                imageBuilder: (context, imageProvider) =>
+                                    Container(
+                                  decoration: BoxDecoration(
+                                    shape:
+                                        BoxShape.circle, // Apply circular shape
+                                    image: DecorationImage(
+                                      image: imageProvider,
+                                      fit: BoxFit.cover,
                                     ),
-                                    backgroundColor: const Color.fromARGB(
-                                        255, 224, 218, 218),
-                                  ),
-                                  imageUrl: student?.profilePicture ?? '',
-                                  imageBuilder: (context, imageProvider) =>
-                                      Container(
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape
-                                          .circle, // Apply circular shape
-                                      image: DecorationImage(
-                                        image: imageProvider,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                  fit: BoxFit.fill,
-                                  width: double.infinity,
-                                  errorWidget: (context, url, error) =>
-                                      CircleAvatar(
-                                    radius: 21.4.sp,
-                                    child: Icon(
-                                      Icons.person,
-                                      color: Colors.white,
-                                    ),
-                                    backgroundColor: const Color.fromARGB(
-                                        255, 224, 218, 218),
                                   ),
                                 ),
-                        ),
-                      ),
-                      student?.userid == storage.read(userId)
-                          ? Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: CircleAvatar(
-                                radius: 7.5,
-                                backgroundColor: Color.fromARGB(
-                                    255, 72, 2, 129), // Adjust color as needed
-                                child: Icon(
-                                  Icons.shield_outlined,
-                                  color: Colors.white,
-                                  size: 15,
+                                fit: BoxFit.fill,
+                                width: double.infinity,
+                                errorWidget: (context, url, error) =>
+                                    CircleAvatar(
+                                  radius: 21.4.sp,
+                                  child: Icon(
+                                    Icons.person,
+                                    color: Colors.white,
+                                  ),
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 224, 218, 218),
                                 ),
                               ),
-                            )
-                          : SizedBox.shrink()
-                    ],
-                  ),
-                  title: Text(
-                    "${student?.name}",
-                    style: TextStyle(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.bold,
+                      ),
                     ),
+                    student?.userid == storage.read(userId)
+                        ? Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: CircleAvatar(
+                              radius: 7.5,
+                              backgroundColor: Color.fromARGB(
+                                  255, 72, 2, 129), // Adjust color as needed
+                              child: Icon(
+                                Icons.shield_outlined,
+                                color: Colors.white,
+                                size: 15,
+                              ),
+                            ),
+                          )
+                        : SizedBox.shrink()
+                  ],
+                ),
+                title: Text(
+                  "${student?.name}",
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.bold,
                   ),
-                  subtitle: Text(
-                    "${student?.phone}",
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      color: Colors.grey,
-                    ),
+                ),
+                subtitle: Text(
+                  "${student?.phone}",
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    color: Colors.grey,
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
           );
         }
       },

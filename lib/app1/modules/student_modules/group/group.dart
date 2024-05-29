@@ -12,6 +12,7 @@ import 'package:connect_canteen/app1/modules/student_modules/group/utils/group_d
 import 'package:connect_canteen/app1/modules/student_modules/group/utils/group_member_fetch.dart';
 import 'package:connect_canteen/app1/modules/student_modules/group/utils/no_group.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
@@ -25,22 +26,20 @@ class GroupPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text(
-          'Group Page',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 22.sp,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF5D56F4), Color(0xFF69B4FF)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+        backgroundColor: Colors.white,
+        titleSpacing: 4.0, // Adjusts the spacing above the title
+        title: Text("Groups"),
+
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(50.0),
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: Padding(
+              padding: EdgeInsets.only(left: 4.0.w),
+              child: Text(
+                'Group Page',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.sp),
+              ),
             ),
           ),
         ),
@@ -67,59 +66,76 @@ class GroupPage extends StatelessWidget {
                 groupController.nogroup.value = false;
                 return Stack(
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        GroupDataField(
-                          groupid: studetnData.groupid,
-                        ),
-                        SizedBox(height: 20),
-                        Container(
-                          padding: EdgeInsets.all(12.0),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: Colors.grey[300]!,
-                            ),
+                    SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          GroupDataField(
+                            groupid: studetnData.groupid,
                           ),
-                          child: Text(
-                            "All orders placed by group members are grouped together.",
-                            maxLines: 2,
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              color: Colors.black54,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                        Divider(
-                          height: 20,
-                          color: Colors.grey[300],
-                          thickness: 1,
-                        ),
-                        GroupMemberField(
-                          groupid: studetnData.groupid,
-                        ),
-                      ],
-                    ),
-                    Positioned(
-                      bottom: 10,
-                      right: 10,
-                      child: Obx(() => groupController.nogroup.value
-                          ? SizedBox.fromSize()
-                          : FloatingActionButton(
-                              onPressed: () {
-                                Get.to(() => FriendsPage(
-                                    grade: studetnData.classes.toString()));
-                                // Add friend action
-                              },
-                              backgroundColor: Color.fromARGB(221, 19, 20, 22),
-                              child: Icon(
-                                Icons.person_add,
-                                color: Colors.white,
+                          SizedBox(height: 20),
+                          Container(
+                            padding: EdgeInsets.all(12.0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: Colors.grey[300]!,
                               ),
-                            )),
-                    )
+                            ),
+                            child: Text(
+                              "All orders placed by group members are grouped together.",
+                              maxLines: 2,
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                color: Colors.black54,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                          Divider(
+                            height: 20,
+                            color: Colors.grey[300],
+                            thickness: 1,
+                          ),
+                          GroupMemberField(
+                            groupid: studetnData.groupid,
+                          ),
+
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Obx(() => groupController.nogroup.value
+                                ? SizedBox.shrink()
+                                : Padding(
+                                    padding: EdgeInsets.all(16.0),
+                                    child: ElevatedButton.icon(
+                                      onPressed: () {
+                                        Get.to(() => FriendsPage(
+                                            grade: studetnData.classes
+                                                .toString()));
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            Color.fromARGB(221, 19, 20, 22),
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 0.5.h, horizontal: 24.w),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
+                                        ),
+                                      ),
+                                      icon: Icon(Icons.person_add,
+                                          color: Colors.white),
+                                      label: Text('Add friends',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18.sp)),
+                                    ),
+                                  )),
+                          ),
+                        ],
+                      ),
+                    ),
+                    
                   ],
                 );
               }

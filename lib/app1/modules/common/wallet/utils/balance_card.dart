@@ -56,7 +56,7 @@ class BalanceCard extends StatelessWidget {
                     Container(
                       color: AppColors.shrimmerColorText,
                       child: Text(
-                        '\NPR 100.00',
+                        '\NPR 00.00',
                         style: TextStyle(
                           fontSize: 25.sp,
                           fontWeight: FontWeight.bold,

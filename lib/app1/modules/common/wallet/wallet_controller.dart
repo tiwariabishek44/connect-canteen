@@ -12,7 +12,10 @@ class WalletController extends GetxController {
   // Method to create a wallet for a user
   Future<void> createWallet(String userId, String userName) async {
     try {
-      await _firestore.collection('wallets').doc(userId).set({
+      await _firestore
+          .collection(ApiEndpoints.prodcutionWalletCollection)
+          .doc(userId)
+          .set({
         'userId': userId,
         'userName': userName,
         'transactions': [],
@@ -29,7 +32,10 @@ class WalletController extends GetxController {
   Future<void> addTransaction(String userId, Transactions transaction) async {
     try {
       transctionAdd(true);
-      await _firestore.collection('wallets').doc(userId).update({
+      await _firestore
+          .collection(ApiEndpoints.prodcutionWalletCollection)
+          .doc(userId)
+          .update({
         'transactions': FieldValue.arrayUnion([transaction.toJson()]),
       });
       transctionAdd(false);
@@ -40,9 +46,10 @@ class WalletController extends GetxController {
 
   // Method to fetch wallet data for a user
   Stream<Wallet?> getWallet(String userId) {
+   
     return _firestore
-        .collection("wallets")
-        .doc("TfDZB529radwp2j3GJF0bp8LeXf2")
+        .collection(ApiEndpoints.prodcutionWalletCollection)
+        .doc(userId)
         .snapshots()
         .map((snapshot) {
       if (snapshot.exists) {

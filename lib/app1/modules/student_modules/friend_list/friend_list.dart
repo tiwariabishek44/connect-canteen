@@ -49,22 +49,23 @@ class FriendsPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+        backgroundColor: Colors.white,
+        titleSpacing: 4.0, // Adjusts the spacing above the title
         title: Text(
-          'Friend List',
-          style: TextStyle(
-            color: Color.fromARGB(255, 246, 244, 244),
-            fontSize: 22.sp,
-            fontWeight: FontWeight.bold,
-          ),
+          "Friends",
+          style: TextStyle(fontWeight: FontWeight.w300),
         ),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF5D56F4), Color(0xFF69B4FF)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(50.0),
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: Padding(
+              padding: EdgeInsets.only(left: 4.0.w),
+              child: Text(
+                '+ Add Friends',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.sp),
+              ),
             ),
           ),
         ),
@@ -84,45 +85,40 @@ class FriendsPage extends StatelessWidget {
             );
           } else {
             final students = snapshot.data!;
-            
-            return ListView.builder(
-              itemCount: students.length,
-              itemBuilder: (context, index) {
-                StudentDataResponse student = students[index]!;
- 
-                return ListTile(
-                  leading: Stack(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 2,
-                              blurRadius: 5,
-                              offset: Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        child: CircleAvatar(
-                          radius: 22.sp,
-                          backgroundColor: Colors.white,
-                          child: student?.profilePicture == ''
-                              ? CircleAvatar(
-                                  radius: 21.4.sp,
-                                  child: Icon(
-                                    Icons.person,
-                                    color: Colors.white,
-                                  ),
-                                  backgroundColor:
-                                      const Color.fromARGB(255, 224, 218, 218),
-                                )
-                              : CachedNetworkImage(
-                                  progressIndicatorBuilder:
-                                      (context, url, downloadProgress) =>
-                                          CircleAvatar(
+
+            return Padding(
+              padding: EdgeInsets.only(top: 8.0),
+              child: ListView.builder(
+                itemCount: students.length,
+                itemBuilder: (context, index) {
+                  StudentDataResponse student = students[index]!;
+
+                  return ListTile(
+                    onTap: () {
+                      student.groupid.isNotEmpty
+                          ? showAlreadyInGroupDialog(context)
+                          : null;
+                    },
+                    leading: Stack(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius: 5,
+                                offset: Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: CircleAvatar(
+                            radius: 22.sp,
+                            backgroundColor: Colors.white,
+                            child: student?.profilePicture == ''
+                                ? CircleAvatar(
                                     radius: 21.4.sp,
                                     child: Icon(
                                       Icons.person,
@@ -130,73 +126,85 @@ class FriendsPage extends StatelessWidget {
                                     ),
                                     backgroundColor: const Color.fromARGB(
                                         255, 224, 218, 218),
-                                  ),
-                                  imageUrl: student?.profilePicture ?? '',
-                                  imageBuilder: (context, imageProvider) =>
-                                      Container(
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape
-                                          .circle, // Apply circular shape
-                                      image: DecorationImage(
-                                        image: imageProvider,
-                                        fit: BoxFit.cover,
+                                  )
+                                : CachedNetworkImage(
+                                    progressIndicatorBuilder:
+                                        (context, url, downloadProgress) =>
+                                            CircleAvatar(
+                                      radius: 21.4.sp,
+                                      child: Icon(
+                                        Icons.person,
+                                        color: Colors.white,
+                                      ),
+                                      backgroundColor: const Color.fromARGB(
+                                          255, 224, 218, 218),
+                                    ),
+                                    imageUrl: student?.profilePicture ?? '',
+                                    imageBuilder: (context, imageProvider) =>
+                                        Container(
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape
+                                            .circle, // Apply circular shape
+                                        image: DecorationImage(
+                                          image: imageProvider,
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  fit: BoxFit.fill,
-                                  width: double.infinity,
-                                  errorWidget: (context, url, error) =>
-                                      CircleAvatar(
-                                    radius: 21.4.sp,
-                                    child: Icon(
-                                      Icons.person,
-                                      color: Colors.white,
+                                    fit: BoxFit.fill,
+                                    width: double.infinity,
+                                    errorWidget: (context, url, error) =>
+                                        CircleAvatar(
+                                      radius: 21.4.sp,
+                                      child: Icon(
+                                        Icons.person,
+                                        color: Colors.white,
+                                      ),
+                                      backgroundColor: const Color.fromARGB(
+                                          255, 224, 218, 218),
                                     ),
-                                    backgroundColor: const Color.fromARGB(
-                                        255, 224, 218, 218),
+                                  ),
+                          ),
+                        ),
+                        student?.groupid != ''
+                            ? Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: CircleAvatar(
+                                  radius: 7.5,
+                                  backgroundColor: Color.fromARGB(
+                                      255, 0, 0, 0), // Adjust color as needed
+                                  child: Icon(
+                                    Icons.check,
+                                    color: Colors.white,
+                                    size: 9,
                                   ),
                                 ),
-                        ),
+                              )
+                            : SizedBox.shrink()
+                      ],
+                    ),
+                    title: Text(
+                      "${student?.name}",
+                      style: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.bold,
                       ),
-                      student?.groupid != ''
-                          ? Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: CircleAvatar(
-                                radius: 7.5,
-                                backgroundColor: Color.fromARGB(
-                                    255, 0, 0, 0), // Adjust color as needed
-                                child: Icon(
-                                  Icons.check,
-                                  color: Colors.white,
-                                  size: 9,
-                                ),
-                              ),
-                            )
-                          : SizedBox.shrink()
-                    ],
-                  ),
-                  title: Text(
-                    "${student?.name}",
-                    style: TextStyle(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.bold,
                     ),
-                  ),
-                  subtitle: Text(
-                    "${student?.phone}",
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      color: Colors.grey,
+                    subtitle: Text(
+                      "${student?.phone}",
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        color: Colors.grey,
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             );
           }
         },
       ),
-      
     );
   }
 }

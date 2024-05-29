@@ -69,19 +69,19 @@ _buildProfileCard(context),
             OurProductsSection(
               products: const [
                 // Provide your list of products here
-                Product(
+                Products(
                   imageUrl:
                       'https://english.onlinekhabar.com/wp-content/uploads/2018/09/Mexican-Buff-Burger.jpg',
                   name: 'Product 1',
                   price: 19.99,
                 ),
-                Product(
+                Products(
                   imageUrl:
                       'https://english.onlinekhabar.com/wp-content/uploads/2018/09/Mexican-Buff-Burger.jpg',
                   name: 'Product 1',
                   price: 19.99,
                 ),
-                Product(
+                Products(
                   imageUrl:
                       'https://english.onlinekhabar.com/wp-content/uploads/2018/09/Mexican-Buff-Burger.jpg',
                   name: 'Product 1',

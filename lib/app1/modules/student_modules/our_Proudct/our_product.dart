@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class OurProductsSection extends StatelessWidget {
-  final List<Product> products;
+  final List<Products> products;
 
   OurProductsSection({required this.products});
 

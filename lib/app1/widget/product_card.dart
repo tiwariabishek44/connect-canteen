@@ -30,7 +30,7 @@ class ProductCard extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Get.to(() => ProductDetailPage(
-              product: Product(imageUrl: imageUrl, name: name, price: price),
+              product: Products(imageUrl: imageUrl, name: name, price: price),
             ));
       },
       child: Stack(
