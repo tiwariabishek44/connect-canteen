@@ -1,10 +1,12 @@
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connect_canteen/app/config/colors.dart';
 import 'package:connect_canteen/app1/cons/prefs.dart';
 import 'package:connect_canteen/app1/model/group_model.dart';
 import 'package:connect_canteen/app1/model/student_model.dart';
 import 'package:connect_canteen/app1/modules/student_modules/group/group_controller.dart';
+import 'package:connect_canteen/app1/modules/student_modules/group/utils/listtile_shrimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -16,14 +18,144 @@ class GroupMemberField extends StatelessWidget {
   final String groupid;
   final groupController = Get.put(GroupController());
   final storage = GetStorage();
+
+  void _showGroupNameDialog(BuildContext context, String name, String userid) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          elevation: 0,
+          backgroundColor: AppColors.backgroundColor,
+          shape: RoundedRectangleBorder(
+            borderRadius:
+                BorderRadius.circular(12.0), // Adjust border radius as needed
+          ),
+          title: Text(
+            'Remove  $name',
+            style: TextStyle(
+              fontSize: 17.5.sp,
+              color: Color.fromARGB(221, 37, 36, 36),
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          content: Text(
+            'User will no longer be able to order food under this group.',
+            style: TextStyle(
+              color: const Color.fromARGB(221, 72, 71, 71),
+              fontSize: 16.0.sp,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                // Close the dialog
+
+                Get.back();
+              },
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.sp,
+                    color: Colors.purple),
+              ),
+            ),
+            GestureDetector(
+              onTap: () async {
+                bool isexist = true;
+                if (isexist) {
+                  Get.back();
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Dialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16.0),
+                        ),
+                        elevation: 0,
+                        backgroundColor: Colors.transparent,
+                        child: contentBox(context),
+                      );
+                    },
+                  );
+                } else {
+                  Get.back();
+                }
+              },
+              child: Container(
+                padding: EdgeInsets.all(12.0),
+                child: Text(
+                  "Remove",
+                  style: TextStyle(
+                    color: Color.fromARGB(255, 225, 6, 6),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 17.sp,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget contentBox(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.warning,
+                  color: Color.fromARGB(255, 255, 17, 0),
+                  size: 30.sp,
+                ),
+                SizedBox(height: 20),
+                const Text(
+                  'Cannot Remove User',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'User have ordered under this group.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<StudentDataResponse>>(
       stream: groupController.getMemberStream(groupid),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: CircularProgressIndicator(),
+          return Expanded(
+            child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: 5,
+                itemBuilder: ((context, index) {
+                  return ListtileShrimmer();
+                })),
           );
         } else if (snapshot.hasError) {
           return Center(
@@ -31,14 +163,17 @@ class GroupMemberField extends StatelessWidget {
           );
         } else {
           final students = snapshot.data!;
-          log(" the total length is ${students.length}");
+
           return Expanded(
             child: ListView.builder(
               itemCount: students.length,
               itemBuilder: (context, index) {
                 StudentDataResponse student = students[index]!;
-                log("the dtudetn data are ${students[index]!.name}");
+
                 return ListTile(
+                  onTap: () {
+                    _showGroupNameDialog(context, student.name, student.userid);
+                  },
                   leading: Stack(
                     children: [
                       Container(

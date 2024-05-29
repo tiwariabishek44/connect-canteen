@@ -1,5 +1,6 @@
 import 'package:connect_canteen/app1/model/group_model.dart';
 import 'package:connect_canteen/app1/modules/student_modules/group/group_controller.dart';
+import 'package:connect_canteen/app1/modules/student_modules/group/utils/group_data_shrimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -15,7 +16,7 @@ class GroupDataField extends StatelessWidget {
       stream: groupController.getGroupData(groupid),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CircularProgressIndicator();
+          return GroupFieldShrimmer();
         } else if (snapshot.hasError) {
           return SizedBox.shrink();
         } else if (snapshot.data == null) {
@@ -48,7 +49,7 @@ class GroupDataField extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Wallet BALANCE',
+                  groupData.groupName,
                   style: TextStyle(
                     fontSize: 18,
                     color: const Color.fromARGB(179, 60, 58, 58),
@@ -56,9 +57,9 @@ class GroupDataField extends StatelessWidget {
                 ),
                 SizedBox(height: 5),
                 Text(
-                  '\NPR 100.00',
+                  'Code:${groupData.groupCode}',
                   style: TextStyle(
-                    fontSize: 27.sp,
+                    fontSize: 25.sp,
                     fontWeight: FontWeight.bold,
                     color: const Color.fromARGB(255, 17, 17, 17),
                   ),
@@ -67,38 +68,7 @@ class GroupDataField extends StatelessWidget {
             ),
           );
 
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color(0xFF5D56F4),
-                  Color(0xFF69B4FF),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Group Name:${groupData.groupName}',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                SizedBox(height: 1.h),
-                Text(
-                  'Group Code:${groupData.groupCode}',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
-                ),
-              ],
-            ),
-          );
+         
         }
       },
     );
