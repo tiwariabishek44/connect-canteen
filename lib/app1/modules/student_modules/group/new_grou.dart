@@ -14,39 +14,26 @@ class NewGroup extends StatelessWidget {
     return Stack(
       children: [
         Scaffold(
+          backgroundColor: Colors.white,
           appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            leading: Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: Container(
-                child: Center(
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.chevron_left,
-                      size: 26.sp,
-                    ),
-                    onPressed: () {
-                      Get.back();
-                    },
-                  ),
-                ),
-              ),
-            ),
+            scrolledUnderElevation: 0,
+            backgroundColor: Colors.white,
+            titleSpacing: 4.0, // Adjusts the spacing above the title
             title: Text(
-              'Create New Group',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 22.sp,
-                fontWeight: FontWeight.bold,
-              ),
+              'Community',
+              style: TextStyle(fontWeight: FontWeight.w300),
             ),
-            flexibleSpace: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFF5D56F4), Color(0xFF69B4FF)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+            bottom: PreferredSize(
+              preferredSize: Size.fromHeight(50.0),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 4.0.w),
+                  child: Text(
+                    'Creat your own group',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 24.sp),
+                  ),
                 ),
               ),
             ),
@@ -57,6 +44,21 @@ class NewGroup extends StatelessWidget {
               key: groupController.groupFormKey,
               child: ListView(
                 children: [
+                  Padding(
+                    padding: EdgeInsets.all(14.0),
+                    child: Text(
+                      "Create your own group and start enjoying the group order. Make dining a better experience.",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 19.sp,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 2.h,
+                  ),
+
                   TextFormFieldWidget(
                     showIcons: false,
                     textInputType: TextInputType.text,

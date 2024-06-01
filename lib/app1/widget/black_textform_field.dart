@@ -47,7 +47,7 @@ class BlackTextFormField extends StatelessWidget {
           child: Text(
             hintText,
             style: TextStyle(
-                fontSize: 19.sp,
+                fontSize: 19.sp, 
                 color: Colors.black,
                 fontWeight: FontWeight.w600),
           ),
@@ -64,6 +64,7 @@ class BlackTextFormField extends StatelessWidget {
           keyboardType: textInputType,
           textInputAction: actionKeyboard,
           controller: controller,
+ 
           onChanged: onChanged as String? Function(String?)?,
           style: const TextStyle(color: Colors.black),
           validator: validatorFunction as String? Function(String?)?,

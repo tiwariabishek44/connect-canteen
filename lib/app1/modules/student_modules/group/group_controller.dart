@@ -156,7 +156,7 @@ class GroupController extends GetxController {
   Stream<StudentGroupApiResponse?> getGroupData(String groupid) {
     return _firestore
         .collection(ApiEndpoints.productionGroupCollection)
-        .where('groupId', isEqualTo: storage.read(groupid))
+        .where('groupId', isEqualTo: groupid)
         .snapshots()
         .map((snapshot) {
       if (snapshot.docs.isNotEmpty) {

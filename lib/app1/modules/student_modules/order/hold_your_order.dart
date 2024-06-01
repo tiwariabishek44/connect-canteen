@@ -1,26 +1,23 @@
-import 'package:connect_canteen/app1/widget/black_textform_field.dart';
-import 'package:connect_canteen/app1/widget/custom_app_bar.dart';
+import 'package:connect_canteen/app1/model/order_model.dart';
+import 'package:connect_canteen/app1/modules/student_modules/order/utils/order_tile.dart';
 import 'package:connect_canteen/app1/widget/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
-class NameUpdate extends StatelessWidget {
-  final String initialName;
+class HoldYourOrder extends StatelessWidget {
+  final OrderResponse order;
+  const HoldYourOrder({super.key, required this.order});
 
-  const NameUpdate({Key? key, required this.initialName}) : super(key: key);
-
+  @override
   Widget build(BuildContext context) {
-    TextEditingController nameController =
-        TextEditingController(text: initialName);
-
     return Scaffold(
-      backgroundColor: Colors.white, 
+      backgroundColor: Colors.white,
       appBar: AppBar(
         scrolledUnderElevation: 0,
         backgroundColor: Colors.white,
         titleSpacing: 4.0, // Adjusts the spacing above the title
         title: Text(
-          'User Account',
+          'Order Setting',
           style: TextStyle(fontWeight: FontWeight.w300),
         ),
         bottom: PreferredSize(
@@ -30,7 +27,7 @@ class NameUpdate extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.only(left: 4.0.w),
               child: Text(
-                'Name',
+                'Hold Your Order',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.sp),
               ),
             ),
@@ -43,43 +40,42 @@ class NameUpdate extends StatelessWidget {
             Padding(
               padding: EdgeInsets.all(18.0),
               child: Text(
-                "This is the name you would like other people to use when refering to you",
+                "You can hold your order. The order will not be prepared. Later, you can reschedule your order.",
                 style: TextStyle(
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.w300,
                     fontSize: 19.sp,
                     color: Colors.black),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(18.0),
-              child: BlackTextFormField(
-                prefixIcon: const Icon(Icons.person),
-                textInputType: TextInputType.text,
-                hintText: 'Name',
-                controller: nameController,
-                validatorFunction: (value) {
-                  if (value.isEmpty) {
-                    return '  Name Can\'t be empty';
-                  }
-                  return null;
-                },
-                actionKeyboard: TextInputAction.next,
-                onSubmitField: () {},
+            SizedBox(
+              height: 4.h,
+            ),
+            Align(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: EdgeInsets.only(left: 4.0.w),
+                child: Text(
+                  'Your Order',
+                  style:
+                      TextStyle(fontWeight: FontWeight.w400, fontSize: 23.sp),
+                ),
               ),
             ),
+            OrderTiles(
+              order: order,
+              type: 'hold',
+            ),
             SizedBox(
-              height: 15.h,
+              height: 17.h,
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: CustomButton(
                 isLoading: false,
-                text: 'Update',
+                text: 'Hold',
                 onPressed: () {},
-                buttonColor: Colors.black,
-                textColor: Colors.white,
               ),
-            ),
+            )
           ],
         ),
       ),

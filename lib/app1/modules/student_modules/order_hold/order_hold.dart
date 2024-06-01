@@ -1,12 +1,16 @@
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connect_canteen/app1/cons/style.dart';
 import 'package:connect_canteen/app1/model/order_model.dart';
 import 'package:connect_canteen/app1/modules/student_modules/group/utils/listtile_shrimmer.dart';
 import 'package:connect_canteen/app1/modules/student_modules/order/order_controller.dart';
+import 'package:connect_canteen/app1/modules/student_modules/order/utils/order_tile.dart';
+import 'package:connect_canteen/app1/modules/student_modules/order/utils/order_tile_simmer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:shimmer/shimmer.dart';
 
 class OrderHoldPage extends StatelessWidget {
   final studentOrderControler = Get.put(StudetnORderController());
@@ -40,13 +44,13 @@ class OrderHoldPage extends StatelessWidget {
         ),
       ),
       body: StreamBuilder<List<OrderResponse>>(
-        stream: studentOrderControler.fetchOrders(cid, schoolrefrenceId),
+        stream: studentOrderControler.fetchHoldOrders(cid, schoolrefrenceId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return ListView.builder(
                 itemCount: 5,
                 itemBuilder: (context, index) {
-                  return ListtileShrimmer();
+                  return OrderTilesShrimmer();
                 });
           } else if (snapshot.hasError) {
             return Center(
@@ -81,113 +85,186 @@ class OrderHoldPage extends StatelessWidget {
           } else {
             final students = snapshot.data!;
 
-            return ListView.builder(
-              itemCount: students.length,
-              itemBuilder: (context, index) {
-                OrderResponse student = students[index]!;
-
-                return ListTile(
-                  leading: Stack(
+            return Padding(
+              padding: EdgeInsets.only(top: 2.h),
+              child: ListView.builder(
+                itemCount: students.length,
+                itemBuilder: (context, index) {
+                  OrderResponse order = students[index]!;
+              
+                  return Column(
                     children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 2,
-                              blurRadius: 5,
-                              offset: Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        child: CircleAvatar(
-                          radius: 22.sp,
-                          backgroundColor: Colors.white,
-                          child: student?.productImage == ''
-                              ? CircleAvatar(
-                                  radius: 21.4.sp,
-                                  child: Icon(
-                                    Icons.person,
-                                    color: Colors.white,
+                      Padding(
+                        padding: AppPadding.screenHorizontalPadding,
+                        child: GestureDetector(
+                          child: Container(
+                            padding: EdgeInsets.all(8.0),
+                            // margin: EdgeInsets.symmetric(vertical: 4.0),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        order.productName,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 20.0.sp,
+                                        ),
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            'NPR ${order.price}',
+                                            style: TextStyle(
+                                                fontSize: 16.0.sp,
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w400),
+                                          ),
+                                          SizedBox(
+                                            width: 3.w,
+                                          ),
+                                          Icon(
+                                            Icons.alarm_outlined,
+                                            size: 17.sp,
+                                          ),
+                                          SizedBox(
+                                            width: 1.w,
+                                          ),
+                                          Text(
+                                            '${order.mealtime}',
+                                            style: TextStyle(
+                                                fontSize: 16.0.sp,
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w400),
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(height: 0.6.h),
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            Icons.person_outline,
+                                            size: 17.sp,
+                                          ),
+                                          SizedBox(
+                                            width: 1.w,
+                                          ),
+                                          Text(
+                                            '${order.customer}',
+                                            style: TextStyle(
+                                              fontSize: 14.0,
+                                              color: Colors.grey[600],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(height: 0.6.h),
+                                      if (order.orderType == 'hold')
+                                        Row(
+                                          children: [
+                                            Text("Hold on:"),
+                                            SizedBox(
+                                              width: 1.w,
+                                            ),
+                                            Text(
+                                              '${order.holdDate}',
+                                              style: TextStyle(
+                                                fontSize: 14.0,
+                                                color: Colors.grey[600],
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 4.w,
+                                            ),
+                                            Text(
+                                              '${order.quantity}/plate',
+                                              style: TextStyle(
+                                                fontSize: 14.0,
+                                                color: Colors.grey[600],
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                    ],
                                   ),
-                                  backgroundColor:
-                                      const Color.fromARGB(255, 224, 218, 218),
-                                )
-                              : CachedNetworkImage(
-                                  progressIndicatorBuilder:
-                                      (context, url, downloadProgress) =>
-                                          CircleAvatar(
-                                    radius: 21.4.sp,
-                                    child: Icon(
-                                      Icons.person,
-                                      color: Colors.white,
-                                    ),
-                                    backgroundColor: const Color.fromARGB(
-                                        255, 224, 218, 218),
-                                  ),
-                                  imageUrl: student?.productImage ?? '',
-                                  imageBuilder: (context, imageProvider) =>
-                                      Container(
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape
-                                          .circle, // Apply circular shape
-                                      image: DecorationImage(
-                                        image: imageProvider,
-                                        fit: BoxFit.cover,
+                                ),
+                                Stack(
+                                  children: [
+                                    Container(
+                                      width: 14.h,
+                                      height: 14.h,
+                                      child: CachedNetworkImage(
+                                        progressIndicatorBuilder:
+                                            (context, url, downloadProgress) =>
+                                                Opacity(
+                                          opacity: 0.8,
+                                          child: Shimmer.fromColors(
+                                            baseColor: const Color.fromARGB(
+                                                255, 248, 246, 246),
+                                            highlightColor: Color.fromARGB(
+                                                255, 238, 230, 230),
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                color: const Color.fromARGB(
+                                                    255, 243, 242, 242),
+                                              ),
+                                              width: 14.h,
+                                              height: 14.h,
+                                            ),
+                                          ),
+                                        ),
+                                        imageUrl: order.productImage ?? '',
+                                        imageBuilder:
+                                            (context, imageProvider) =>
+                                                Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            image: DecorationImage(
+                                              image: imageProvider,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                        fit: BoxFit.fill,
+                                        width: double.infinity,
+                                        errorWidget: (context, url, error) =>
+                                            CircleAvatar(
+                                          radius: 21.4.sp,
+                                          child: Icon(
+                                            Icons.person,
+                                            color: Colors.white,
+                                          ),
+                                          backgroundColor: const Color.fromARGB(
+                                              255, 224, 218, 218),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  fit: BoxFit.fill,
-                                  width: double.infinity,
-                                  errorWidget: (context, url, error) =>
-                                      CircleAvatar(
-                                    radius: 21.4.sp,
-                                    child: Icon(
-                                      Icons.person,
-                                      color: Colors.white,
-                                    ),
-                                    backgroundColor: const Color.fromARGB(
-                                        255, 224, 218, 218),
-                                  ),
+                   
+                                  ],
                                 ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
-                      student?.groupid != ''
-                          ? Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: CircleAvatar(
-                                radius: 7.5,
-                                backgroundColor: Color.fromARGB(
-                                    255, 0, 0, 0), // Adjust color as needed
-                                child: Icon(
-                                  Icons.check,
-                                  color: Colors.white,
-                                  size: 9,
-                                ),
-                              ),
-                            )
-                          : SizedBox.shrink()
+                      SizedBox(
+                        height: 1.h,
+                      ),
+                      const Divider(
+                        height: 2,
+                        thickness: 2,
+                        color: Color.fromARGB(255, 232, 230, 230),
+                      )
                     ],
-                  ),
-                  title: Text(
-                    "${student?.productName}",
-                    style: TextStyle(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  subtitle: Text(
-                    "${student?.price}",
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      color: Colors.grey,
-                    ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             );
           }
         },

@@ -8,7 +8,7 @@ import 'package:connect_canteen/app1/modules/common/login/login_controller.dart'
 import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:connect_canteen/app1/cons/style.dart';
 import 'package:connect_canteen/app1/model/product_model.dart';
-import 'package:connect_canteen/app1/modules/student_modules/our_Proudct/our_product.dart';
+import 'package:connect_canteen/app1/modules/student_modules/menue_product/menue_product.dart';
 import 'package:connect_canteen/app1/modules/common/wallet/utils/balance_card.dart';
 import 'package:connect_canteen/app1/utils/date.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +20,7 @@ class StudentHomePage extends StatelessWidget {
   final storage = GetStorage();
   DateController dateController = Get.put(DateController());
   final loignController = Get.put(LoginController());
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,10 +35,11 @@ class StudentHomePage extends StatelessWidget {
         padding: AppPadding.screenHorizontalPadding,
         child: ListView(
           children: [
-_buildProfileCard(context),
-            BalanceCard(
-              userid: storage.read(userId),
+            SizedBox(
+              height: 3.h,
             ),
+_buildProfileCard(context),
+      
             SizedBox(height: 3.h),
             Container(
               width: 100.w,
@@ -60,34 +62,49 @@ _buildProfileCard(context),
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontSize: 25.sp,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w400,
                   color: Color.fromARGB(255, 80, 79, 79),
                 ),
               ),
             ),
             SizedBox(height: 3.h),
-            OurProductsSection(
+            MenueSection(
               products: const [
                 // Provide your list of products here
                 Products(
+                  type: "VEG",
                   imageUrl:
-                      'https://english.onlinekhabar.com/wp-content/uploads/2018/09/Mexican-Buff-Burger.jpg',
+                      'https://tb-static.uber.com/prod/image-proc/processed_images/738d85f881e2063a399fa8858183c06e/b4facf495c22df52f3ca635379ebe613.jpeg',
                   name: 'Product 1',
                   price: 19.99,
                 ),
                 Products(
+                  type: "VEG",
                   imageUrl:
-                      'https://english.onlinekhabar.com/wp-content/uploads/2018/09/Mexican-Buff-Burger.jpg',
+                      'https://tb-static.uber.com/prod/image-proc/processed_images/12a65c8086d9349620e7af6453fecd3a/859baff1d76042a45e319d1de80aec7a.jpeg',
                   name: 'Product 1',
                   price: 19.99,
                 ),
                 Products(
+                  type: "NON",
                   imageUrl:
-                      'https://english.onlinekhabar.com/wp-content/uploads/2018/09/Mexican-Buff-Burger.jpg',
-                  name: 'Product 1',
+                      'https://tb-static.uber.com/prod/image-proc/processed_images/a306037b3802d6bada1729e55a8b016f/9b3aae4cf90f897799a5ed357d60e09d.jpeg',
+                  name: 'Samosa Achar ',
                   price: 19.99,
                 ),
-                
+                Products(
+                    type: "VEG",
+                    imageUrl:
+                        'https://d1ralsognjng37.cloudfront.net/d65ca498-dba0-4033-a21d-d550e567842c.jpeg',
+                    name: "Veg-Fried Rice",
+                    price: 60),
+
+                Products(
+                    type: "VEG",
+                    imageUrl:
+                        "https://media-cdn.tripadvisor.com/media/photo-m/1280/1b/57/52/cb/roti-and-tarkari-vegan.jpg",
+                    name: 'Roti Tarkari',
+                    price: 140),                
 
                 // Add more products as needed
               ],
@@ -155,12 +172,12 @@ _buildProfileCard(context),
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: 20.sp,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w400,
                             color: Color.fromARGB(255, 70, 69, 69),
                           ),
                         ),
                         Text(
-                          'Class 12',
+                          '${studetnData.classes}',
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
@@ -173,13 +190,18 @@ _buildProfileCard(context),
                   CircleAvatar(
                     radius: 21.sp,
                     backgroundColor: Colors.white,
-                    child: CachedNetworkImage(
+                    child: studetnData.name == ''
+                        ? CircleAvatar(
+                            radius: 21.sp,
+                            backgroundColor: Colors.white,
+                          )
+                        : CachedNetworkImage(
                       progressIndicatorBuilder:
                           (context, url, downloadProgress) =>
                               CircularProgressIndicator(
                                   value: downloadProgress.progress),
                       imageUrl:
-                          'https://res.cloudinary.com/dndtiooiy/image/upload/v1694107077/jcqp06eon60nd99g5i4v.png',
+ studetnData.profilePicture,
                       imageBuilder: (context, imageProvider) => Container(
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,

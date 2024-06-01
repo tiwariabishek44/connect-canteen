@@ -19,7 +19,8 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color defaultButtonColor = Colors.green; // Default button color
+    Color defaultButtonColor =
+        const Color.fromARGB(255, 0, 0, 0); // Default button color
     Color defaultTextColor = Colors.white; // Default text color
 
     return Padding(

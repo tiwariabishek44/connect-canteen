@@ -1,4 +1,5 @@
 import 'package:connect_canteen/app1/modules/student_modules/group/new_grou.dart';
+import 'package:connect_canteen/app1/widget/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -35,6 +36,7 @@ class NoGroupField extends StatelessWidget {
               ),
             ),
           ),
+         
           Padding(
             padding: const EdgeInsets.all(20.0),
             child: Row(
@@ -45,10 +47,10 @@ class NoGroupField extends StatelessWidget {
                       Get.to(() => NewGroup());
                     },
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(vertical: 16.0),
+                      padding: EdgeInsets.symmetric(vertical: 12.0),
                       backgroundColor: Colors.black,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.0),
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
                     ),
                     child: Text(

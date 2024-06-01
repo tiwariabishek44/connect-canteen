@@ -1,13 +1,16 @@
 import 'package:connect_canteen/app1/model/product_model.dart';
 import 'package:connect_canteen/app1/modules/student_modules/homepage/homepage.dart';
+import 'package:connect_canteen/app1/modules/student_modules/product_detail/product_detail.dart';
 import 'package:connect_canteen/app1/widget/product_card.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
-class OurProductsSection extends StatelessWidget {
+class MenueSection extends StatelessWidget {
   final List<Products> products;
 
-  OurProductsSection({required this.products});
+  MenueSection({required this.products});
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +32,23 @@ class OurProductsSection extends StatelessWidget {
           ),
           itemCount: products.length,
           itemBuilder: (context, index) {
-            return ProductCard(
-              name: products[index].name,
-              imageUrl: products[index].imageUrl,
-              price: products[index].price,
+            return GestureDetector(
+              onTap: () {
+                Get.to(() => ProductDetailPage(
+                      product: Products(
+                          type: products[index].type,
+                          imageUrl: products[index].imageUrl,
+                          name: products[index].name,
+                          price: products[index].price),
+                    ));
+              },
+              child: ProductCard(
+                active: true,
+                type: products[index].type,
+                name: products[index].name,
+                imageUrl: products[index].imageUrl,
+                price: products[index].price,
+              ),
             );
           },
         ),

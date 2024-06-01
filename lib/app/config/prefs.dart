@@ -11,7 +11,7 @@ const canteen = "canteen";
 const student = "student";
 const canteenhelper = 'canteenHelper';
 final List<String> timeSlots = [
-  'All',
+ 
   "12:30",
   "1:15",
   "2:00",

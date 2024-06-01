@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:connect_canteen/app1/modules/common/login/login_controller.dart';
-import 'package:connect_canteen/app1/modules/student_modules/order/all_order_tab.dart';
-import 'package:connect_canteen/app1/modules/student_modules/order/order_history_tab.dart';
+import 'package:connect_canteen/app1/modules/student_modules/order/utils/all_order_tab.dart';
+import 'package:connect_canteen/app1/modules/student_modules/order/utils/order_history_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:connect_canteen/app1/cons/colors.dart';
+import 'package:connect_canteen/app1/modules/canteen_module.dart/canteen_main_screen/canteen_main_screen.dart';
 import 'package:connect_canteen/app1/modules/common/logoin_option/login_option.dart';
 import 'package:connect_canteen/app1/modules/student_modules/student_mainscreen/student_main_screen.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     Timer(const Duration(seconds: 1), () {
       loginController.autoLogin()
-          ? Get.offAll(() => StudentMainScreenView())
+          ? Get.offAll(() => CanteenMainScreen())
           : Get.offAll(() => OnboardingScreen());
     });
   }

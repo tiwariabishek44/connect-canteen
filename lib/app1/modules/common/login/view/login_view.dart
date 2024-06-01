@@ -183,7 +183,7 @@ class _LoginViewState extends State<LoginView> {
                                   "Register",
                                   style: TextStyle(
                                     fontSize: 17.sp,
-                                    color: AppColors.secondaryColor,
+                                    color: Colors.black,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),

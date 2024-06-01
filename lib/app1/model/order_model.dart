@@ -1,3 +1,5 @@
+import 'package:nepali_utils/nepali_utils.dart';
+
 class OrderResponse {
   final String id;
   final String classs;
@@ -48,6 +50,7 @@ class OrderResponse {
     required this.overFlowRead,
     required this.scrhoolrefrenceid, // Update the constructor to include scrhoolrefrenceid
   });
+  NepaliDateTime get parsedDate => NepaliDateTime.parse(date);
 
   Map<String, dynamic> toMap() {
     return {
