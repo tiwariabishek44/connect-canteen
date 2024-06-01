@@ -2,13 +2,14 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:connect_canteen/app/local_notificaiton/local_notifications.dart';
-import 'package:connect_canteen/app1/modules/common/logoin_option/login_option.dart';
+import 'package:connect_canteen/app1/modules/canteen_module.dart/canteen_main_screen/canteen_main_screen.dart';
+import 'package:connect_canteen/app1/modules/common/splash%20screen/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
+import 'package:get_storage/get_storage.dart'; 
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -116,7 +117,7 @@ class _MyAppState extends State<MyApp> {
               // Check connectivity status to determine which screen to show
               home: _connectionStatus == ConnectivityResult.none
                   ? OfflineScreen()
-                  : OnboardingScreen(),
+                  : CanteenMainScreen(),
             );
           },
         );
