@@ -117,7 +117,7 @@ class _MyAppState extends State<MyApp> {
               // Check connectivity status to determine which screen to show
               home: _connectionStatus == ConnectivityResult.none
                   ? OfflineScreen()
-                  : CanteenMainScreen(),
+                  : SplashScreen(),
             );
           },
         );

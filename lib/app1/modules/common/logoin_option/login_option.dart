@@ -1,3 +1,4 @@
+import 'package:connect_canteen/app1/modules/canteen_module.dart/canteen_main_screen/canteen_main_screen.dart';
 import 'package:connect_canteen/app1/modules/common/login/view/login_view.dart';
 import 'package:connect_canteen/app1/modules/common/logoin_option/login_option_controller.dart';
 import 'package:flutter/material.dart';
@@ -91,7 +92,7 @@ class OnboardingScreen extends StatelessWidget {
                     onTap: () {
                       loginOptionController.isStudent.value = false;
 
-                      Get.to(() => LoginView());
+                      Get.to(() => CanteenMainScreen());
                     },
                     child: Container(
                       width: double.infinity,

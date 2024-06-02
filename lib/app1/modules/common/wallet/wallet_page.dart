@@ -40,14 +40,34 @@ class WalletPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-    
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        titleSpacing: 4.0, // Adjusts the spacing above the title
+        title: Text(
+          "Wallet",
+          style: TextStyle(fontWeight: FontWeight.w300),
+        ),
+
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(50.0),
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: Padding(
+              padding: EdgeInsets.only(left: 4.0.w),
+              child: Text(
+                name,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.sp),
+              ),
+            ),
+          ),
+        ),
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              !isStudent ? SizedBox.shrink() : _buildProfileCard(context),
               SizedBox(height: 1.h),
               Text(
                 "Wallet",
@@ -68,88 +88,7 @@ class WalletPage extends StatelessWidget {
       ),
     );
   }
-
-  Widget _buildProfileCard(BuildContext) {
-    return Container(
-      width: 100.w,
-      height: 14.h,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [
-            Color.fromARGB(255, 237, 240, 240),
-            Color.fromARGB(255, 218, 218, 218)
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: const [
-          BoxShadow(
-            color: Color.fromARGB(66, 0, 0, 0),
-            blurRadius: 2,
-            offset: Offset(1, 1),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start, // Added this line
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '$name ! 👋',
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 20.sp,
-                      fontWeight: FontWeight.bold,
-                      color: const Color.fromARGB(255, 33, 33, 33),
-                    ),
-                  ),
-                  SizedBox(height: 5),
-                  Text(
-                    'Class',
-                    style: TextStyle(
-                      fontSize: 17.sp,
-                      fontWeight: FontWeight.w700,
-                      color: const Color.fromARGB(179, 69, 67, 67),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            CircleAvatar(
-              radius: 23.sp,
-              backgroundColor: Colors.white,
-              child: CachedNetworkImage(
-                progressIndicatorBuilder: (context, url, downloadProgress) =>
-                    CircularProgressIndicator(value: downloadProgress.progress),
-                imageUrl: image,
-                imageBuilder: (context, imageProvider) => Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                      image: imageProvider,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                errorWidget: (context, url, error) => Icon(
-                  Icons.person,
-                  color: Colors.grey,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+ 
 
   Widget _buildTransactionSection() {
     return Column(

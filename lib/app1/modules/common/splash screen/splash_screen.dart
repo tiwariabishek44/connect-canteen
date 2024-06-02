@@ -48,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     Timer(const Duration(seconds: 1), () {
       loginController.autoLogin()
-          ? Get.offAll(() => CanteenMainScreen())
+          ? Get.offAll(() => StudentMainScreenView())
           : Get.offAll(() => OnboardingScreen());
     });
   }

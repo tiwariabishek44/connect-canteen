@@ -1,11 +1,11 @@
 import 'package:connect_canteen/app1/modules/canteen_module.dart/canteen_main_screen/canteen_main_screen_controller.dart';
-import 'package:connect_canteen/app1/modules/canteen_module.dart/checkout/chekcout_page.dart';
-import 'package:connect_canteen/app1/modules/canteen_module.dart/checkout/search_page.dart';
+ 
+import 'package:connect_canteen/app1/modules/canteen_module.dart/dashboard/dashboard.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/demo%20buttons/demo_buttons.dart';
-import 'package:connect_canteen/app1/modules/canteen_module.dart/menue/menue_page.dart';
-import 'package:connect_canteen/app1/modules/student_modules/profile/profile_page.dart';
+ 
 import 'package:connect_canteen/app1/cons/colors.dart';
-import 'package:connect_canteen/app1/modules/student_modules/order/order_page.dart';
+import 'package:connect_canteen/app1/modules/canteen_module.dart/expense/expense_page.dart';
+import 'package:connect_canteen/app1/modules/canteen_module.dart/order_requirement/order_requirement.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -15,7 +15,9 @@ class CanteenMainScreen extends StatelessWidget {
   final canteenScreenController = Get.put(CanteenScreenController());
 
   final List<Widget> pages = [
-    CanteenMenuePage(),
+    CanteenDashboard(),
+    OrderRequirementPage(),
+    ExpensePage(),
     ButtonColumnPage(),
   ];
 
@@ -84,7 +86,6 @@ class CanteenMainScreen extends StatelessWidget {
               );
             },
           );
-          ; // Allow back navigation
         },
         child: Obx(
           () => PageStorage(
@@ -120,7 +121,15 @@ class CanteenMainScreen extends StatelessWidget {
               MyBottomNavigationBarItem(
                   nonSelectedicon: Icons.shopping_cart_outlined,
                   icon: Icons.shopping_cart,
-                  label: 'MyOrders'),
+                  label: 'Requirement'),
+              MyBottomNavigationBarItem(
+                  nonSelectedicon: Icons.money,
+                  icon: Icons.money_outlined,
+                  label: 'Expense'),
+              MyBottomNavigationBarItem(
+                  nonSelectedicon: Icons.settings_outlined,
+                  icon: Icons.settings,
+                  label: 'Settings'),
             ],
           ),
         ),

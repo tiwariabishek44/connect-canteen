@@ -125,10 +125,10 @@ class BalanceCard extends StatelessWidget {
                 padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [
-                      Color.fromARGB(255, 237, 240, 240),
-                      Color.fromARGB(255, 223, 224, 223)
-                    ],
+                         colors: [
+                  Color.fromARGB(255, 245, 255, 255),
+                  Color.fromARGB(255, 200, 232, 200)
+                ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
