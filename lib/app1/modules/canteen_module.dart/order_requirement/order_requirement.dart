@@ -2,8 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connect_canteen/app/config/colors.dart';
 import 'package:connect_canteen/app/config/prefs.dart';
 import 'package:connect_canteen/app1/model/order_model.dart';
+import 'package:connect_canteen/app1/model/product_detials_model.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/order%20hold/utils/order_tile_shrimmer.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/order_requirement/order_requirement_controller.dart';
+import 'package:connect_canteen/app1/widget/no_order.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -19,10 +21,7 @@ class OrderRequirementPage extends StatefulWidget {
 class _OrderRequirementPageState extends State<OrderRequirementPage> {
   final orderRequiremtnController = Get.put(OrderRequirementController());
 
-  final List<String> verticalItems =
-      List.generate(20, (index) => "Item $index");
-  int selectedIndex = -1;
-
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -152,7 +151,9 @@ class _OrderRequirementPageState extends State<OrderRequirementPage> {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 }
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('No orders found'));
+                  return NoOrder(
+                    onClick: () {},
+                  );
                 }
 
                 var orders = snapshot.data!;

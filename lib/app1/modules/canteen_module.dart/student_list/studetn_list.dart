@@ -3,6 +3,8 @@ import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:connect_canteen/app1/model/student_model.dart';
+import 'package:connect_canteen/app1/modules/canteen_module.dart/student_list/student_list_controller.dart';
+import 'package:connect_canteen/app1/modules/common/wallet/wallet_page.dart';
 import 'package:connect_canteen/app1/modules/student_modules/friend_list/studetn_list_controller.dart';
 import 'package:connect_canteen/app1/modules/student_modules/group/utils/listtile_shrimmer.dart';
 import 'package:flutter/material.dart';
@@ -10,40 +12,11 @@ import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:shimmer/shimmer.dart';
 
-class FriendsPage extends StatelessWidget {
+class StudentListPage extends StatelessWidget {
   final String grade;
-  final studetnListControllre = Get.put(StudetnListController());
+  final studetnListControllre = Get.put(StudetnController());
 
-  FriendsPage({super.key, required this.grade});
-  void showAlreadyInGroupDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          elevation: 0,
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.0),
-          ),
-          title: Text(
-            'Sorry',
-            style: TextStyle(
-              fontSize: 17.5.sp,
-              color: Colors.black87,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          content: Text(
-            'User is already involved in a group.',
-            style: TextStyle(
-              color: Colors.black87,
-              fontSize: 16.0.sp,
-            ),
-          ),
-        );
-      },
-    );
-  }
+  StudentListPage({super.key, required this.grade});
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +26,7 @@ class FriendsPage extends StatelessWidget {
         backgroundColor: Colors.white,
         titleSpacing: 4.0, // Adjusts the spacing above the title
         title: Text(
-          "Friends",
+          "Students",
           style: TextStyle(fontWeight: FontWeight.w300),
         ),
 
@@ -64,7 +37,7 @@ class FriendsPage extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.only(left: 4.0.w),
               child: Text(
-                '+ Add Friends',
+                grade,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.sp),
               ),
             ),
@@ -92,15 +65,17 @@ class FriendsPage extends StatelessWidget {
               child: ListView.builder(
                 itemCount: students.length,
                 itemBuilder: (context, index) {
-                  StudentDataResponse student = students[index];
+                  StudentDataResponse student = students[index]!;
                   return Padding(
                     padding:
                         EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
                     child: GestureDetector(
                       onTap: () {
-                        student.groupid.isNotEmpty
-                            ? showAlreadyInGroupDialog(context)
-                            : null;
+                        Get.to(() => WalletPage(
+                            userId: student.userid,
+                            isStudent: false,
+                            name: student.name,
+                            image: student.profilePicture));
                       },
                       child: Container(
                         padding: EdgeInsets.all(8.0),
@@ -202,7 +177,6 @@ class FriendsPage extends StatelessWidget {
                       ),
                     ),
                   );
-                  
                 },
               ),
             );

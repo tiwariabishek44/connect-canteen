@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connect_canteen/app1/cons/api_end_points.dart';
 import 'package:connect_canteen/app1/model/order_model.dart';
+import 'package:connect_canteen/app1/model/product_detials_model.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:nepali_utils/nepali_utils.dart';
@@ -53,16 +54,4 @@ class OrderRequirementController extends GetxController {
       }
     }
   }
-}
-
-class ProductDetail {
-  final String productName;
-  final String productImage;
-  int totalQuantity;
-
-  ProductDetail({
-    required this.productName,
-    required this.productImage,
-    required this.totalQuantity,
-  });
 }

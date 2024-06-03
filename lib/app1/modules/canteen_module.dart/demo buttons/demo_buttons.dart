@@ -1,9 +1,14 @@
+import 'package:connect_canteen/app/modules/vendor_modules/order_requirement_reports/view/order_requirement_report_view.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/checkout/search_page.dart';
+import 'package:connect_canteen/app1/modules/canteen_module.dart/dashboard/dashboard.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/order%20hold/hold_search_page.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/order%20verify/verify_search_page.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/order_requirement/order_requirement.dart';
+import 'package:connect_canteen/app1/modules/canteen_module.dart/report/report_page.dart';
+import 'package:connect_canteen/app1/modules/canteen_module.dart/wallet_class/class_wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 class ButtonColumnPage extends StatelessWidget {
   @override
@@ -50,6 +55,42 @@ class ButtonColumnPage extends StatelessWidget {
               color: Colors.blue,
               onTap: () {
                 Get.to(() => OrderRequirementPage(),
+                    transition: Transition.cupertinoDialog);
+                print('Button A pressed');
+              },
+            ),
+            SizedBox(
+              height: 10.h,
+            ),
+            buildButtonContainer(
+              label: 'Class Wallet ',
+              color: Colors.blue,
+              onTap: () {
+                Get.to(() => ClassWalletPage(),
+                    transition: Transition.cupertinoDialog);
+                print('Button A pressed');
+              },
+            ),
+            SizedBox(
+              height: 5.h,
+            ),
+            buildButtonContainer(
+              label: 'Class Wallet ',
+              color: Colors.blue,
+              onTap: () {
+                Get.to(() => CanteenDailyReport(),
+                    transition: Transition.cupertinoDialog);
+                print('Button A pressed');
+              },
+            ),
+            SizedBox(
+              height: 5.h,
+            ),
+            buildButtonContainer(
+              label: 'Dashboard ',
+              color: Colors.blue,
+              onTap: () {
+                Get.to(() => CanteenDashboard(),
                     transition: Transition.cupertinoDialog);
                 print('Button A pressed');
               },

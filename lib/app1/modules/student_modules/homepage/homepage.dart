@@ -18,7 +18,6 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 
 class StudentHomePage extends StatelessWidget {
   final storage = GetStorage();
-  DateController dateController = Get.put(DateController());
   final loignController = Get.put(LoginController());
   
   @override
@@ -39,6 +38,9 @@ class StudentHomePage extends StatelessWidget {
               height: 3.h,
             ),
 _buildProfileCard(context),
+            BalanceCard(
+              userid: loignController.studentDataResponse.value!.classes,
+            ),
       
             SizedBox(height: 3.h),
             Container(

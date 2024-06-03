@@ -14,6 +14,8 @@ class VerifySearchPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
+
       appBar: AppBar(
         scrolledUnderElevation: 0,
         backgroundColor: Colors.white,

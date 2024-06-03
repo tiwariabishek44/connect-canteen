@@ -160,56 +160,88 @@ class _OrderCheckoutPageState extends State<OrderCheckoutPage> {
                                       ],
                                     ),
                                   ),
-                                  Container(
-                                    width: 9.h,
-                                    height: 9.h,
-                                    child: CachedNetworkImage(
-                                      progressIndicatorBuilder:
-                                          (context, url, downloadProgress) =>
+                                  Stack(
+                                    children: [
+                                      Container(
+                                        width: 9.h,
+                                        height: 9.h,
+                                        child: CachedNetworkImage(
+                                          progressIndicatorBuilder: (context,
+                                                  url, downloadProgress) =>
                                               Opacity(
-                                        opacity: 0.8,
-                                        child: Shimmer.fromColors(
-                                          baseColor: const Color.fromARGB(
-                                              255, 248, 246, 246),
-                                          highlightColor: Color.fromARGB(
-                                              255, 238, 230, 230),
-                                          child: Container(
+                                            opacity: 0.8,
+                                            child: Shimmer.fromColors(
+                                              baseColor: const Color.fromARGB(
+                                                  255, 248, 246, 246),
+                                              highlightColor: Color.fromARGB(
+                                                  255, 238, 230, 230),
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                  color: const Color.fromARGB(
+                                                      255, 243, 242, 242),
+                                                ),
+                                                width: 9.h,
+                                                height: 9.h,
+                                              ),
+                                            ),
+                                          ),
+                                          imageUrl: order.customerImage ?? '',
+                                          imageBuilder:
+                                              (context, imageProvider) =>
+                                                  Container(
                                             decoration: BoxDecoration(
                                               borderRadius:
                                                   BorderRadius.circular(20),
-                                              color: const Color.fromARGB(
-                                                  255, 243, 242, 242),
+                                              image: DecorationImage(
+                                                image: imageProvider,
+                                                fit: BoxFit.cover,
+                                              ),
                                             ),
-                                            width: 9.h,
-                                            height: 9.h,
+                                          ),
+                                          fit: BoxFit.fill,
+                                          width: double.infinity,
+                                          errorWidget: (context, url, error) =>
+                                              CircleAvatar(
+                                            radius: 21.4.sp,
+                                            child: Icon(
+                                              Icons.person,
+                                              color: Colors.white,
+                                            ),
+                                            backgroundColor:
+                                                const Color.fromARGB(
+                                                    255, 224, 218, 218),
                                           ),
                                         ),
                                       ),
-                                      imageUrl: order.customerImage ?? '',
-                                      imageBuilder: (context, imageProvider) =>
-                                          Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          image: DecorationImage(
-                                            image: imageProvider,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                      ),
-                                      fit: BoxFit.fill,
-                                      width: double.infinity,
-                                      errorWidget: (context, url, error) =>
-                                          CircleAvatar(
-                                        radius: 21.4.sp,
-                                        child: Icon(
-                                          Icons.person,
-                                          color: Colors.white,
-                                        ),
-                                        backgroundColor: const Color.fromARGB(
-                                            255, 224, 218, 218),
-                                      ),
-                                    ),
+                                      Positioned(
+                                        top: 10,
+                                        left: 10,
+                                        child: Obx(() => Checkbox(
+                                              overlayColor:
+                                                  MaterialStateProperty.all(
+                                                      Colors.transparent),
+                                              activeColor: Colors.transparent,
+                                              hoverColor: Colors.transparent,
+
+                                              fillColor: MaterialStateProperty
+                                                  .all(Colors
+                                                      .transparent), // Use MaterialStateProperty
+
+                                              checkColor: Colors.transparent,
+                                              value: checkoutController
+                                                          .selectedOrders[
+                                                      order.id] ??
+                                                  false,
+                                              onChanged: (bool? value) {
+                                                checkoutController
+                                                        .selectedOrders[
+                                                    order.id] = value ?? false;
+                                              },
+                                            )),
+                                      )
+                                    ],
                                   ),
                                   Obx(() => Checkbox(
                                         value: checkoutController
