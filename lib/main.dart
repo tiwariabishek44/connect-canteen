@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:connect_canteen/app/local_notificaiton/local_notifications.dart';
-import 'package:connect_canteen/app1/modules/common/logoin_option/login_option.dart';
+import 'package:connect_canteen/app/widget/splash_screen.dart';
+import 'package:connect_canteen/app1/modules/student_modules/student_mainscreen/student_main_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -116,7 +117,7 @@ class _MyAppState extends State<MyApp> {
               // Check connectivity status to determine which screen to show
               home: _connectionStatus == ConnectivityResult.none
                   ? OfflineScreen()
-                  : OnboardingScreen(),
+                  : StudentMainScreenView(),
             );
           },
         );

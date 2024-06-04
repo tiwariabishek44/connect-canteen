@@ -30,16 +30,11 @@ class WalletPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    DateTime now = DateTime.now();
-    NepaliDateTime nepaliDateTime = NepaliDateTime.fromDateTime(now);
-    final timeStamp = DateFormat('HH:mm\'', 'en').format(nepaliDateTime);
-    final date = DateFormat('dd/MM/yyyy\'', 'en').format(nepaliDateTime);
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: const CustomAppBar(
         isLeadingBack: false,
-        title: 'Profile',
+        title: '',
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -47,91 +42,16 @@ class WalletPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildProfileCard(context, date),
+              Text(
+                "Wallet",
+                style: TextStyle(fontSize: 25.sp, fontWeight: FontWeight.bold),
+              ),
               SizedBox(height: 1.h),
               BalanceCard(),
               SizedBox(height: 2.h),
               _buildTransactionSection(),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProfileCard(BuildContext context, String date) {
-    return Container(
-      width: 100.w,
-      height: 14.h,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.blue.shade400, Colors.blue.shade800],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 10,
-            offset: Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start, // Added this line
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '$name ! 👋',
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 20.sp,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(height: 5),
-                  Text(
-                    date,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.white70,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            CircleAvatar(
-              radius: 23.sp,
-              backgroundColor: Colors.white,
-              child: CachedNetworkImage(
-                progressIndicatorBuilder: (context, url, downloadProgress) =>
-                    CircularProgressIndicator(value: downloadProgress.progress),
-                imageUrl: image,
-                imageBuilder: (context, imageProvider) => Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                      image: imageProvider,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                errorWidget: (context, url, error) => Icon(
-                  Icons.person,
-                  color: Colors.grey,
-                ),
-              ),
-            ),
-          ],
         ),
       ),
     );
@@ -147,7 +67,7 @@ class WalletPage extends StatelessWidget {
             Text(
               'Transactions',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 23.sp,
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
               ),
