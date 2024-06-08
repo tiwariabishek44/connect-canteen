@@ -21,11 +21,13 @@ class ClassUpdate extends StatelessWidget {
       required this.classOptions})
       : super(key: key);
   final accountInfoController = Get.put(AccountInfoController());
+
   @override
   Widget build(BuildContext context) {
     TextEditingController nameController =
         TextEditingController(text: initialName);
-    String selectedClass = classOptions.isNotEmpty ? classOptions.first : '';
+    var selectedClass =
+        classOptions.isNotEmpty ? classOptions.first.obs : ''.obs;
 
     return Stack(
       children: [
@@ -114,13 +116,12 @@ class ClassUpdate extends StatelessWidget {
                       color: const Color.fromARGB(24, 152, 151, 151),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: DropdownButton<String>(
-                      value: selectedClass,
+                    child: Obx(() => DropdownButton<String>(
+                          value: selectedClass.value,
                       onChanged: (newValue) {
-                        accountInfoController.newClass.value =
-                            newValue.toString();
-
-                        log("${accountInfoController.newClass.value}");
+                            selectedClass.value = newValue.toString();
+                            accountInfoController.newClass.value =
+                                newValue.toString();
                       },
                       items: classOptions
                           .map<DropdownMenuItem<String>>((String value) {
@@ -129,7 +130,7 @@ class ClassUpdate extends StatelessWidget {
                           child: Text(value),
                         );
                       }).toList(),
-                    ),
+                        )),
                   ),
                 ),
                 SizedBox(

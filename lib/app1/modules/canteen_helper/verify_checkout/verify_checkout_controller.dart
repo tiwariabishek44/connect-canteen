@@ -3,60 +3,45 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connect_canteen/app1/cons/api_end_points.dart';
 import 'package:connect_canteen/app1/model/order_model.dart';
-import 'package:connect_canteen/app1/model/product_detials_model.dart';
+import 'package:connect_canteen/app1/widget/custom_sncak_bar.dart';
 import 'package:connect_canteen/app1/widget/loded_succesfull.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:nepali_date_picker/nepali_date_picker.dart';
+import 'package:nepali_utils/nepali_utils.dart';
 
-class HelperController extends GetxController {
+class VerifyCheckoutController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final TextEditingController groupCodController = TextEditingController();
+  final RxMap<String, bool> selectedOrders = <String, bool>{}.obs;
+  var groupCod = ''.obs;
+  var checkboxTick = false.obs;
 
+  var selectAll = false.obs;
+  List<OrderResponse> orders = [];
 //------------TO GET ALL THE ORDRES OF THE GROUP
-
-  Stream<List<OrderResponse>> getGrouppedOrder() {
+  Stream<List<OrderResponse>> getAllGroupOrder(String groupCod) {
     DateTime now = DateTime.now();
     NepaliDateTime nepaliDateTime = NepaliDateTime.fromDateTime(now);
     final todayDate = DateFormat('dd/MM/yyyy\'', 'en').format(nepaliDateTime);
 
-    Query query = _firestore
+    log("this is the date:::::::: ${todayDate}");
+
+    return _firestore
         .collection(ApiEndpoints.productionOrderCollection)
-        .where('scrhoolrefrenceid', isEqualTo: "texasinternationalcollege")
+        .where('groupcod',
+            isEqualTo: groupCod) // Filter documents by groupid field
         .where('date', isEqualTo: todayDate)
         .where('checkoutVerified', isEqualTo: 'true')
         .where('checkout', isEqualTo: 'false')
-        .where('orderType', isEqualTo: 'regular');
-
-    return query.snapshots().map(
+        .where('orderType', isEqualTo: 'regular')
+        .snapshots()
+        .map(
           (snapshot) => snapshot.docs
-              .map((doc) =>
-                  OrderResponse.fromJson(doc.data() as Map<String, dynamic>))
+              .map((doc) => OrderResponse.fromJson(doc.data()))
               .toList(),
         );
   }
-
-  var grouppedProduct = <String, GruoupedProductDetail>{}.obs;
-
-  void calculateProductTotals(List<OrderResponse> orders) {
-    grouppedProduct.clear(); // Clear previous totals
-    for (var order in orders) {
-      if (grouppedProduct.containsKey(order.productName)) {
-        grouppedProduct[order.productName]!.totalQuantity += order.quantity;
-      } else {
-        grouppedProduct[order.groupName] = GruoupedProductDetail(
-          groupName: order.groupName,
-          groupCod: order.groupcod,
-          totalQuantity: order.quantity,
-        );
-      }
-    }
-  }
-
-
-
-
-  //--------to checkout verfy order
 
 //------------------ TO CHECKOUT THE ORDERS
   var checkoutLoading = false.obs;
@@ -84,4 +69,11 @@ class HelperController extends GetxController {
     );
   }
 
+  //---------- TO VALIDATE IS ORDER OR NOT
+  Future<bool> validateAndFetchOrders(String groupCode) async {
+    log(" this is the ${groupCod}");
+    var ordersStream = getAllGroupOrder(groupCode);
+    var orders = await ordersStream.first;
+    return orders.isNotEmpty;
+  }
 }

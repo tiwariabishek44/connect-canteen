@@ -1,6 +1,7 @@
 import 'package:connect_canteen/app1/model/order_model.dart';
 import 'package:connect_canteen/app1/model/product_detials_model.dart';
 import 'package:connect_canteen/app1/modules/canteen_helper/verify%20list/controller.dart';
+import 'package:connect_canteen/app1/modules/canteen_helper/verify_checkout/verify_checkout.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/checkout/chekcout_page.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/order%20hold/utils/order_tile_shrimmer.dart';
 import 'package:connect_canteen/app1/widget/no_order.dart';
@@ -77,7 +78,8 @@ class VerifyOrderList extends StatelessWidget {
                     return GestureDetector(
                       onTap: () {
                         Get.to(() =>
-                            OrderCheckoutPage(groupCode: detail.groupCod));
+                            VerifyOrderCheckoutPage(
+                            groupCode: detail.groupCod));
                       },
                       child: Container(
                         decoration: BoxDecoration(

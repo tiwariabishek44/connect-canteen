@@ -7,6 +7,7 @@ import 'package:connect_canteen/app1/model/student_model.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/mealTime/meal_time.dart';
 import 'package:connect_canteen/app1/modules/common/login/login_controller.dart';
 import 'package:connect_canteen/app1/modules/student_modules/acount_info/acount_info.dart';
+import 'package:connect_canteen/app1/modules/student_modules/contact_us_page/contact_us_page.dart';
 import 'package:connect_canteen/app1/modules/student_modules/group/group.dart';
 import 'package:connect_canteen/app1/modules/common/wallet/wallet_page.dart';
 import 'package:connect_canteen/app1/modules/student_modules/order_hold/order_hold.dart';
@@ -137,6 +138,15 @@ class ProfilePage extends StatelessWidget {
                   //
                   title: 'Order Hold  ',
                   subtitle: 'Reschedule your order ',
+                  trailing: Icons.chevron_right),
+              buildCustomListTile(
+                  onTap: () {
+                    Get.to(() => ContactUsPage(),
+                        transition: Transition.cupertinoDialog);
+                  },
+                  //
+                  title: 'Contact Us',
+                  subtitle: 'Get you meal time information',
                   trailing: Icons.chevron_right),
               buildCustomListTile(
                   onTap: () {
