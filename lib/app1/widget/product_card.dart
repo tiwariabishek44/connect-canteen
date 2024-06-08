@@ -86,7 +86,7 @@ class ProductCard extends StatelessWidget {
         SizedBox(height: 8.0),
         // Product Name
         Text(
-          'Samosa Achar-plate with the nam eof th eprod',
+          name,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(

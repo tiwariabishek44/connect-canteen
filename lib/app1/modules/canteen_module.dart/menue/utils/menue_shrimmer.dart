@@ -13,6 +13,7 @@ class MenueShrimmer extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(left: 3.w, right: 3.w, top: 2.h),
       child: GridView.builder(
+        shrinkWrap: true, 
         physics: ScrollPhysics(),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2, // Number of columns in the grid

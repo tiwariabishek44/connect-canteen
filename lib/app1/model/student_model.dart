@@ -12,6 +12,7 @@ class StudentDataResponse {
   final int miCoin;
   final String schoolId;
   final String schoolName; // Added school name field
+  final String groupname;
 
   StudentDataResponse({
     required this.userid,
@@ -27,6 +28,7 @@ class StudentDataResponse {
     required this.miCoin,
     required this.schoolId,
     required this.schoolName, // Included in the constructor
+    required this.groupname,
   });
 
   factory StudentDataResponse.fromJson(Map<String, dynamic> json) {
@@ -44,6 +46,7 @@ class StudentDataResponse {
       miCoin: json['miCoin'] ?? 0,
       schoolId: json['schoolId'] ?? '',
       schoolName: json['schoolName'] ?? '', // Parsing school name
+      groupname: json['groupname'] ?? '',
     );
   }
 
@@ -62,6 +65,7 @@ class StudentDataResponse {
       'miCoin': miCoin,
       'schoolId': schoolId,
       'schoolName': schoolName, // Adding school name to the map
+      'groupname': groupname,
     };
   }
 }

@@ -9,8 +9,12 @@ import 'package:intl/intl.dart';
 import 'package:nepali_date_picker/nepali_date_picker.dart';
 
 class CanteenReportController extends GetxController {
+
+  
+  var selectedDate = ''.obs;
+
   // to get the total order requiremnt
-  Stream<List<OrderResponse>> getAllTodayOrders() {
+  Stream<List<OrderResponse>> getAllTodayOrders(String date) {
     DateTime now = DateTime.now();
     NepaliDateTime nepaliDateTime = NepaliDateTime.fromDateTime(now);
     final todayDate = DateFormat('dd/MM/yyyy\'', 'en').format(nepaliDateTime);
@@ -19,7 +23,7 @@ class CanteenReportController extends GetxController {
     Query query = _firestore
         .collection(ApiEndpoints.productionOrderCollection)
         .where('scrhoolrefrenceid', isEqualTo: "texasinternationalcollege")
-        .where('date', isEqualTo: todayDate);
+        .where('date', isEqualTo: date);
 
     return query.snapshots().map(
           (snapshot) => snapshot.docs
@@ -47,7 +51,7 @@ class CanteenReportController extends GetxController {
   }
 
   // to get the total uncheckout orer
-  Stream<List<OrderResponse>> getallUncheckoutOrder() {
+  Stream<List<OrderResponse>> getallUncheckoutOrder(String date) {
     DateTime now = DateTime.now();
     NepaliDateTime nepaliDateTime = NepaliDateTime.fromDateTime(now);
     final todayDate = DateFormat('dd/MM/yyyy\'', 'en').format(nepaliDateTime);
@@ -57,7 +61,7 @@ class CanteenReportController extends GetxController {
     return firestore
         .collection(ApiEndpoints.productionOrderCollection)
         .where('scrhoolrefrenceid', isEqualTo: "texasinternationalcollege")
-        .where('date', isEqualTo: todayDate)
+        .where('date', isEqualTo: date)
         .where('checkout', isEqualTo: 'false')
         .snapshots()
         .map(

@@ -2,25 +2,28 @@ import 'dart:developer';
 
 import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:connect_canteen/app1/model/wallet_model.dart';
-import 'package:connect_canteen/app1/modules/common/wallet/wallet_controller.dart';
+import 'package:connect_canteen/app1/modules/common/wallet/transcton_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class BalanceCard extends StatelessWidget {
-  final walletController = Get.put(WalletController());
+  final transctionController = Get.put(TransctionController());
   final String userid;
 
   BalanceCard({super.key, required this.userid});
   @override
   Widget build(BuildContext context) {
+    log("this is user id ::::: $userid   ");
     return Column(
       children: [
-        StreamBuilder<Wallet?>(
-          stream: walletController.getWallet(userid),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Container(
+
+StreamBuilder<List<TransctionResponseMode>>(
+            stream: transctionController.fetchAllTransction(
+                userid, 'texasinternationalcollege'),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Container(
                 width: double.infinity,
                 padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -67,19 +70,19 @@ class BalanceCard extends StatelessWidget {
                   ],
                 ),
               );
-              ;
-            } else if (snapshot.hasError) {
+            
+              } else if (snapshot.hasError) {
               return SizedBox.shrink();
-            } else if (snapshot.data == null) {
-              return Container(
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return Container(
                 width: double.infinity,
                 padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [
-                      Color.fromARGB(255, 237, 240, 240),
-                      Color.fromARGB(255, 218, 218, 218)
-                    ],
+                        Color.fromARGB(255, 245, 255, 255),
+                        Color.fromARGB(255, 200, 232, 200)
+                      ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -113,11 +116,11 @@ class BalanceCard extends StatelessWidget {
                     ),
                   ],
                 ),
-              );
-            } else {
-              Wallet wallet = snapshot.data!;
-              Map<String, double> totals =
-                  walletController.calculateTotals(wallet.transactions);
+                );
+              } else {
+                List<TransctionResponseMode> transactions = snapshot.data!;
+                Map<String, double> totals =
+                    transctionController.calculateTotals(transactions);
               double totalBalance = totals['totalBalance'] ?? 0.0;
 
               return Container(
@@ -125,10 +128,10 @@ class BalanceCard extends StatelessWidget {
                 padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                         colors: [
-                  Color.fromARGB(255, 245, 255, 255),
-                  Color.fromARGB(255, 200, 232, 200)
-                ],
+                      colors: [
+                        Color.fromARGB(255, 245, 255, 255),
+                        Color.fromARGB(255, 200, 232, 200)
+                      ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -153,7 +156,7 @@ class BalanceCard extends StatelessWidget {
                     ),
                     SizedBox(height: 5),
                     Text(
-                      '\NPR 100.00',
+                        '\NPR $totalBalance',
                       style: TextStyle(
                         fontSize: 27.sp,
                         fontWeight: FontWeight.bold,
@@ -164,8 +167,8 @@ class BalanceCard extends StatelessWidget {
                 ),
               );
             }
-          },
-        ),
+            }),
+         
       ],
     );
 

@@ -1,6 +1,10 @@
 import 'dart:async';
+import 'dart:developer';
 
+import 'package:connect_canteen/app/modules/canteen_helper/helper%20main%20screen/main_screen.dart';
 import 'package:connect_canteen/app1/cons/colors.dart';
+import 'package:connect_canteen/app1/cons/prefs.dart';
+import 'package:connect_canteen/app1/modules/canteen_helper/helper_main_screen/helper_main.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/canteen_main_screen/canteen_main_screen.dart';
 import 'package:connect_canteen/app1/modules/common/logoin_option/login_option.dart';
 import 'package:connect_canteen/app1/modules/student_modules/student_mainscreen/student_main_screen.dart';
@@ -24,23 +28,16 @@ class _SplashScreenState extends State<SplashScreen> {
   final loginController = Get.put(LoginController());
   final storage = GetStorage();
 
-  // void handleMainScreen() async {
-  //   if (storage.read(userType) == student) {
-  //     await logincontroller.fetchUserData();
-  //     if (logincontroller
-  //         .userDataResponse.value.response!.first.groupid.isNotEmpty) {
-  //       groupController.fetchGroupData();
-  //     }
-
-  //     logincontroller.userDataResponse.value.response!.isNotEmpty
-  //         ? Get.offAll(() => UserMainScreenView())
-  //         : log("some went wrong");
-  //   } else if (storage.read(userType) == canteenhelper) {
-  //     Get.offAll(() => HelperMainScreen());
-  //   } else {
-  //     Get.offAll(() => CanteenMainScreenView());
-  //   }
-  // }
+  void handleMainScreen() async {
+    log(" this is the user type ${storage.read(userTypes)}");
+    if (storage.read(userTypes) == 'student') {
+      Get.offAll(() => StudentMainScreenView());
+    } else if (storage.read(userTypes) == 'canteen') {
+      Get.offAll(() => CanteenMainScreen());
+    } else {
+      Get.offAll(() => CanteenHelperMainScreen());
+    }
+  }
 
   @override
   void initState() {
@@ -48,7 +45,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     Timer(const Duration(seconds: 1), () {
       loginController.autoLogin()
-          ? Get.offAll(() => StudentMainScreenView())
+          ? handleMainScreen()
           : Get.offAll(() => OnboardingScreen());
     });
   }
@@ -58,6 +55,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    FocusScope.of(context).unfocus();
+
     return Material(
       child: Scaffold(
         backgroundColor: Colors.white,

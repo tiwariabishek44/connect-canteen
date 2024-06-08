@@ -8,8 +8,8 @@ import 'package:connect_canteen/app1/cons/api_end_points.dart';
 import 'package:connect_canteen/app1/cons/style.dart';
 import 'package:connect_canteen/app1/data/api_models/register_api_response.dart';
 import 'package:connect_canteen/app1/modules/common/login/view/login_view.dart';
-import 'package:connect_canteen/app1/modules/common/wallet/wallet_controller.dart';
- 
+import 'package:connect_canteen/app1/modules/common/wallet/transcton_controller.dart';
+
 import 'package:connect_canteen/app1/widget/custom_sncak_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
@@ -17,36 +17,32 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
-class RegisterController extends GetxController {
+class UserRegisterController extends GetxController {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController mobileNumberController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+
   var schoolname = ''.obs;
-  var schoolId = ''.obs;
+  
   var isPasswordVisible = false.obs;
   var iscPasswordVisible = false.obs;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GlobalKey<FormState> registerFormKey = GlobalKey<FormState>();
 
   var termsAndConditions = false.obs;
-  final GlobalKey<FormState> registerFormKey = GlobalKey<FormState>();
-  final walletController = Get.put(WalletController());
-
+ 
   // Check validation for the inputs for login
-  void userRegister(BuildContext context) {
-    if (termsAndConditions.value != true) {
-      CustomSnackbar.error(context, "Agree to read terms and conditions");
-      return;
+  void userRegister(BuildContext context, String schoolName, String schoolId) {
+    if (registerFormKey.currentState!.validate()) {
+      registerUser(schoolName, schoolId);
+      log(" inside the register user");
     }
-    if (!registerFormKey.currentState!.validate()) {}
-    registerUser();
   }
 
 //-------Register Student-------
   var isRegisterLoading = false.obs;
-  Future<void> registerUser() async {
+  Future<void> registerUser(String schoolName, String schoolId) async {
     try {
       isRegisterLoading(true);
 
@@ -66,22 +62,15 @@ class RegisterController extends GetxController {
         'email': emailController.text,
         'groupid': '',
         'classes': '',
-        "schoolId": schoolId.value,
-        'schoolName': schoolname.value,
+        "schoolId": schoolId,
+        'schoolName': schoolName,
         'profilePicture': '',
         "fineAmount": 0,
+        'groupname': '',
+        'groupcod': '',
       });
-      isRegisterLoading(false);
-      log("User registration successful");
-
-      await walletController
-          .createWallet(userCredential.user!.uid, nameController.text)
-          .then((value) {
-        isRegisterLoading(false);
-
-        Get.offAll(LoginView());
-
-        showDialog(
+      Get.back();
+      showDialog(
             context: Get.context!,
             builder: (BuildContext context) {
               return AlertDialog(
@@ -101,7 +90,23 @@ class RegisterController extends GetxController {
                 ),
               );
             });
-      });
+
+  
+    } on FirebaseAuthException catch (e) {
+      // Handle FirebaseAuthException
+      isRegisterLoading.value = false;
+
+      if (e.code == 'user-not-found') {
+        CustomSnackbar.error(Get.context!, 'User Not Fount');
+      } else if (e.code == 'wrong-password') {
+        CustomSnackbar.error(Get.context!, 'Wrong Password');
+      } else if (e.code == 'invalid-credential') {
+        log(e.code);
+        CustomSnackbar.error(Get.context!, 'User is not Register ');
+      } else {
+        log(e.code);
+        CustomSnackbar.error(Get.context!, '${e.code}');
+      }
     } catch (e) {
       isRegisterLoading(false);
       log("Error during user registration: $e");
@@ -170,11 +175,11 @@ class RegisterController extends GetxController {
   @override
   void onClose() {
     // Dispose controllers when the controller is closed
-    nameController.dispose();
-    emailController.dispose();
-    mobileNumberController.dispose();
-    passwordController.dispose();
-    confirmPasswordController.dispose();
+    nameController.clear();
+    emailController.clear();
+    mobileNumberController.clear();
+    passwordController.clear();
+
     super.onClose();
   }
 }

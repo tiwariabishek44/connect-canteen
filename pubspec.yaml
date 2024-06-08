@@ -65,6 +65,8 @@ dependencies:
   image_cropper: ^5.0.1
   dotted_border: ^2.1.0
   flutter_screenutil: ^5.9.3
+  image: ^4.2.0
+  font_awesome_flutter: ^10.7.0
 
 dev_dependencies:
   flutter_test:

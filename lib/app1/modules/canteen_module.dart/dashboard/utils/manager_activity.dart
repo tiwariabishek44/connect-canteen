@@ -2,13 +2,17 @@ import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:connect_canteen/app1/cons/style.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/dashboard/utils/clickable_action_icon.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/menue/menue_page.dart';
-import 'package:connect_canteen/app1/modules/canteen_module.dart/order_requirement/order_requirement.dart';
+import 'package:connect_canteen/app1/modules/canteen_module.dart/report/canteen_report_controller.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/report/report_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class ManagerActivity extends StatelessWidget {
+  final canteenDailyReport = Get.put(CanteenReportController());
+
+  ManagerActivity({Key? key, required this.date}) : super(key: key);
+  final String date;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -58,16 +62,11 @@ class ManagerActivity extends StatelessWidget {
                 icon: Icons.analytics,
                 label: 'Daily Report',
                 onTap: () {
-                  Get.to(() => CanteenDailyReport(),
-                      transition: Transition.cupertinoDialog);
-                  // // Handle click for Analytics\
-                },
-              ),
-              buildClickableIcon(
-                icon: Icons.analytics,
-                label: 'Requirement',
-                onTap: () {
-                  Get.to(() => OrderRequirementPage(),
+                  canteenDailyReport.selectedDate.value = date;
+                  Get.to(
+                      () => CanteenDailyReport(
+                            isDailyReport: true,
+                          ),
                       transition: Transition.cupertinoDialog);
                   // // Handle click for Analytics\
                 },

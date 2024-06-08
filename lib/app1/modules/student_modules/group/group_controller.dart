@@ -5,6 +5,7 @@ import 'package:connect_canteen/app1/cons/api_end_points.dart';
 import 'package:connect_canteen/app1/cons/prefs.dart';
 import 'package:connect_canteen/app1/model/group_model.dart';
 import 'package:connect_canteen/app1/model/student_model.dart';
+import 'package:connect_canteen/app1/widget/custom_sncak_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -103,7 +104,11 @@ class GroupController extends GetxController {
         final studentDocRef = firestore
             .collection(ApiEndpoints.prodcutionStudentCollection)
             .doc(userid);
-        await studentDocRef.update({'groupid': userid});
+        await studentDocRef.update({
+          'groupid': userid,
+          'groupcod': groupCodeController.text.trim(),
+          'groupname': groupNameController.text.trim()
+        });
         groupCreateLoading(false);
 
         Get.back();
@@ -197,5 +202,81 @@ class GroupController extends GetxController {
         return null;
       }
     });
+  }
+
+  var loading = false.obs;
+// to remove user form group.
+  Future<void> removeMember(
+    String studetnId,
+  ) async {
+    try {
+      loading(true);
+      // Query for the document with the given product ID
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection(ApiEndpoints.prodcutionStudentCollection)
+          .where('userid',
+              isEqualTo: studetnId) // Assuming productId is the field name
+          .get();
+
+      // Check if any documents match the query
+      if (querySnapshot.docs.isNotEmpty) {
+        // Update the 'active' field of the first document that matches the query
+        await querySnapshot.docs.first.reference.update({
+          'groupid': '',
+          'groupcod': '',
+        });
+        loading(false);
+        CustomSnackbar.success(Get.context!, 'updated successfully');
+      } else {
+        loading(false);
+
+        Get.snackbar('Error', 'No student found with ID');
+      }
+      loading(false);
+    } catch (e) {
+      loading(false);
+
+      log(e.toString());
+      Get.snackbar('Error', 'Failed to update product status: $e');
+    }
+  }
+
+// -------------add friend to group
+
+  Future<void> addMember(
+    String studetnId,
+    String groupid,
+    String groupcode,
+  ) async {
+    try {
+      loading(true);
+      // Query for the document with the given product ID
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection(ApiEndpoints.prodcutionStudentCollection)
+          .where('userid',
+              isEqualTo: studetnId) // Assuming productId is the field name
+          .get();
+
+      // Check if any documents match the query
+      if (querySnapshot.docs.isNotEmpty) {
+        // Update the 'active' field of the first document that matches the query
+        await querySnapshot.docs.first.reference.update({
+          'groupid': groupid,
+          'groupcod': groupcode,
+        });
+        loading(false);
+        CustomSnackbar.success(Get.context!, 'updated successfully');
+      } else {
+        loading(false);
+
+        Get.snackbar('Error', 'No student found with ID');
+      }
+      loading(false);
+    } catch (e) {
+      loading(false);
+
+      log(e.toString());
+      Get.snackbar('Error', 'Failed to update product status: $e');
+    }
   }
 }

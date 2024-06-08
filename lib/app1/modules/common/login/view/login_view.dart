@@ -1,8 +1,10 @@
+import 'package:connect_canteen/app/modules/common/register/register_controller.dart';
 import 'package:connect_canteen/app/widget/custom_loging_widget.dart';
 import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:connect_canteen/app1/cons/style.dart';
 import 'package:connect_canteen/app1/modules/common/forget_password/forget_password_view.dart';
 import 'package:connect_canteen/app1/modules/common/login/login_controller.dart';
+import 'package:connect_canteen/app1/modules/common/login/utils/option_choose.dart';
 import 'package:connect_canteen/app1/modules/common/logoin_option/login_option_controller.dart';
 import 'package:connect_canteen/app1/modules/common/registration/view/registration_view.dart';
 import 'package:connect_canteen/app1/modules/common/registration/view/school_choose.dart';
@@ -24,7 +26,7 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   final loginController = Get.put(LoginController());
   final loginOptionController = Get.put(LoginOptionController());
-
+  final registercontroller = Get.put(RegisterController());
   final storage = GetStorage();
   @override
   void initState() {
@@ -41,7 +43,7 @@ class _LoginViewState extends State<LoginView> {
             child: Padding(
               padding: AppPadding.screenHorizontalPadding,
               child: Form(
-                key: loginController.loginFormKey,
+                key: loginController.formkeys,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -51,7 +53,11 @@ class _LoginViewState extends State<LoginView> {
                     Obx(() => WelcomeHeading(
                         mainHeading: 'Welcome to Connect Canteen',
                         subHeading:
-                            "Login As ${loginOptionController.isStudent.value ? 'Student' : 'Canteen'}")),
+                            "Login As ${loginOptionController.userTypes.value == 'student' ? 'Student' : 'Canteen'}")),
+                    OptionChoose(),
+                    SizedBox(
+                      height: 3.h,
+                    ),
                     TextFormFieldWidget(
                       textInputType: TextInputType.emailAddress,
                       hintText: "Email",
@@ -68,7 +74,6 @@ class _LoginViewState extends State<LoginView> {
                       actionKeyboard: TextInputAction.next,
                       prefixIcon: const Icon(Icons.email_outlined),
                     ),
-
                     SizedBox(
                       height: 3.h,
                     ),
@@ -127,7 +132,7 @@ class _LoginViewState extends State<LoginView> {
                     SizedBox(
                       height: 5.h,
                     ),
-                    loginOptionController.isStudent.value
+                    loginOptionController.userTypes.value == 'student'
                         ? Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 16.0),
@@ -166,7 +171,7 @@ class _LoginViewState extends State<LoginView> {
                     SizedBox(
                       height: 1.5.h,
                     ),
-                    loginOptionController.isStudent.value
+                    loginOptionController.userTypes.value == 'student'
                         ? Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -205,12 +210,5 @@ class _LoginViewState extends State<LoginView> {
             : SizedBox.shrink())
       ],
     );
-  }
-
-  @override
-  void dispose() {
-    loginController.emailController.clear();
-    loginController.passwordController.clear();
-    super.dispose();
   }
 }

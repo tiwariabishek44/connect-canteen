@@ -9,7 +9,8 @@ import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class RemaningOrderSection extends StatelessWidget {
-  RemaningOrderSection({super.key});
+  final String date;
+  RemaningOrderSection({super.key, required this.date});  
   final canteenDailyReport = Get.put(CanteenReportController());
 
   @override
@@ -45,7 +46,7 @@ class RemaningOrderSection extends StatelessWidget {
             ),
           ),
           StreamBuilder<List<OrderResponse>>(
-            stream: canteenDailyReport.getallUncheckoutOrder(),
+            stream: canteenDailyReport.getallUncheckoutOrder(date),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Column(

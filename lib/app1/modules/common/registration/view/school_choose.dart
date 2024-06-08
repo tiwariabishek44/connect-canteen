@@ -1,11 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connect_canteen/app1/cons/api_end_points.dart';
+import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:connect_canteen/app1/modules/common/registration/registration_controller.dart';
+import 'package:connect_canteen/app1/modules/common/registration/view/registration_view.dart';
+import 'package:connect_canteen/app1/widget/welcome_heading.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:connect_canteen/app1/modules/common/registration/view/registration_view.dart';
-import 'package:connect_canteen/app1/cons/colors.dart';
-import 'package:connect_canteen/app1/widget/welcome_heading.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -13,7 +13,7 @@ class SchoolChoose extends StatelessWidget {
   SchoolChoose({Key? key}) : super(key: key);
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final registerController = Get.put(RegisterController());
+  final registerController = Get.put(UserRegisterController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,9 +99,11 @@ class SchoolChoose extends StatelessWidget {
                         onTap: () {
                           registerController.schoolname.value =
                               schoolData["name"];
-                          registerController.schoolId.value =
-                              schoolData["schoolId"];
-                          Get.to(() => RegisterView());
+                
+                          Get.off(() => RegisterView(
+                                schoolname: schoolData["name"],
+                                schoolId: schoolData["schoolId"],
+                              ));
                         },
                         child: Padding(
                           padding: EdgeInsets.only(bottom: 3.h),

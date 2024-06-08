@@ -12,9 +12,17 @@ import 'package:shimmer/shimmer.dart';
 
 class FriendsPage extends StatelessWidget {
   final String grade;
+  final String groupid;
+  final String groupcod;
+  final String groupname;
   final studetnListControllre = Get.put(StudetnListController());
 
-  FriendsPage({super.key, required this.grade});
+  FriendsPage(
+      {super.key,
+      required this.groupname,
+      required this.grade,
+      required this.groupid,
+      required this.groupcod});
   void showAlreadyInGroupDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -100,7 +108,8 @@ class FriendsPage extends StatelessWidget {
                       onTap: () {
                         student.groupid.isNotEmpty
                             ? showAlreadyInGroupDialog(context)
-                            : null;
+                            : studetnListControllre.addMember(
+                                student.userid, groupid, groupcod, groupname);
                       },
                       child: Container(
                         padding: EdgeInsets.all(8.0),
@@ -127,6 +136,24 @@ class FriendsPage extends StatelessWidget {
                                           fontWeight: FontWeight.w400,
                                         ),
                                       ),
+                                      SizedBox(
+                                        width: 2.w,
+                                      ),
+                                      student.groupcod != ''
+                                          ? CircleAvatar(
+                                              radius: 7.5,
+                                              backgroundColor: Color.fromARGB(
+                                                  255,
+                                                  0,
+                                                  0,
+                                                  0), // Adjust color as needed
+                                              child: Icon(
+                                                Icons.check,
+                                                color: Colors.white,
+                                                size: 9,
+                                              ),
+                                            )
+                                          : SizedBox.shrink()
                                     ],
                                   ),
                                 ],
@@ -206,7 +233,7 @@ class FriendsPage extends StatelessWidget {
                 },
               ),
             );
-          }
+          } 
         },
       ),
     );

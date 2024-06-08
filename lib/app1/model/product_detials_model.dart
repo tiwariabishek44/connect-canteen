@@ -9,3 +9,16 @@ class ProductDetail {
     required this.totalQuantity,
   });
 }
+
+
+class GruoupedProductDetail {
+  final String groupName;
+  int totalQuantity;
+  final String groupCod;
+
+  GruoupedProductDetail({
+    required this.groupName,
+    required this.groupCod,
+    required this.totalQuantity,
+  });
+}

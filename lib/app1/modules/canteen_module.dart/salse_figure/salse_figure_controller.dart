@@ -12,7 +12,7 @@ class SalseFigureController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Stream to get all orders of the group
-  Stream<List<OrderResponse>> getAllOrder() {
+  Stream<List<OrderResponse>> getAllOrder(String date) {
     DateTime now = DateTime.now();
     NepaliDateTime nepaliDateTime = NepaliDateTime.fromDateTime(now);
     final todayDate = DateFormat('dd/MM/yyyy', 'en').format(nepaliDateTime);
@@ -20,7 +20,7 @@ class SalseFigureController extends GetxController {
     return _firestore
         .collection(ApiEndpoints.productionOrderCollection)
         // Filter documents by date field
-        .where('date', isEqualTo: todayDate)
+        .where('date', isEqualTo: date)
         .snapshots()
         .map(
           (snapshot) => snapshot.docs

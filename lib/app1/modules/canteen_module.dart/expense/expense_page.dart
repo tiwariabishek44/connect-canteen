@@ -1,8 +1,9 @@
 import 'package:connect_canteen/app/config/style.dart';
-import 'package:connect_canteen/app1/modules/canteen_module.dart/expense/utils/activity.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/expense/utils/daily_expense.dart';
+import 'package:connect_canteen/app1/modules/canteen_module.dart/expense/utils/item_search_page.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/salse_figure/salse_figure.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:nepali_date_picker/nepali_date_picker.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -53,10 +54,6 @@ class ExpensePage extends StatelessWidget {
               SizedBox(
                 height: 2.h,
               ),
-              Activity(),
-              SizedBox(
-                height: 1.h,
-              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -96,6 +93,8 @@ class ExpensePage extends StatelessWidget {
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
         onPressed: () {
+          Get.to(() => ItemSearchPage(),
+              transition: Transition.cupertinoDialog);
           // Add purchase logic here
         },
         label: Text('Add Purchase'),

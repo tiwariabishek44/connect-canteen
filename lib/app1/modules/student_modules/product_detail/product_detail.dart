@@ -1,18 +1,26 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connect_canteen/app/config/prefs.dart';
 import 'package:connect_canteen/app/widget/custom_loging_widget.dart';
 import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:connect_canteen/app1/cons/style.dart';
 import 'package:connect_canteen/app1/model/food_order_time_model.dart';
+import 'package:connect_canteen/app1/model/meal_time.dart';
 import 'package:connect_canteen/app1/model/product_model.dart';
+import 'package:connect_canteen/app1/modules/canteen_module.dart/mealTime/meal_time_controller.dart';
 import 'package:connect_canteen/app1/modules/common/login/login_controller.dart';
-import 'package:connect_canteen/app1/modules/common/wallet/wallet_controller.dart';
+import 'package:connect_canteen/app1/modules/common/wallet/transcton_controller.dart';
 import 'package:connect_canteen/app1/modules/student_modules/product_detail/controller.dart';
 import 'package:connect_canteen/app1/modules/student_modules/product_detail/utils/info_widget.dart';
 import 'package:connect_canteen/app1/modules/student_modules/product_detail/utils/no_group.dart';
+import 'package:connect_canteen/app1/modules/student_modules/product_detail/utils/time_off.dart';
 import 'package:connect_canteen/app1/modules/student_modules/product_detail/utils/update_profile_popup.dart';
 import 'package:connect_canteen/app1/widget/order_cornfirmation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:nepali_utils/nepali_utils.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -27,18 +35,60 @@ class ProductDetailPage extends StatefulWidget {
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
   final loignController = Get.put(LoginController());
-  final walletController = Get.put(WalletController());
+  final transctionController = Get.put(TransctionController());
   final addOrderControllre = Get.put(AddOrderController());
-  int quantity = 1; // Initial quantity
-  final List<FoodOrderTime> foodOrdersTime = [
-    FoodOrderTime(mealTime: "12:30", orderHoldTime: "8:00"),
-    FoodOrderTime(mealTime: "1:15", orderHoldTime: "8:00"),
-    FoodOrderTime(mealTime: "2:00", orderHoldTime: "8:00"),
-    FoodOrderTime(mealTime: "1:15", orderHoldTime: "8:00"),
-    FoodOrderTime(mealTime: "2:00", orderHoldTime: "8:00"),
-  ];
+  final mealTimeController = Get.put(MealTimeController());
+  void _showOrderEndPopup(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Order Time Ended"),
+          content: Text("Your order time has ended for today."),
+          actions: [
+            TextButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void checkTime(String timeString, String mealtime, String restriction) {
+    DateTime now = DateTime.now();
+    DateTime specifiedTime = DateFormat.Hm().parse(timeString);
+
+    // Set today's date for comparison
+    specifiedTime = DateTime(
+        now.year, now.month, now.day, specifiedTime.hour, specifiedTime.minute);
+    if (restriction == 'true') {
+      if (now.isAfter(specifiedTime)) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CustomAlertDialog(timeString: timeString);
+          },
+        );
+      } else {
+        log("You are in time.");
+        addOrderControllre.mealtime.value = mealtime;
+      }
+    } else {
+      addOrderControllre.mealtime.value = mealtime;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    DateTime now = DateTime.now();
+
+    NepaliDateTime nepaliDateTime = NepaliDateTime.fromDateTime(now);
+    final todayDate = DateFormat('dd/MM/yyyy\'', 'en').format(nepaliDateTime);
+
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       body: Stack(
@@ -90,9 +140,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 ),
               ),
             ),
-            
-            
-             
           ),
           Positioned(
             top: 5.h,
@@ -176,7 +223,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           ),
                         ),
                         Text(
-                          "Rs.200",
+                          "Rs ${widget.product.price.toInt()}",
                           style: TextStyle(
                               fontSize: 19.sp, fontWeight: FontWeight.w400),
                         )
@@ -199,10 +246,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-
-
                             Container(
-                              padding: EdgeInsets.all(16),
+                              padding: EdgeInsets.all(10),
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
                                   colors: [
@@ -243,17 +288,17 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                                               "Sorry, you are not in any group.",
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
-                                                fontSize: 19.sp,
+                                                fontSize: 16.sp,
                                                 color: Colors.black,
                                               ),
                                             ),
                                           ],
                                         )
                                       : Text(
-                                          'Your order is under group ${loignController.studentDataResponse.value!.groupcod}',
+                                          'Your group code: ${loignController.studentDataResponse.value!.groupcod}',
                                           style: TextStyle(
                                             fontWeight: FontWeight.w400,
-                                            fontSize: 19.sp,
+                                            fontSize: 16.sp,
                                             color: Colors.black,
                                           ),
                                           maxLines: 2,
@@ -264,43 +309,101 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             SizedBox(
                               height: 2.h,
                             ),
-                            Text(
-                              "Select Meal Time:-   ",
-                              style: AppStyles.titleStyle,
+                            Row(
+                              children: [
+                                Text(
+                                  "Select Meal Time:-  ",
+                                  style: AppStyles.titleStyle,
+                                ),
+                                Obx(() => Text(
+                                      "${addOrderControllre.mealtime.value}",
+                                      style: TextStyle(
+                                        fontSize: 20.sp,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    )),
+                              ],
                             ),
-                            GridView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                            StreamBuilder<List<MealTime>>(
+                              stream: mealTimeController
+                                  .getAllMealTimes('texasinternationalcollege'),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return SizedBox(
+                                    height: 2.h,
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return SizedBox();
+                                } else if (snapshot.hasData) {
+                                  List<MealTime> mealTimes = snapshot.data!;
+                                  return GridView.builder(
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    gridDelegate:
+                                        const SliverGridDelegateWithFixedCrossAxisCount(
                                       crossAxisCount: 3,
                                       crossAxisSpacing: 8.0,
                                       mainAxisSpacing: 10.0,
-                                      childAspectRatio: 3.5),
-                              itemCount: foodOrdersTime.length,
-                              itemBuilder: (context, index) {
-                                return GestureDetector(
-                                  onTap: () {},
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color:
-                                            Color.fromARGB(255, 166, 167, 167),
-                                      ),
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: Color.fromARGB(255, 255, 255, 255),
+                                      childAspectRatio: 3.5,
                                     ),
-                                    child: Center(
-                                      child: Text(
-                                        foodOrdersTime[index].mealTime,
-                                        style: TextStyle(
-                                            fontSize: 18.0,
-                                            color: Color.fromARGB(
-                                                255, 84, 82, 82)),
-                                      ),
-                                    ),
-                                  ),
-                                );
+                                    itemCount: mealTimes.length,
+                                    itemBuilder: (context, index) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          checkTime(
+                                              mealTimes[index].finalOrderTime,
+                                              mealTimes[index].mealTime,
+                                              mealTimes[index].restriction);
+
+                                          // if (1 == 1) {
+                                          //   _showOrderEndPopup(context);
+                                          // } else {
+                                          //   log('This is the meal time ${mealTimes[index].finalOrderTime}');
+                                          //   addOrderControllre.mealtime.value =
+                                          //       mealTimes[index].mealTime;
+                                          // }
+                                        },
+                                        child: Obx(() => Container(
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                  color: Color.fromARGB(
+                                                      255, 166, 167, 167),
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                color: addOrderControllre
+                                                            .mealtime.value ==
+                                                        mealTimes[index]
+                                                            .mealTime
+                                                    ? Color.fromARGB(
+                                                        255, 0, 0, 0)
+                                                    : Colors.white,
+                                              ),
+                                              child: Center(
+                                                child: Text(
+                                                  mealTimes[index].mealTime,
+                                                  style: TextStyle(
+                                                    fontSize: 18.0,
+                                                    color: addOrderControllre
+                                                                .mealtime
+                                                                .value ==
+                                                            mealTimes[index]
+                                                                .mealTime
+                                                        ? Color.fromARGB(
+                                                            255, 255, 255, 255)
+                                                        : Colors.black,
+                                                  ),
+                                                ),
+                                              ),
+                                            )),
+                                      );
+                                    },
+                                  );
+                                } else {
+                                  return Center(
+                                      child: Text('No data available'));
+                                }
                               },
                             ),
                           ],
@@ -317,7 +420,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       color:
                           Color.fromARGB(255, 222, 219, 219).withOpacity(0.5),
                     ),
-                    
+
                     SizedBox(height: 1.h),
 
                     Container(
@@ -353,11 +456,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               padding: const EdgeInsets.all(12.0),
                               child: Column(
                                 children: [
-                                  topicRow('Order For ', 'date'),
-                                  topicRow('Subtotal',
+                                  topicRow('Order For ', todayDate),
+                                  topicRow('Per Item',
                                       "Rs. ${widget.product.price.toInt()}"),
-                                  topicRow('Grand Total',
-                                      'Rs. ${widget.product.price.toInt()}'),
+                                  Obx(
+                                    () => topicRow('Grand Total',
+                                        'Rs. ${widget.product.price.toInt() * addOrderControllre.quantity.value}'),
+                                  )
                                 ],
                               ),
                             ),
@@ -374,10 +479,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               ),
             ),
           ),
-
           Positioned(
               top: 40.h,
-              width: 40.2,
+              left: 40.w,
               child: Obx(() => addOrderControllre.isLoading.value
                   ? LoadingWidget()
                   : SizedBox.shrink()))
@@ -412,20 +516,20 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         icon: Icon(Icons.remove, color: Colors.teal),
                         onPressed: () {
                           // Decrement quantity logic
-                          setState(() {
-                            if (quantity > 1) {
-                              quantity--;
-                            }
-                          });
+                          if (addOrderControllre.quantity.value > 1) {
+                            addOrderControllre.quantity.value -= 1;
+                          }
+                           
+                           
                         },
                       ),
                     ),
                     Container(
                       padding: const EdgeInsets.all(12.0),
-                      child: Text(
-                        '$quantity',
+                      child: Obx(() => Text(
+                            '${addOrderControllre.quantity.value}',
                         style: TextStyle(fontSize: 18, color: Colors.black87),
-                      ),
+                          )),
                     ),
                     Container(
                       padding: const EdgeInsets.all(0.0),
@@ -444,9 +548,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         icon: Icon(Icons.add, color: Colors.teal),
                         onPressed: () {
                           // Increment quantity logic
-                          setState(() {
-                            quantity++;
-                          });
+                          addOrderControllre.quantity.value += 1;
+ 
                         },
                       ),
                     ),
@@ -458,44 +561,71 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 child: SizedBox(
                   height: 6.h,
                   child: ElevatedButton(
-                    onPressed: () {
-                      addOrderControllre.addDummyOrder(context);
+                    onPressed: () async {
+                      // addOrderControllre.addDummyOrder(context);
 
-                      // if (walletController.totalbalances.value <=
-                      //     widget.product.price.toInt()) {
-                      //   showDialog(
-                      //     context: context,
-                      //     builder: (BuildContext context) {
-                      //       return InfoDialog();
-                      //     },
-                      //   );
-                      // } else if (loignController
-                      //             .studentDataResponse.value!.classes !=
-                      //         '' ||
-                      //     loignController
-                      //             .studentDataResponse.value!.profilePicture !=
-                      //         '') {
-                      //   showUpdateProfileDialog(Get.context!);
-                      // } else if (loignController
-                      //         .studentDataResponse.value!.groupid ==
-                      //     '') {
-                      //   showDialog(
-                      //     context: context,
-                      //     builder: (BuildContext context) {
-                      //       return NoGroup(
-                      //         heading: 'You are not in any group',
-                      //         subheading: "Make a group or join a group",
-                      //       );
-                      //     },
-                      //   );
-                      // } else {
-                      //   showDialog(
-                      //     context: context,
-                      //     builder: (BuildContext context) {
-                      //       return ConfirmationDialog();
-                      //     },
-                      //   );
-                      // }
+                      if (transctionController.totalbalances.value <=
+                          (widget.product.price.toInt() *
+                              addOrderControllre.quantity.value)) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return InfoDialog();
+                          },
+                        );
+                      } else if (loignController
+                                  .studentDataResponse.value!.classes ==
+                              '' ||
+                          loignController
+                                  .studentDataResponse.value!.profilePicture ==
+                              '') {
+                        showUpdateProfileDialog(Get.context!);
+                      } else if (loignController
+                              .studentDataResponse.value!.groupid ==
+                          '') {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return NoGroup(
+                              heading: 'You are not in any group',
+                              subheading: "Make a group or join a group",
+                            );
+                          },
+                        );
+                      } else if (addOrderControllre.mealtime.value == '') {
+                        showNoSelectionMessage();
+                      } else {
+                        log(" this is he group name ::::${loignController.studentDataResponse.value!.groupname}");
+                        await addOrderControllre.addItemToOrder(context,
+                            groupName: loignController
+                                .studentDataResponse.value!.groupname,
+                            customerImage: loignController
+                                .studentDataResponse.value!.profilePicture,
+                            classs: loignController
+                                .studentDataResponse.value!.classes,
+                            customer:
+                                loignController.studentDataResponse.value!.name,
+                            groupid: loignController
+                                .studentDataResponse.value!.groupid,
+                            cid: loignController
+                                .studentDataResponse.value!.userid,
+                            productName: widget.product.name,
+                            productImage: widget.product.imageUrl,
+                            price: (widget.product.price.toInt() *
+                                    addOrderControllre.quantity.value)
+                                .toDouble(),
+                            quantity: addOrderControllre.quantity.value,
+                            groupcod: loignController
+                                .studentDataResponse.value!.groupcod,
+                            checkout: 'false',
+                            mealtime: addOrderControllre.mealtime.value,
+                            date: todayDate,
+                            orderHoldTime: '',
+                            scrhoolrefrenceid: loignController
+                                .studentDataResponse.value!.schoolId,
+                            lastTime: transctionController.totalbalances.value
+                                .toString());
+                      }
 
                       // Add to cart logic
                     },
@@ -532,8 +662,19 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             style: AppStyles.listTileTitle,
           ),
           SizedBox(width: 8), //  Add spacing between topic and subtopic
-          Text(subtopic, style: AppStyles.listTileTitle),
+          Text(subtopic,
+              style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w400)),
         ],
+      ),
+    );
+  }
+
+  void showNoSelectionMessage() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.green,
+        content: Text('Select Time Slots'),
+        duration: Duration(seconds: 2),
       ),
     );
   }

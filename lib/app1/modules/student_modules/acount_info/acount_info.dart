@@ -1,15 +1,24 @@
+import 'dart:developer';
+
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connect_canteen/app/config/prefs.dart';
 import 'package:connect_canteen/app/config/style.dart';
 import 'package:connect_canteen/app1/cons/colors.dart';
+import 'package:connect_canteen/app1/model/student_model.dart';
+import 'package:connect_canteen/app1/modules/common/login/login_controller.dart';
 import 'package:connect_canteen/app1/modules/student_modules/acount_info/account_info_controller.dart';
 import 'package:connect_canteen/app1/modules/student_modules/acount_info/class_update.dart';
 import 'package:connect_canteen/app1/modules/student_modules/acount_info/name_update.dart';
+import 'package:connect_canteen/app1/modules/student_modules/acount_info/utils/photo_permission.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:shimmer/shimmer.dart';
 
 class AccountInfo extends StatelessWidget {
   AccountInfo({super.key});
   final accountInfoController = Get.put(AccountInfoController());
+  final loignController = Get.put(LoginController());
 
   @override
   Widget build(BuildContext context) {
@@ -36,101 +45,171 @@ class AccountInfo extends StatelessWidget {
       ),
       body: Padding(
         padding: AppPadding.screenHorizontalPadding,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Obx(() => Stack(
-                  children: [
-                    CircleAvatar(
-                      radius: 35.sp,
-                      backgroundColor: const Color.fromARGB(255, 255, 255, 255)
-                          .withOpacity(0.4),
-                      child: accountInfoController.image.value.path.isEmpty
-                          ? CircleAvatar(
-                              radius: 33.4.sp,
-                              child: Icon(
-                                Icons.person,
-                                size: 38.sp,
-                                color: Colors.white,
+        child: StreamBuilder<StudentDataResponse?>(
+          stream: loignController.getStudetnData(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Container();
+            } else if (snapshot.hasError) {
+              return SizedBox.shrink();
+            } else if (snapshot.data == null) {
+              return Center();
+            } else {
+              StudentDataResponse studetnData = snapshot.data!;
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 34.sp,
+                        backgroundColor: Colors.white,
+                        child: studetnData.profilePicture == ''
+                            ? CircleAvatar(
+                                radius: 34.sp,
+                                backgroundColor:
+                                    const Color.fromARGB(255, 236, 230, 230),
+                                child: Icon(
+                                  Icons.person,
+                                  size: 38.sp,
+                                  color: Colors.grey,
+                                ),
+                              )
+                            : CachedNetworkImage(
+                                progressIndicatorBuilder:
+                                    (context, url, downloadProgress) => Opacity(
+                                  opacity: 0.8,
+                                  child: Shimmer.fromColors(
+                                    baseColor: const Color.fromARGB(
+                                        255, 248, 246, 246),
+                                    highlightColor:
+                                        Color.fromARGB(255, 238, 230, 230),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(50),
+                                        color:
+                                            Color.fromARGB(255, 161, 157, 157),
+                                      ),
+                                      width: 14.h,
+                                      height: 14.h,
+                                    ),
+                                  ),
+                                ),
+                                imageUrl: studetnData.profilePicture,
+                                imageBuilder: (context, imageProvider) =>
+                                    Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    image: DecorationImage(
+                                      image: imageProvider,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                errorWidget: (context, url, error) => Icon(
+                                  Icons.person,
+                                  color: Colors.grey,
+                                ),
                               ),
-                              backgroundColor:
-                                  const Color.fromARGB(255, 224, 218, 218),
-                            )
-                          : ClipOval(
-                              child: Image.file(
-                                accountInfoController.image.value!,
-                                fit: BoxFit.fill,
-                                width: 35
-                                    .w, // Adjust the width and height as needed
-                                height: 35.w,
-                              ),
+                      ),
+                      Positioned(
+                        bottom: 10.sp,
+                        right: 16,
+                        child: GestureDetector(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return PhotoPermission(
+                                  studentId: studetnData.userid,
+                                );
+                              },
+                            );
+                          },
+                          child: CircleAvatar(
+                            backgroundColor:
+                                const Color.fromARGB(255, 235, 232, 232),
+                            radius: 20.sp,
+                            child: Icon(
+                              Icons.edit,
+                              size: 20.0.sp,
+                              color: Colors.black,
                             ),
-                    ),
-                    Positioned(
-                      bottom: 10.sp,
-                      right: 16,
-                      child: GestureDetector(
-                        onTap: () {
-                          accountInfoController.pickImages();
-                        },
-                        child: CircleAvatar(
-                          backgroundColor:
-                              const Color.fromARGB(255, 235, 232, 232),
-                          radius: 20.sp,
-                          child: Icon(
-                            Icons.edit,
-                            size: 20.0.sp,
-                            color: Colors.black,
                           ),
                         ),
-                      ),
-                    )
-                  ],
-                )),
-            SizedBox(
-              height: 5.h,
-            ),
-            Text(
-              " Basic info",
-              style: TextStyle(fontWeight: FontWeight.w800, fontSize: 19.sp),
-            ),
-            SizedBox(
-              height: 1.h,
-            ),
-            buildCustomListTile(
-                onTap: () {
-                  Get.to(
-                      () => NameUpdate(
-                            initialName: "Abishek Tiwari",
-                          ),
-                      transition: Transition.cupertinoDialog);
-                },
-                title: 'Name ',
-                subtitle: 'Abishek Tiwari',
-                trailing: Icons.chevron_right),
-            buildCustomListTile(
-                onTap: () {
-                  Get.to(
-                      () => ClassUpdate(
-                            initialName: "Class",
-                            classOptions: ['Class 1', "Class 2", "Class 3"],
-                          ),
-                      transition: Transition.cupertinoDialog);
-                },
-                title: 'Class ',
-                subtitle: 'Class 12',
-                trailing: Icons.chevron_right),
-            buildCustomListTile(
-                onTap: () {},
-                title: 'Phone number ',
-                subtitle: '9742555741',
-                trailing: Icons.chevron_right),
-            buildCustomListTile(
-                onTap: () {},
-                title: 'Email ',
-                subtitle: 'tiwariabishek44@gmail.com',
-                trailing: Icons.chevron_right)
-          ],
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: 5.h,
+                  ),
+                  Text(
+                    " Basic info",
+                    style:
+                        TextStyle(fontWeight: FontWeight.w800, fontSize: 19.sp),
+                  ),
+                  SizedBox(
+                    height: 1.h,
+                  ),
+                  buildCustomListTile(
+                      istick: false,
+                      onTap: () {
+                        Get.to(
+                            () => NameUpdate(
+                                  userId: studetnData.userid,
+                                  initialName: loignController
+                                      .studentDataResponse.value!.name,
+                                ),
+                            transition: Transition.cupertinoDialog);
+                      },
+                      title: 'Name ',
+                      subtitle: studetnData.name,
+                      trailing: Icons.chevron_right),
+                  StreamBuilder<List<String>>(
+                    stream: accountInfoController
+                        .getClassNames("texasinternationalcollege"),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return SizedBox.shrink();
+                      } else if (snapshot.hasError) {
+                        return SizedBox.shrink();
+                      } else {
+                        List<String> classNames = snapshot.data ?? [];
+
+                        return buildCustomListTile(
+                            istick: false,
+                            onTap: () {
+                              Get.to(
+                                  () => ClassUpdate(
+                                        userId: studetnData.userid,
+                                        initialName: studetnData.classes,
+                                        classOptions: classNames,
+                                      ),
+                                  transition: Transition.cupertinoDialog);
+                            },
+                            title: 'Class ',
+                            subtitle: studetnData.classes,
+                            trailing: Icons.chevron_right);
+                      }
+                    },
+                  ),
+                  buildCustomListTile(
+                      onTap: () {},
+                      istick: true,
+                      title: 'Phone number ',
+                      subtitle: studetnData.phone,
+                      trailing: Icons.chevron_right),
+                  buildCustomListTile(
+                      istick: true,
+                      onTap: () {},
+                      title: 'Email ',
+                      subtitle: studetnData.email,
+                      trailing: Icons.chevron_right)
+                ],
+              );
+            }
+          },
         ),
       ),
     );
@@ -141,6 +220,7 @@ class AccountInfo extends StatelessWidget {
     required String subtitle,
     required IconData trailing,
     required VoidCallback onTap,
+    required bool istick,
   }) {
     return ListTile(
       title: Text(
@@ -148,12 +228,31 @@ class AccountInfo extends StatelessWidget {
         style: TextStyle(
             fontWeight: FontWeight.w500, fontSize: 19.sp, color: Colors.black),
       ),
-      subtitle: Text(
-        subtitle,
-        style: TextStyle(
-            fontWeight: FontWeight.w400,
-            fontSize: 17.sp,
-            color: Colors.grey[700]),
+      subtitle: Row(
+        children: [
+          Text(
+            subtitle,
+            style: TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: 17.sp,
+                color: Colors.grey[700]),
+          ),
+          SizedBox(
+            width: 5.w,
+          ),
+          istick
+              ? CircleAvatar(
+                  radius: 7.5,
+                  backgroundColor:
+                      Color.fromARGB(255, 0, 0, 0), // Adjust color as needed
+                  child: Icon(
+                    Icons.check,
+                    color: Colors.white,
+                    size: 9,
+                  ),
+                )
+              : SizedBox.shrink()
+        ],
       ),
       trailing: Icon(
         trailing,

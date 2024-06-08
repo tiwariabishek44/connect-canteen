@@ -100,7 +100,7 @@ class LocalNotifications {
             importance: Importance.max,
             priority: Priority.high,
             ticker: 'ticker',
-            playSound: true,
+            playSound: false,
             sound: RawResourceAndroidNotificationSound('notification'),
             largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
             styleInformation: BigPictureStyleInformation(
@@ -157,7 +157,7 @@ class LocalNotifications {
             importance: Importance.max,
             priority: Priority.high,
             ticker: 'ticker',
-            playSound: true,
+            playSound: false,
             sound: RawResourceAndroidNotificationSound('notification'),
             largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
           ),

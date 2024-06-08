@@ -3,7 +3,9 @@ import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:connect_canteen/app1/model/student_model.dart';
+import 'package:connect_canteen/app1/modules/canteen_module.dart/statements/utils/no_data_found.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/student_list/student_list_controller.dart';
+import 'package:connect_canteen/app1/modules/canteen_module.dart/student_list/utils/no_student_found.dart';
 import 'package:connect_canteen/app1/modules/common/wallet/wallet_page.dart';
 import 'package:connect_canteen/app1/modules/student_modules/friend_list/studetn_list_controller.dart';
 import 'package:connect_canteen/app1/modules/student_modules/group/utils/listtile_shrimmer.dart';
@@ -17,7 +19,7 @@ class StudentListPage extends StatelessWidget {
   final studetnListControllre = Get.put(StudetnController());
 
   StudentListPage({super.key, required this.grade});
-
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,6 +59,8 @@ class StudentListPage extends StatelessWidget {
             return Center(
               child: Text('Error: ${snapshot.error}'),
             );
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return NoStudetnFound();
           } else {
             final students = snapshot.data!;
 
@@ -72,6 +76,7 @@ class StudentListPage extends StatelessWidget {
                     child: GestureDetector(
                       onTap: () {
                         Get.to(() => WalletPage(
+                            grade: student.classes,
                             userId: student.userid,
                             isStudent: false,
                             name: student.name,
