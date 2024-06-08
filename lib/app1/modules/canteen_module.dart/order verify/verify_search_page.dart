@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:connect_canteen/app1/cons/style.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/order%20verify/order_verify_controller.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/order%20verify/verify_page.dart';
+import 'package:connect_canteen/app1/widget/enter_group_pin.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -126,6 +127,7 @@ class VerifySearchPage extends StatelessWidget {
                   ),
                 ),
               ),
+              EnterGroupPin()
             ],
           ),
         ),

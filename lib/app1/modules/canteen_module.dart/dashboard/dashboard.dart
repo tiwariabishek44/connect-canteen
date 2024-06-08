@@ -54,15 +54,21 @@ class CanteenDashboard extends StatelessWidget {
               SizedBox(
                 height: 2.h,
               ),
-              SalseFigure(),
+              SalseFigure(
+                date: formattedDate,
+              ),
               SizedBox(
                 height: 2.h,
               ),
-              PaymentActivity(),
+              PaymentActivity(
+                date: formattedDate,
+              ),
               SizedBox(
                 height: 2.h,
               ),
-              ManagerActivity(),
+              ManagerActivity(
+                date: formattedDate,
+              ),
               SizedBox(
                 height: 2.h,
               ),

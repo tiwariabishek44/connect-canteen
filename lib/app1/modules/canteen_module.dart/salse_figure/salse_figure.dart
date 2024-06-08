@@ -1,107 +1,36 @@
+import 'dart:developer';
+
 import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:connect_canteen/app1/cons/style.dart';
 import 'package:connect_canteen/app1/model/order_model.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/salse_figure/salse_figure_controller.dart';
+import 'package:connect_canteen/app1/modules/canteen_module.dart/salse_figure/utils/no_salse.dart';
+import 'package:connect_canteen/app1/modules/canteen_module.dart/salse_figure/utils/shrimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class SalseFigure extends StatelessWidget {
-  SalseFigure({super.key});
+  final String date;
+  SalseFigure({super.key, required this.date});
 
   final salsefigureController = Get.put(SalseFigureController());
 
   @override
   Widget build(BuildContext context) {
+    log(" this i our date");
     return StreamBuilder<List<OrderResponse>>(
-        stream: salsefigureController.getAllOrder(),
+        stream: salsefigureController.getAllOrder(date),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Container(
-              decoration: BoxDecoration(
-                color: AppColors.backgroundColor,
-                borderRadius: BorderRadius.circular(
-                    10.0), // Adjust the value for the desired curve
-                boxShadow: [
-                  BoxShadow(
-                    color: Color.fromARGB(255, 189, 187, 187).withOpacity(0.5),
-                    spreadRadius: 1,
-                    blurRadius: 5,
-                    offset: Offset(0,
-                        2), // Adjust the values to control the shadow appearance
-                  ),
-                ],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(18.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                        child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                            color: Color.fromARGB(255, 197, 195, 195)),
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 10.w, vertical: 1.h),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Rs 00.0",
-                              style: AppStyles.topicsHeading,
-                            ),
-                            Text(
-                              'Gross Sales',
-                              style: AppStyles.listTilesubTitle,
-                            ),
-                            // Add spacing between the texts
-                          ],
-                        ),
-                      ),
-                    )),
-                    SizedBox(
-                      width: 2.w,
-                    ),
-                    Expanded(
-                        child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                            color: Color.fromARGB(255, 197, 195, 195)),
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 10.w, vertical: 1.h),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Rs. woo",
-                              style: AppStyles.topicsHeading,
-                            ),
-                            Text(
-                              'Net Sales',
-                              style: AppStyles.listTilesubTitle,
-                            ),
-                          ],
-                        ),
-                      ),
-                    )),
-                  ],
-                ),
-              ),
-            );
+            return SalseShrimmer();
           }
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No orders found'));
+            return NoSalse();
           }
 
           var orders = snapshot.data!;
@@ -152,7 +81,7 @@ class SalseFigure extends StatelessWidget {
                   child: Column(
                     children: [
                       Text(
-                        '\NPR ${salsefigureController.grandTotal.value.toStringAsFixed(1)}',
+                        '\NPR ${salsefigureController.netTotal.value.toStringAsFixed(1)}',
                         style: TextStyle(
                           fontSize: 21.sp,
                           fontWeight: FontWeight.bold,

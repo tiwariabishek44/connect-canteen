@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 class TransactionItem extends StatelessWidget {
   final String name;
@@ -40,7 +41,7 @@ class TransactionItem extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 2),
           child: Row(
             children: [
               GestureDetector(
@@ -61,9 +62,10 @@ class TransactionItem extends StatelessWidget {
                           ),
                           child: Padding(
                             padding: EdgeInsets.symmetric(
-                                vertical: 16, horizontal: 32),
+                                vertical: 16, horizontal: 10.w),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
@@ -100,7 +102,7 @@ class TransactionItem extends StatelessWidget {
                                     Text(
                                       date,
                                       style: TextStyle(
-                                        fontSize: 16,
+                                        fontSize: 16.sp,
                                         color: Colors.black,
                                       ),
                                     ),
@@ -112,18 +114,25 @@ class TransactionItem extends StatelessWidget {
                                     Text(
                                       name.toLowerCase() == 'load'
                                           ? "Last Time : Rs."
-                                          : 'Item:',
+                                          : 'Remarks: ',
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: Colors.grey.shade600,
                                       ),
                                     ),
                                     SizedBox(width: 5),
-                                    Text(
-                                      remarks,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.black,
+                                    Expanded(
+                                      child: Text(
+                                        name.toLowerCase() == 'load'
+                                            ? remarks
+                                            : 'Last Time ${remarks}',
+                                        maxLines: 2,
+                                        overflow: TextOverflow
+                                            .clip, // or TextOverflow.ellipsis
+                                        style: TextStyle(
+                                          fontSize: 16.sp,
+                                          color: Colors.black,
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -135,6 +144,7 @@ class TransactionItem extends StatelessWidget {
                       );
                     },
                   );
+
                 },
                 child: CircleAvatar(
                   radius: 25,

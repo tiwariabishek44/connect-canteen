@@ -97,164 +97,157 @@ class _OrderCheckoutPageState extends State<OrderCheckoutPage> {
                         return Padding(
                           padding: EdgeInsets.symmetric(
                               vertical: 4.0, horizontal: 16.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              checkoutController.selectedOrders[order.id] =
-                                  !checkoutController.selectedOrders[order.id]!;
-                            },
-                            child: Container(
-                              padding: EdgeInsets.all(8.0),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          order.productName,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 20.0.sp,
-                                          ),
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text(
-                                              'Qnty: ${order.quantity}',
-                                              style: TextStyle(
-                                                fontSize: 18.0.sp,
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                            ),
-                                            SizedBox(width: 5.w),
-                                            Icon(Icons.alarm_outlined,
-                                                size: 17.sp),
-                                            SizedBox(width: 1.w),
-                                            Text(
-                                              '(${order.mealtime})',
-                                              style: TextStyle(
-                                                fontSize: 17.0.sp,
-                                                color: Colors.black,
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(height: 0.6.h),
-                                        Row(
-                                          children: [
-                                            Icon(Icons.person_outline,
-                                                size: 17.sp),
-                                            SizedBox(width: 1.w),
-                                            Text(
-                                              '${order.customer}',
-                                              style: TextStyle(
-                                                fontSize: 17.0,
-                                                color: Colors.grey[600],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Stack(
+                          child: Container(
+                            padding: EdgeInsets.all(8.0),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Container(
-                                        width: 9.h,
-                                        height: 9.h,
-                                        child: CachedNetworkImage(
-                                          progressIndicatorBuilder: (context,
-                                                  url, downloadProgress) =>
-                                              Opacity(
-                                            opacity: 0.8,
-                                            child: Shimmer.fromColors(
-                                              baseColor: const Color.fromARGB(
-                                                  255, 248, 246, 246),
-                                              highlightColor: Color.fromARGB(
-                                                  255, 238, 230, 230),
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                  color: const Color.fromARGB(
-                                                      255, 243, 242, 242),
-                                                ),
-                                                width: 9.h,
-                                                height: 9.h,
-                                              ),
-                                            ),
-                                          ),
-                                          imageUrl: order.customerImage ?? '',
-                                          imageBuilder:
-                                              (context, imageProvider) =>
-                                                  Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                              image: DecorationImage(
-                                                image: imageProvider,
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
-                                          ),
-                                          fit: BoxFit.fill,
-                                          width: double.infinity,
-                                          errorWidget: (context, url, error) =>
-                                              CircleAvatar(
-                                            radius: 21.4.sp,
-                                            child: Icon(
-                                              Icons.person,
-                                              color: Colors.white,
-                                            ),
-                                            backgroundColor:
-                                                const Color.fromARGB(
-                                                    255, 224, 218, 218),
-                                          ),
+                                      Text(
+                                        order.productName,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w400,
+                                          fontSize: 20.0.sp,
                                         ),
                                       ),
-                                      Positioned(
-                                        top: 10,
-                                        left: 10,
-                                        child: Obx(() => Checkbox(
-                                              overlayColor:
-                                                  MaterialStateProperty.all(
-                                                      Colors.transparent),
-                                              activeColor: Colors.transparent,
-                                              hoverColor: Colors.transparent,
-
-                                              fillColor: MaterialStateProperty
-                                                  .all(Colors
-                                                      .transparent), // Use MaterialStateProperty
-
-                                              checkColor: Colors.transparent,
-                                              value: checkoutController
-                                                          .selectedOrders[
-                                                      order.id] ??
-                                                  false,
-                                              onChanged: (bool? value) {
-                                                checkoutController
-                                                        .selectedOrders[
-                                                    order.id] = value ?? false;
-                                              },
-                                            )),
-                                      )
+                                      Row(
+                                        children: [
+                                          Text(
+                                            'Qnty: ${order.quantity}',
+                                            style: TextStyle(
+                                              fontSize: 18.0.sp,
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                          SizedBox(width: 5.w),
+                                          Icon(Icons.alarm_outlined,
+                                              size: 17.sp),
+                                          SizedBox(width: 1.w),
+                                          Text(
+                                            '(${order.mealtime})',
+                                            style: TextStyle(
+                                              fontSize: 17.0.sp,
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(height: 0.6.h),
+                                      Row(
+                                        children: [
+                                          Icon(Icons.person_outline,
+                                              size: 17.sp),
+                                          SizedBox(width: 1.w),
+                                          Text(
+                                            '${order.customer}',
+                                            style: TextStyle(
+                                              fontSize: 17.0,
+                                              color: Colors.grey[600],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ],
                                   ),
-                                  Obx(() => Checkbox(
-                                        value: checkoutController
-                                                .selectedOrders[order.id] ??
-                                            false,
-                                        onChanged: (bool? value) {
-                                          checkoutController
-                                                  .selectedOrders[order.id] =
-                                              value ?? false;
-                                        },
-                                      )),
-                                ],
-                              ),
+                                ),
+                                Stack(
+                                  children: [
+                                    Container(
+                                      width: 9.h,
+                                      height: 9.h,
+                                      child: CachedNetworkImage(
+                                        progressIndicatorBuilder:
+                                            (context, url, downloadProgress) =>
+                                                Opacity(
+                                          opacity: 0.8,
+                                          child: Shimmer.fromColors(
+                                            baseColor: const Color.fromARGB(
+                                                255, 248, 246, 246),
+                                            highlightColor: Color.fromARGB(
+                                                255, 238, 230, 230),
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                color: const Color.fromARGB(
+                                                    255, 243, 242, 242),
+                                              ),
+                                              width: 9.h,
+                                              height: 9.h,
+                                            ),
+                                          ),
+                                        ),
+                                        imageUrl: order.customerImage ?? '',
+                                        imageBuilder:
+                                            (context, imageProvider) =>
+                                                Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            image: DecorationImage(
+                                              image: imageProvider,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                        fit: BoxFit.fill,
+                                        width: double.infinity,
+                                        errorWidget: (context, url, error) =>
+                                            CircleAvatar(
+                                          radius: 21.4.sp,
+                                          child: Icon(
+                                            Icons.person,
+                                            color: Colors.white,
+                                          ),
+                                          backgroundColor: const Color.fromARGB(
+                                              255, 224, 218, 218),
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: 10,
+                                      left: 10,
+                                      child: Obx(() => Checkbox(
+                                            visualDensity:
+                                                VisualDensity.compact,
+                                            overlayColor:
+                                                MaterialStateProperty.all(
+                                                    Colors.transparent),
+                                            activeColor: Colors.transparent,
+                                            hoverColor: Colors.transparent,
+
+                                            fillColor:
+                                                MaterialStateProperty.all(Colors
+                                                    .transparent), // Use MaterialStateProperty
+
+                                            checkColor: Colors.transparent,
+                                            value: checkoutController
+                                                    .selectedOrders[order.id] ??
+                                                false,
+                                            onChanged: (bool? value) {
+                                              checkoutController.selectedOrders[
+                                                  order.id] = value ?? false;
+                                            },
+                                          )),
+                                    )
+                                  ],
+                                ),
+                                Obx(() => Checkbox(
+                                      value: checkoutController
+                                              .selectedOrders[order.id] ??
+                                          false,
+                                      onChanged: (bool? value) {
+                                        checkoutController
+                                                .selectedOrders[order.id] =
+                                            value ?? false;
+                                      },
+                                    )),
+                              ],
                             ),
                           ),
                         );

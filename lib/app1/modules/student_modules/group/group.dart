@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connect_canteen/app/config/prefs.dart';
 import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:connect_canteen/app1/model/group_model.dart';
 import 'package:connect_canteen/app1/model/student_model.dart';
@@ -10,16 +11,18 @@ import 'package:connect_canteen/app1/modules/student_modules/group/group_control
 import 'package:connect_canteen/app1/modules/student_modules/group/new_grou.dart';
 import 'package:connect_canteen/app1/modules/student_modules/group/utils/group_data_field.dart';
 import 'package:connect_canteen/app1/modules/student_modules/group/utils/group_member_fetch.dart';
+import 'package:connect_canteen/app1/modules/student_modules/group/utils/listtile_shrimmer.dart';
 import 'package:connect_canteen/app1/modules/student_modules/group/utils/no_group.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class GroupPage extends StatelessWidget {
   final loignController = Get.put(LoginController());
   final groupController = Get.put(GroupController());
-
+final storage = GetStorage();
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +53,13 @@ class GroupPage extends StatelessWidget {
           stream: loignController.getStudetnData(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Container();
+              return ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: 5,
+                  itemBuilder: ((context, index) {
+                    return ListtileShrimmer();
+                  }));
             } else if (snapshot.hasError) {
               return SizedBox.shrink();
             } else if (snapshot.data == null) {
@@ -101,7 +110,8 @@ class GroupPage extends StatelessWidget {
                             groupid: studetnData.groupid,
                           ),
 
-                          Align(
+                          if (storage.read(userId) == studetnData.groupid)
+                            Align(
                             alignment: Alignment.bottomCenter,
                             child: Obx(() => groupController.nogroup.value
                                 ? SizedBox.shrink()
@@ -109,7 +119,10 @@ class GroupPage extends StatelessWidget {
                                     padding: EdgeInsets.all(16.0),
                                     child: ElevatedButton.icon(
                                       onPressed: () {
-                                        Get.to(() => FriendsPage(
+                                          Get.to(() => FriendsPage(
+                                              groupname: studetnData.groupname,
+                                              groupcod: studetnData.groupcod,
+                                              groupid: studetnData.groupid,
                                             grade: studetnData.classes
                                                 .toString()));
                                       },

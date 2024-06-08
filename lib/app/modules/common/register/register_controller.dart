@@ -252,18 +252,18 @@ class RegisterController extends GetxController {
 
       UserCredential userCredential =
           await _auth.createUserWithEmailAndPassword(
-        email: 'helper@gmail.com',
+        email: 'canteen@gmail.com',
         password: "1234567890",
       );
 
       await FirebaseFirestore.instance
-          .collection('canteenHelper')
+          .collection('canteen')
           .doc(userCredential.user!.uid)
           .set({
         'userid': userCredential.user!.uid, // Saving userid
         'name': 'Texas Canteen',
-        'phone': '9742555741',
-        'email': "helper@gmail.com",
+        'phone': '9090909090',
+        'email': "canteen@gmail.com",
         'type': "owner",
       });
       log("User registration successful");

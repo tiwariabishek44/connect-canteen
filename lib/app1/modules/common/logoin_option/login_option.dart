@@ -60,11 +60,12 @@ class OnboardingScreen extends StatelessWidget {
                   SizedBox(
                     height: 2.h,
                   ),
-                  GestureDetector( 
+                  GestureDetector(
                     onTap: () {
-                      loginOptionController.isStudent.value = true;
+                      loginOptionController.userTypes.value = 'student';
 
-                      Get.to(() => LoginView());
+                      Get.to(() => LoginView(),
+                          transition: Transition.cupertinoDialog);
                     },
                     child: Container(
                       width: double.infinity,
@@ -90,9 +91,10 @@ class OnboardingScreen extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: () {
-                      loginOptionController.isStudent.value = false;
+                      loginOptionController.userTypes.value = 'canteen';
 
-                      Get.to(() => CanteenMainScreen());
+                      Get.to(() => LoginView(),
+                          transition: Transition.cupertinoDialog);
                     },
                     child: Container(
                       width: double.infinity,

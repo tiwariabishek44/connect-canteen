@@ -1,9 +1,12 @@
+import 'dart:developer';
+
 import 'package:connect_canteen/app/widget/custom_loging_widget.dart';
 import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:connect_canteen/app1/cons/style.dart';
 import 'package:connect_canteen/app1/modules/common/logoin_option/login_option_controller.dart';
 import 'package:connect_canteen/app1/modules/common/registration/registration_controller.dart';
 import 'package:connect_canteen/app1/widget/custom_button.dart';
+import 'package:connect_canteen/app1/widget/custom_sncak_bar.dart';
 import 'package:connect_canteen/app1/widget/welcome_heading.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,14 +14,17 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 import '../../../../widget/textFormField.dart';
 
 class RegisterView extends StatelessWidget {
-  RegisterView({super.key});
+  RegisterView({super.key, required this.schoolname, required this.schoolId});
+  final String schoolname;
+  final String schoolId;
 
-  final registercontroller = Get.put(RegisterController());
+  final registercontroller = Get.put(UserRegisterController());
 
   final loginOptionController = Get.put(LoginOptionController());
 
   @override
   Widget build(BuildContext context) {
+    log("schoolname $schoolId");
     return Stack(
       children: [
         Scaffold(
@@ -39,8 +45,7 @@ class RegisterView extends StatelessWidget {
               children: [
                 WelcomeHeading(
                     mainHeading: "Create an Account",
-                    subHeading:
-                registercontroller.schoolname.value),
+                    subHeading: schoolname),
                 SizedBox(
                   height: 1.h,
                 ),
@@ -49,6 +54,7 @@ class RegisterView extends StatelessWidget {
                   child: Form(
                     key: registercontroller.registerFormKey,
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         TextFormFieldWidget(
                           prefixIcon: const Icon(Icons.person),
@@ -65,7 +71,6 @@ class RegisterView extends StatelessWidget {
                           onSubmitField: () {},
                         ),
                         SizedBox(height: 2.h),
-                        
                         SizedBox(height: 2.h),
                         TextFormFieldWidget(
                           prefixIcon: const Icon(Icons.email),
@@ -192,7 +197,11 @@ class RegisterView extends StatelessWidget {
                           text: "Register",
                           onPressed: () {
                             FocusScope.of(context).unfocus();
-                            registercontroller.userRegister(context);
+                            registercontroller.termsAndConditions.value == false
+                                ? CustomSnackbar.error(context,
+                                    'Please accept terms and conditions')
+                                : registercontroller.userRegister(
+                                    context, schoolname, schoolId);
                           },
                           isLoading: false,
                         ),

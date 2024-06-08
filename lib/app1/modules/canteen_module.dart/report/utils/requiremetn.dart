@@ -9,7 +9,8 @@ import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class RequirementSection extends StatelessWidget {
-  RequirementSection({super.key});
+  final String date;
+  RequirementSection({super.key, required this.date});
   final canteenDailyReport = Get.put(CanteenReportController());
 
   @override
@@ -45,7 +46,7 @@ class RequirementSection extends StatelessWidget {
             ),
           ),
           StreamBuilder<List<OrderResponse>>(
-            stream: canteenDailyReport.getAllTodayOrders(),
+            stream: canteenDailyReport.getAllTodayOrders(date),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Column(

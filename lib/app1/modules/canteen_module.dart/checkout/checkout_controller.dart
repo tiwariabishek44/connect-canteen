@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connect_canteen/app1/cons/api_end_points.dart';
 import 'package:connect_canteen/app1/model/order_model.dart';
 import 'package:connect_canteen/app1/widget/custom_sncak_bar.dart';
+import 'package:connect_canteen/app1/widget/loded_succesfull.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -57,7 +58,15 @@ class CheckoutController extends GetxController {
     await batch.commit();
     checkoutLoading(false);
 
-    CustomSnackbar.success(Get.context!, "Orders Checkout Succesfully");
+    showDialog(
+      context: Get.context!,
+      builder: (BuildContext context) {
+        return PaymentSuccessPopup(
+          message: 'Successfully!',
+        );
+      },
+    );
+
   }
 
   //---------- TO VALIDATE IS ORDER OR NOT

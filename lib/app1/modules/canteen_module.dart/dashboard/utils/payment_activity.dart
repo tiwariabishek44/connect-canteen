@@ -2,13 +2,17 @@ import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:connect_canteen/app1/cons/style.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/dashboard/utils/clickable_action_icon.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/menue/menue_page.dart';
+import 'package:connect_canteen/app1/modules/canteen_module.dart/statements/statement_controller.dart';
+import 'package:connect_canteen/app1/modules/canteen_module.dart/statements/statements_page.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/wallet_class/class_wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class PaymentActivity extends StatelessWidget {
-  const PaymentActivity({super.key});
+  final String date;
+  PaymentActivity({super.key, required this.date});
+  final statementController = Get.put(StatementController());
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +72,7 @@ class PaymentActivity extends StatelessWidget {
                       const SizedBox(height: 1.0),
                       Center(
                         child: Text(
-                          'Balance Load',
+                          'Load Wallet',
                           style: TextStyle(
                             fontSize: 16.sp,
                             color: const Color.fromARGB(255, 59, 57, 57),
@@ -81,10 +85,11 @@ class PaymentActivity extends StatelessWidget {
                 ),
               ),
               buildClickableIcon(
-                icon: Icons.balance,
-                label: 'Balance Load',
+                icon: Icons.leaderboard,
+                label: 'Statements',
                 onTap: () {
-                  Get.to(() => CanteenMenuePage(),
+                  statementController.selectedDate.value = date;
+                  Get.to(() => StatementPage(),
                       transition: Transition.cupertinoDialog);
                 },
               ),

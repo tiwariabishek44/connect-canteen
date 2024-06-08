@@ -66,7 +66,7 @@ class AllOrdersTab extends StatelessWidget {
                 children: [
                   OrderTiles(
                     order: order,
-                    type: 'regular',
+                    type: 'history',
                   ),
                   SizedBox(
                     height: 1.h,

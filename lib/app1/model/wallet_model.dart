@@ -1,62 +1,51 @@
-class Transactions {
-  final DateTime date;
-  final String name;
+class TransctionResponseMode {
+  final String transactionType;
   final double amount;
   final String remarks;
-
-  Transactions({
-    required this.date,
-    required this.name,
-    required this.amount,
-    required this.remarks,
-  });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'date': date.toIso8601String(),
-      'name': name,
-      'amount': amount,
-      'purchaseItem': remarks,
-    };
-  }
-
-  factory Transactions.fromJson(Map<String, dynamic> json) {
-    return Transactions(
-      date: DateTime.parse(json['date']),
-      name: json['name'],
-      amount: json['amount'],
-      remarks: json['purchaseItem'],
-    );
-  }
-}
-
-class Wallet {
   final String userId;
   final String userName;
-  final List<Transactions> transactions;
+  final String schoolReference;
+  final String className;
+  final String transactionDate;
+  final String transctionTime;
 
-  Wallet({
+  TransctionResponseMode({
+    required this.transctionTime,
+    required this.transactionType,
+    required this.amount,
+    required this.remarks,
     required this.userId,
     required this.userName,
-    required this.transactions, 
+    required this.schoolReference,
+    required this.className,
+    required this.transactionDate,
   });
 
   Map<String, dynamic> toJson() {
     return {
+      'transactionType': transactionType,
+      'amount': amount,
+      'remarks': remarks,
       'userId': userId,
       'userName': userName,
-      'transactions':
-          transactions.map((transaction) => transaction.toJson()).toList(),
+      'schoolReference': schoolReference,
+      'className': className,
+      'transactionDate': transactionDate,
+      'transctionTime': transctionTime,
     };
   }
 
-  factory Wallet.fromJson(Map<String, dynamic> json) {
-    return Wallet(
+  factory TransctionResponseMode.fromJson(Map<String, dynamic> json) {
+    return TransctionResponseMode(
+      transactionType: json['transactionType'],
+      amount: json['amount'],
+      remarks: json['remarks'],
       userId: json['userId'],
       userName: json['userName'],
-      transactions: (json['transactions'] as List<dynamic>)
-          .map((transactionJson) => Transactions.fromJson(transactionJson))
-          .toList(),
+      schoolReference: json['schoolReference'],
+      className: json['className'],
+      transactionDate: json['transactionDate'],
+      transctionTime: json['transctionTime'],
     );
   }
 }

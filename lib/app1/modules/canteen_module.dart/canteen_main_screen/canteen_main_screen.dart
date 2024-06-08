@@ -6,6 +6,7 @@ import 'package:connect_canteen/app1/modules/canteen_module.dart/demo%20buttons/
 import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/expense/expense_page.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/order_requirement/order_requirement.dart';
+import 'package:connect_canteen/app1/modules/canteen_module.dart/setting/setting.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -17,8 +18,8 @@ class CanteenMainScreen extends StatelessWidget {
   final List<Widget> pages = [
     CanteenDashboard(),
     OrderRequirementPage(),
-    ExpensePage(),
-    ButtonColumnPage(),
+    // ExpensePage(),
+    CanteenSetting(),
   ];
 
   @override
@@ -122,10 +123,10 @@ class CanteenMainScreen extends StatelessWidget {
                   nonSelectedicon: Icons.shopping_cart_outlined,
                   icon: Icons.shopping_cart,
                   label: 'Requirement'),
-              MyBottomNavigationBarItem(
-                  nonSelectedicon: Icons.money,
-                  icon: Icons.money_outlined,
-                  label: 'Expense'),
+              // MyBottomNavigationBarItem(
+              //     nonSelectedicon: Icons.money,
+              //     icon: Icons.money_outlined,
+              //     label: 'Expense'),
               MyBottomNavigationBarItem(
                   nonSelectedicon: Icons.settings_outlined,
                   icon: Icons.settings,

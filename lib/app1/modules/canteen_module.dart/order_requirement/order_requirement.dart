@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connect_canteen/app/config/colors.dart';
 import 'package:connect_canteen/app/config/prefs.dart';
+import 'package:connect_canteen/app1/model/meal_time.dart';
 import 'package:connect_canteen/app1/model/order_model.dart';
 import 'package:connect_canteen/app1/model/product_detials_model.dart';
+import 'package:connect_canteen/app1/modules/canteen_module.dart/mealTime/meal_time_controller.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/order%20hold/utils/order_tile_shrimmer.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/order_requirement/order_requirement_controller.dart';
 import 'package:connect_canteen/app1/widget/no_order.dart';
@@ -20,6 +22,7 @@ class OrderRequirementPage extends StatefulWidget {
 
 class _OrderRequirementPageState extends State<OrderRequirementPage> {
   final orderRequiremtnController = Get.put(OrderRequirementController());
+  final mealtimeControllre = Get.put(MealTimeController());
 
  
   @override
@@ -52,87 +55,104 @@ class _OrderRequirementPageState extends State<OrderRequirementPage> {
         children: [
           //
           Container(
-            height: 6.h, // Set the desired height for the horizontal ListView
-            child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                physics: ScrollPhysics(),
-                itemCount: timeSlots.length + 1,
-                itemBuilder: (BuildContext context, int index) {
-                  if (index == 0) {
-                    return Padding(
-                      padding: const EdgeInsets.all(6.0),
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            orderRequiremtnController.mealtime.value = 'All';
-                          });
-                        },
-                        child: Obx(() => Container(
-                              width: 100,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: orderRequiremtnController
-                                            .mealtime.value ==
-                                        'All'
-                                    ? Color.fromARGB(255, 9, 9, 9)
-                                    : const Color.fromARGB(255, 247, 245, 245),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  'All',
-                                  style: TextStyle(
-                                      fontSize: 18.0,
-                                      color: orderRequiremtnController
-                                                  .mealtime.value ==
-                                              'All'
-                                          ? AppColors.backgroundColor
-                                          : Color.fromARGB(255, 84, 82, 82)),
-                                ),
-                              ),
-                            )),
-                      ),
-                    );
-                  } else {
-                    return Padding(
-                      padding: const EdgeInsets.all(6.0),
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            orderRequiremtnController.mealtime.value =
-                                timeSlots[index - 1];
-                          });
+              height: 6.h, // Set the desired height for the horizontal ListView
+              child: StreamBuilder<List<MealTime>>(
+                stream: mealtimeControllre
+                    .getAllMealTimes('texasinternationalcollege'),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    List<MealTime> mealTimes = snapshot.data!;
 
-                          ;
-                        },
-                        child: Obx(() => Container(
-                              width: 100,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: orderRequiremtnController
-                                            .mealtime.value ==
-                                        timeSlots[index - 1]
-                                    ? Color.fromARGB(255, 9, 9, 9)
-                                    : const Color.fromARGB(255, 247, 245, 245),
+                    return ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        shrinkWrap: true,
+                        physics: ScrollPhysics(),
+                        itemCount: mealTimes.length + 1,
+                        itemBuilder: (BuildContext context, int index) {
+                          if (index == 0) {
+                            return Padding(
+                              padding: const EdgeInsets.all(6.0),
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    orderRequiremtnController.mealtime.value =
+                                        'All';
+                                  });
+                                },
+                                child: Obx(() => Container(
+                                      width: 100,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: orderRequiremtnController
+                                                    .mealtime.value ==
+                                                'All'
+                                            ? Color.fromARGB(255, 9, 9, 9)
+                                            : const Color.fromARGB(
+                                                255, 247, 245, 245),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          'All',
+                                          style: TextStyle(
+                                              fontSize: 18.0,
+                                              color: orderRequiremtnController
+                                                          .mealtime.value ==
+                                                      'All'
+                                                  ? AppColors.backgroundColor
+                                                  : Color.fromARGB(
+                                                      255, 84, 82, 82)),
+                                        ),
+                                      ),
+                                    )),
                               ),
-                              child: Center(
-                                child: Text(
-                                  timeSlots[index - 1],
-                                  style: TextStyle(
-                                      fontSize: 18.0.sp,
-                                      color: orderRequiremtnController
-                                                  .mealtime.value ==
-                                              timeSlots[index - 1]
-                                          ? AppColors.backgroundColor
-                                          : Color.fromARGB(255, 84, 82, 82)),
-                                ),
+                            );
+                          } else {
+                            return Padding(
+                              padding: const EdgeInsets.all(6.0),
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    orderRequiremtnController.mealtime.value =
+                                        mealTimes[index - 1].mealTime;
+                                  });
+                                },
+                                child: Obx(() => Container(
+                                      width: 100,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: orderRequiremtnController
+                                                    .mealtime.value ==
+                                                mealTimes[index - 1].mealTime
+                                            ? Color.fromARGB(255, 9, 9, 9)
+                                            : const Color.fromARGB(
+                                                255, 247, 245, 245),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          mealTimes[index - 1].mealTime,
+                                          style: TextStyle(
+                                              fontSize: 18.0.sp,
+                                              color: orderRequiremtnController
+                                                          .mealtime.value ==
+                                                      mealTimes[index - 1]
+                                                          .mealTime
+                                                  ? AppColors.backgroundColor
+                                                  : Color.fromARGB(
+                                                      255, 84, 82, 82)),
+                                        ),
+                                      ),
+                                    )),
                               ),
-                            )),
-                      ),
-                    );
+                            );
+                          }
+                        });
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    return CircularProgressIndicator();
                   }
-                }),
-          ),
+                },
+              )),
           SizedBox(
             height: 4.h,
           ),

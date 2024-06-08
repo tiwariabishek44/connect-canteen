@@ -253,6 +253,9 @@ class _VerifyPageState extends State<VerifyPage> {
                       },
                     ),
                   ),
+                  SizedBox(
+                    height: 14.h,
+                  )
                 ],
               );
             },
@@ -273,7 +276,7 @@ class _VerifyPageState extends State<VerifyPage> {
               },
               backgroundColor: Colors.black,
               child: Text(
-                'Hold',
+                'Verify Orders',
                 style: TextStyle(
                   fontSize: 19.sp,
                   color: Colors.white,
