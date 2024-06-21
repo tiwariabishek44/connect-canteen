@@ -29,8 +29,8 @@ class WelcomeHeading extends StatelessWidget {
             subHeading,
             style: TextStyle(
                 fontSize: 19.sp,
-                fontWeight: FontWeight.bold,
-                color: AppColors.secondaryColor),
+                fontWeight: FontWeight.w400,
+                color: const Color.fromARGB(255, 0, 0, 0)),
           ),
         ],
       ),

@@ -1,18 +1,30 @@
 import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class CustomSnackbar {
-  static void show(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          message,
-          style: const TextStyle(color: Colors.white),
-        ),
-        backgroundColor: AppColors.secondaryColor,
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-      ),
+  static void error(BuildContext context, String message) {
+    Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Color.fromARGB(255, 194, 123, 118),
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
+    ;
+  }
+
+  static void success(BuildContext context, String message) {
+    Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.green, // Set success color to green
+      textColor: Colors.white,
+      fontSize: 16.0,
     );
   }
 }

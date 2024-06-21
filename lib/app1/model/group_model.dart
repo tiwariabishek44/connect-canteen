@@ -1,18 +1,18 @@
-class GroupApiResponse {
+class StudentGroupApiResponse {
   String groupId;
   String groupCode;
   String groupName;
   String moderator;
 
-  GroupApiResponse({
+  StudentGroupApiResponse({
     required this.groupId,
     required this.groupCode,
     required this.groupName,
     required this.moderator,
   });
 
-  factory GroupApiResponse.fromJson(Map<String, dynamic> json) {
-    return GroupApiResponse(
+  factory StudentGroupApiResponse.fromJson(Map<String, dynamic> json) {
+    return StudentGroupApiResponse(
       groupId: json['groupId'],
       groupCode: json['groupCode'],
       groupName: json['groupName'],

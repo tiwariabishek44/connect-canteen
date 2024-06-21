@@ -44,7 +44,13 @@ class TextFormFieldWidget extends StatelessWidget {
       children: [
         Align(
           alignment: Alignment.topLeft,
-          child: Text(hintText),
+          child: Text(
+            hintText,
+            style: TextStyle(
+                fontSize: 17.sp,
+                color: Colors.black,
+                fontWeight: FontWeight.w600),
+          ),
         ),
         SizedBox(
           height: 1.h,
@@ -52,7 +58,7 @@ class TextFormFieldWidget extends StatelessWidget {
         TextFormField(
           readOnly: readOnly,
           autovalidateMode: AutovalidateMode.onUserInteraction,
-          cursorColor: AppColors.primaryColor,
+          cursorColor: Colors.black,
           textAlign: TextAlign.left,
           obscureText: obscureText ?? false,
           keyboardType: textInputType,
@@ -61,18 +67,22 @@ class TextFormFieldWidget extends StatelessWidget {
           onChanged: onChanged as String? Function(String?)?,
           style: const TextStyle(color: Colors.black),
           validator: validatorFunction as String? Function(String?)?,
+          
+
+
+
           decoration: InputDecoration(
             labelStyle: TextStyle(
-              color: Colors.grey,
+              color: const Color.fromARGB(255, 0, 0, 0),
               fontSize: 18.sp,
               fontWeight: FontWeight.w400,
             ),
             suffixIcon:
                 showIcons ? suffixIcon : null, // Conditionally show suffixIcon
-            suffixIconColor: AppColors.primaryColor,
+            suffixIconColor: const Color.fromARGB(255, 0, 0, 0),
             prefixIcon:
                 showIcons ? prefixIcon : null, // Conditionally show prefixIcon
-            prefixIconColor: AppColors.primaryColor,
+            prefixIconColor: Color.fromARGB(255, 0, 0, 0),
             errorBorder: const OutlineInputBorder(
               borderSide: BorderSide(
                 color: Colors.transparent,
@@ -93,7 +103,7 @@ class TextFormFieldWidget extends StatelessWidget {
             ),
             focusedBorder: const OutlineInputBorder(
               borderSide: BorderSide(
-                color: Color.fromARGB(255, 202, 201, 201),
+                color: Color.fromARGB(255, 0, 0, 0),
               ),
               borderRadius: BorderRadius.all(Radius.circular(10)),
             ),

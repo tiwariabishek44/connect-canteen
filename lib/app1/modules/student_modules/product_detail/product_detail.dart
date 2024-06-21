@@ -1,14 +1,33 @@
+import 'dart:developer';
+
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:connect_canteen/app/widget/custom_loging_widget.dart';
 import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:connect_canteen/app1/cons/style.dart';
-import 'package:connect_canteen/app1/model/food_order_time_model.dart';
+import 'package:connect_canteen/app1/model/meal_time.dart';
 import 'package:connect_canteen/app1/model/product_model.dart';
-import 'package:connect_canteen/app1/widget/order_cornfirmation.dart';
+import 'package:connect_canteen/app1/model/student_model.dart';
+import 'package:connect_canteen/app1/modules/canteen_module.dart/mealTime/meal_time_controller.dart';
+import 'package:connect_canteen/app1/modules/common/login/login_controller.dart';
+import 'package:connect_canteen/app1/modules/common/wallet/transcton_controller.dart';
+import 'package:connect_canteen/app1/modules/student_modules/group/group_controller.dart';
+import 'package:connect_canteen/app1/modules/student_modules/order_for_friend/order_for_friend.dart';
+import 'package:connect_canteen/app1/modules/student_modules/product_detail/controller.dart';
+import 'package:connect_canteen/app1/modules/student_modules/product_detail/utils/info_widget.dart';
+import 'package:connect_canteen/app1/modules/student_modules/product_detail/utils/no_group.dart';
+import 'package:connect_canteen/app1/modules/student_modules/product_detail/utils/payment_type.dart';
+import 'package:connect_canteen/app1/modules/student_modules/product_detail/utils/time_off.dart';
+import 'package:connect_canteen/app1/modules/student_modules/product_detail/utils/update_profile_popup.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:nepali_utils/nepali_utils.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:nepali_date_picker/nepali_date_picker.dart' as picker;
 
 class ProductDetailPage extends StatefulWidget {
-  final Product product;
+  final Products product;
 
   ProductDetailPage({required this.product});
 
@@ -17,37 +36,186 @@ class ProductDetailPage extends StatefulWidget {
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
-  int quantity = 1; // Initial quantity
-  final List<FoodOrderTime> foodOrdersTime = [
-    FoodOrderTime(mealTime: "12:30", orderHoldTime: "8:00"),
-    FoodOrderTime(mealTime: "1:15", orderHoldTime: "8:00"),
-    FoodOrderTime(mealTime: "2:00", orderHoldTime: "8:00"),
-    FoodOrderTime(mealTime: "1:15", orderHoldTime: "8:00"),
-    FoodOrderTime(mealTime: "2:00", orderHoldTime: "8:00"),
-  ];
+  final loignController = Get.put(LoginController());
+  final transctionController = Get.put(TransctionController());
+  final addOrderControllre = Get.put(AddOrderController());
+  final mealTimeController = Get.put(MealTimeController());
+  void _showOrderEndPopup(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Order Time Ended"),
+          content: Text("Your order time has ended for today."),
+          actions: [
+            TextButton(
+              child: Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void checkTime(String timeString, String mealtime, String restriction) {
+    DateTime now = DateTime.now();
+    DateTime specifiedTime = DateFormat.Hm().parse(timeString);
+
+    // Set today's date for comparison
+    specifiedTime = DateTime(
+        now.year, now.month, now.day, specifiedTime.hour, specifiedTime.minute);
+    if (restriction == 'true') {
+      if (now.isAfter(specifiedTime)) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CustomAlertDialog(timeString: timeString);
+          },
+        );
+      } else {
+        log("You are in time.");
+        addOrderControllre.mealtime.value = mealtime;
+      }
+    } else {
+      addOrderControllre.mealtime.value = mealtime;
+    }
+  }
+
+  Future<void> performOrderLogic(String todaydate) async {
+    addOrderControllre.isLoading.value = true;
+
+    bool isPermission = await addOrderControllre.isPermission(
+      loignController.studentDataResponse.value!.userid,
+    );
+    if (isPermission && addOrderControllre.quantity.value <= 1) {
+      // if (transctionController.totalbalances.value <= 45) {
+      //   addOrderControllre.isLoading.value = false;
+
+      //   showDialog(
+      //     context: context,
+      //     builder: (BuildContext context) {
+      //       return InfoDialog(
+      //         message:
+      //             'You do not have sufficient balance. Please contact the administration.',
+      //       );
+      //     },
+      //   );
+      // } else
+      if (loignController.studentDataResponse.value!.groupid == '') {
+        addOrderControllre.isLoading.value = false;
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return NoGroup(
+              heading: 'You are not in any group',
+              subheading: "Make a group or join a group",
+            );
+          },
+        );
+      } else if (addOrderControllre.mealtime.value == '') {
+        addOrderControllre.isLoading.value = false;
+        showNoSelectionMessage();
+      } else {
+        log('transction amount ${transctionController.totalbalances.value}');
+        await addOrderControllre.addItemToOrder(
+          context,
+          orderby: loignController.studentDataResponse.value!.name,
+          groupName: loignController.studentDataResponse.value!.groupname,
+          customerImage:
+              loignController.studentDataResponse.value!.profilePicture,
+          classs: loignController.studentDataResponse.value!.classes,
+          customer: loignController.studentDataResponse.value!.name,
+          groupid: loignController.studentDataResponse.value!.groupid,
+          cid: loignController.studentDataResponse.value!.userid,
+          productName: widget.product.name,
+          productImage: widget.product.imageUrl,
+          price:
+              (widget.product.price.toInt() * addOrderControllre.quantity.value)
+                  .toDouble(),
+          quantity: addOrderControllre.quantity.value,
+          groupcod: loignController.studentDataResponse.value!.groupcod,
+          checkout: 'false',
+          mealtime: addOrderControllre.mealtime.value,
+          date: todaydate,
+          orderHoldTime: '',
+          scrhoolrefrenceid:
+              loignController.studentDataResponse.value!.schoolId,
+        );
+      }
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return InfoDialog(
+            message: 'Your order quota has been exceeded.',
+          );
+        },
+      );
+    }
+    addOrderControllre.isLoading.value = false;
+  }
+
   @override
   Widget build(BuildContext context) {
+    DateTime nowUtc = DateTime.now().toUtc();
+    DateTime nowNepal = nowUtc.add(Duration(hours: 5, minutes: 45));
+    final todayDate = "${nowNepal.day}/${nowNepal.month}/${nowNepal.year}";
+
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       body: Stack(
         children: [
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: ClipRRect(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
-              child: Image.network(
-                widget.product.imageUrl,
-                height: 200,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
+          // Positioned(
+          //   top: 0,
+          //   left: 0,
+          //   right: 0,
+          //   child: Container(
+          //     width: double.infinity,
+          //     height: 260,
+          //     child: CachedNetworkImage(
+          //       progressIndicatorBuilder: (context, url, downloadProgress) =>
+          //           Opacity(
+          //         opacity: 0.8,
+          //         child: Shimmer.fromColors(
+          //           baseColor: const Color.fromARGB(255, 248, 246, 246),
+          //           highlightColor: Color.fromARGB(255, 238, 230, 230),
+          //           child: Container(
+          //             decoration: BoxDecoration(
+          //               color: Color.fromARGB(255, 140, 115, 115),
+          //             ),
+          //             width: double.infinity,
+          //             height: 260,
+          //           ),
+          //         ),
+          //       ),
+          //       imageUrl: widget.product.imageUrl ?? '',
+          //       imageBuilder: (context, imageProvider) => Container(
+          //         width: double.infinity,
+          //         height: 260,
+          //         decoration: BoxDecoration(
+          //           borderRadius: BorderRadius.circular(-20),
+          //           image: DecorationImage(
+          //             image: imageProvider,
+          //             fit: BoxFit.cover,
+          //           ),
+          //         ),
+          //       ),
+          //       fit: BoxFit.fill,
+          //       width: double.infinity,
+          //       errorWidget: (context, url, error) => CircleAvatar(
+          //         radius: 21.4.sp,
+          //         child: Icon(
+          //           Icons.person,
+          //           color: Colors.white,
+          //         ),
+          //         backgroundColor: const Color.fromARGB(255, 224, 218, 218),
+          //       ),
+          //     ),
+          //   ),
+          // ),
           Positioned(
             top: 5.h,
             left: 3.w,
@@ -70,7 +238,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             ),
           ),
           Positioned(
-            top: 180, // Adjust as necessary to overlap the image slightly
+            top: 150, // Adjust as necessary to overlap the image slightly
             left: 0,
             right: 0,
             bottom: 0,
@@ -93,7 +261,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             height: 0.5.h,
                             width: 20.w,
                             decoration: BoxDecoration(
-                                color: Colors.green, // Changed color to green
+                                color: const Color.fromARGB(
+                                    255, 0, 0, 0), // Changed color to green
                                 borderRadius: BorderRadius.circular(10))),
                       ),
                     ),
@@ -128,7 +297,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             ],
                           ),
                         ),
-                        Text("Rs.200")
+                        Text(
+                          "Rs ${widget.product.price.toInt()}",
+                          style: TextStyle(
+                              fontSize: 19.sp, fontWeight: FontWeight.w400),
+                        )
                       ],
                     ),
 
@@ -148,42 +321,96 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              "Select Meal Time:-   ",
-                              style: AppStyles.titleStyle,
+                            SizedBox(
+                              height: 2.h,
                             ),
-                            GridView.builder(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                            Row(
+                              children: [
+                                Text(
+                                  "Select Meal Time:-  ",
+                                  style: AppStyles.titleStyle,
+                                ),
+                                Obx(() => Text(
+                                      "${addOrderControllre.mealtime.value}",
+                                      style: TextStyle(
+                                        fontSize: 20.sp,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    )),
+                              ],
+                            ),
+                            StreamBuilder<List<MealTime>>(
+                              stream: mealTimeController
+                                  .getAllMealTimes('texasinternationalcollege'),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return SizedBox(
+                                    height: 2.h,
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return SizedBox();
+                                } else if (snapshot.hasData) {
+                                  List<MealTime> mealTimes = snapshot.data!;
+                                  return GridView.builder(
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    gridDelegate:
+                                        const SliverGridDelegateWithFixedCrossAxisCount(
                                       crossAxisCount: 3,
                                       crossAxisSpacing: 8.0,
                                       mainAxisSpacing: 10.0,
-                                      childAspectRatio: 3.5),
-                              itemCount: foodOrdersTime.length,
-                              itemBuilder: (context, index) {
-                                return GestureDetector(
-                                  onTap: () {},
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: AppColors.secondaryColor),
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: const Color.fromARGB(
-                                          255, 247, 245, 245),
+                                      childAspectRatio: 3.5,
                                     ),
-                                    child: Center(
-                                      child: Text(
-                                        foodOrdersTime[index].mealTime,
-                                        style: TextStyle(
-                                            fontSize: 18.0,
-                                            color: Color.fromARGB(
-                                                255, 84, 82, 82)),
-                                      ),
-                                    ),
-                                  ),
-                                );
+                                    itemCount: mealTimes.length,
+                                    itemBuilder: (context, index) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          checkTime(
+                                              mealTimes[index].finalOrderTime,
+                                              mealTimes[index].mealTime,
+                                              mealTimes[index].restriction);
+                                        },
+                                        child: Obx(() => Container(
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                  color: Color.fromARGB(
+                                                      255, 166, 167, 167),
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                color: addOrderControllre
+                                                            .mealtime.value ==
+                                                        mealTimes[index]
+                                                            .mealTime
+                                                    ? Color.fromARGB(
+                                                        255, 0, 0, 0)
+                                                    : Colors.white,
+                                              ),
+                                              child: Center(
+                                                child: Text(
+                                                  mealTimes[index].mealTime,
+                                                  style: TextStyle(
+                                                    fontSize: 18.0,
+                                                    color: addOrderControllre
+                                                                .mealtime
+                                                                .value ==
+                                                            mealTimes[index]
+                                                                .mealTime
+                                                        ? Color.fromARGB(
+                                                            255, 255, 255, 255)
+                                                        : Colors.black,
+                                                  ),
+                                                ),
+                                              ),
+                                            )),
+                                      );
+                                    },
+                                  );
+                                } else {
+                                  return Center(
+                                      child: Text('No data available'));
+                                }
                               },
                             ),
                           ],
@@ -200,81 +427,80 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       color:
                           Color.fromARGB(255, 222, 219, 219).withOpacity(0.5),
                     ),
-                    Container(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Quantity:',
-                            style:
-                                TextStyle(fontSize: 18, color: Colors.black87),
-                          ),
-                          SizedBox(width: 16),
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(0.0),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black12,
-                                      blurRadius: 8,
-                                      offset: Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                child: IconButton(
-                                  icon: Icon(Icons.remove, color: Colors.teal),
-                                  onPressed: () {
-                                    // Decrement quantity logic
-                                    setState(() {
-                                      if (quantity > 1) {
-                                        quantity--;
-                                      }
-                                    });
-                                  },
-                                ),
-                              ),
-                              Container(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Text(
-                                  '$quantity',
-                                  style: TextStyle(
-                                      fontSize: 18, color: Colors.black87),
-                                ),
-                              ),
-                              Container(
-                                padding: const EdgeInsets.all(0.0),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black12,
-                                      blurRadius: 8,
-                                      offset: Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                child: IconButton(
-                                  icon: Icon(Icons.add, color: Colors.teal),
-                                  onPressed: () {
-                                    // Increment quantity logic
-                                    setState(() {
-                                      quantity++;
-                                    });
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+
                     SizedBox(height: 1.h),
+                    PaymentTypeRow(),
+                    SizedBox(height: 2.h),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Quantity',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 8,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: IconButton(
+                                icon: Icon(Icons.remove, color: Colors.teal),
+                                onPressed: () {
+                                  // Decrement quantity logic
+                                  if (addOrderControllre.quantity.value > 1) {
+                                    addOrderControllre.quantity.value -= 1;
+                                  }
+                                },
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Obx(() => Text(
+                                    '${addOrderControllre.quantity.value}',
+                                    style: TextStyle(
+                                        fontSize: 18, color: Colors.black87),
+                                  )),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.all(0.0),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 8,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: IconButton(
+                                icon: Icon(Icons.add, color: Colors.teal),
+                                onPressed: () {
+                                  // Increment quantity logic
+                                  addOrderControllre.quantity.value += 1;
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 2.h),
 
                     Container(
                       decoration: BoxDecoration(
@@ -309,11 +535,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                               padding: const EdgeInsets.all(12.0),
                               child: Column(
                                 children: [
-                                  topicRow('Order For ', 'date'),
-                                  topicRow('Subtotal',
+                                  topicRow('Order For ', todayDate),
+                                  topicRow('Per Item',
                                       "Rs. ${widget.product.price.toInt()}"),
-                                  topicRow('Grand Total',
-                                      'Rs. ${widget.product.price.toInt()}'),
+                                  Obx(
+                                    () => topicRow('Grand Total',
+                                        'Rs. ${widget.product.price.toInt() * addOrderControllre.quantity.value}'),
+                                  )
                                 ],
                               ),
                             ),
@@ -330,6 +558,12 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               ),
             ),
           ),
+          Positioned(
+              top: 40.h,
+              left: 40.w,
+              child: Obx(() => addOrderControllre.isLoading.value
+                  ? LoadingWidget()
+                  : SizedBox.shrink()))
         ],
       ),
       bottomNavigationBar: Container(
@@ -338,35 +572,164 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              SizedBox(
-                width: 90.w,
-                height: 6.h,
-                child: ElevatedButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return ConfirmationDialog();
-                      },
-                    );
-                    // Add to cart logic
-                  },
-                  child: Text(
-                    'Order Now',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                    backgroundColor: Colors.teal,
-                    textStyle: TextStyle(fontSize: 18),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
+              Expanded(
+                child: SizedBox(
+                  height: 6.h,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      performOrderLogic(todayDate);
+                      // // addOrderControllre.addDummyOrder(context);
+                      // bool ispermission = await addOrderControllre.isPermission(
+                      //     loignController.studentDataResponse.value!.userid);
+                      // if (ispermission &&
+                      //     (addOrderControllre.quantity.value <= 2)) {
+                      //   if (transctionController.totalbalances.value <= 45) {
+                      //     showDialog(
+                      //       context: context,
+                      //       builder: (BuildContext context) {
+                      //         return InfoDialog(
+                      //           message:
+                      //               'You do not have sufficient balance. Please contact the administration.',
+                      //         );
+                      //       },
+                      //     );
+                      //   } else if (loignController
+                      //               .studentDataResponse.value!.classes ==
+                      //           ''
+
+                      //       //      ||
+                      //       // loignController.studentDataResponse.value!
+                      //       //         .profilePicture ==
+                      //       //     ''
+
+                      //       ) {
+                      //     showUpdateProfileDialog(Get.context!);
+                      //   } else if (loignController
+                      //           .studentDataResponse.value!.groupid ==
+                      //       '') {
+                      //     showDialog(
+                      //       context: context,
+                      //       builder: (BuildContext context) {
+                      //         return NoGroup(
+                      //           heading: 'You are not in any group',
+                      //           subheading: "Make a group or join a group",
+                      //         );
+                      //       },
+                      //     );
+                      //   } else if (addOrderControllre.mealtime.value == '') {
+                      //     showNoSelectionMessage();
+                      //   } else {
+                      //     log('transction amount ${transctionController.totalbalances.value}');
+                      //     await addOrderControllre.addItemToOrder(
+                      //       context,
+                      //       orderby:
+                      //           loignController.studentDataResponse.value!.name,
+                      //       groupName: loignController
+                      //           .studentDataResponse.value!.groupname,
+                      //       customerImage: loignController
+                      //           .studentDataResponse.value!.profilePicture,
+                      //       classs: loignController
+                      //           .studentDataResponse.value!.classes,
+                      //       customer:
+                      //           loignController.studentDataResponse.value!.name,
+                      //       groupid: loignController
+                      //           .studentDataResponse.value!.groupid,
+                      //       cid: loignController
+                      //           .studentDataResponse.value!.userid,
+                      //       productName: widget.product.name,
+                      //       productImage: widget.product.imageUrl,
+                      //       price: (widget.product.price.toInt() *
+                      //               addOrderControllre.quantity.value)
+                      //           .toDouble(),
+                      //       quantity: addOrderControllre.quantity.value,
+                      //       groupcod: loignController
+                      //           .studentDataResponse.value!.groupcod,
+                      //       checkout: 'false',
+                      //       mealtime: addOrderControllre.mealtime.value,
+                      //       date: todayDate,
+                      //       orderHoldTime: '',
+                      //       scrhoolrefrenceid: loignController
+                      //           .studentDataResponse.value!.schoolId,
+                      //     );
+                      //   }
+                      // } else {
+                      //   showDialog(
+                      //     context: context,
+                      //     builder: (BuildContext context) {
+                      //       return InfoDialog(
+                      //         message: 'Your order quota has been exceeded.',
+                      //       );
+                      //     },
+                      //   );
+                      // }
+
+                      // Add to cart logic
+                    },
+                    child: Text(
+                      'Order For me',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      backgroundColor: Colors.teal,
+                      textStyle: TextStyle(fontSize: 18),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(3),
+                      ),
                     ),
                   ),
                 ),
               ),
+              SizedBox(
+                width: 2.w,
+              ),
+              // Expanded(
+              //   child: SizedBox(
+              //     height: 6.h,
+              //     child: ElevatedButton(
+              //       onPressed: () {
+              //         if (loignController.studentDataResponse.value!.groupid ==
+              //             '') {
+              //           showDialog(
+              //             context: context,
+              //             builder: (BuildContext context) {
+              //               return NoGroup(
+              //                 heading: 'You are not in any group',
+              //                 subheading: "Make a group or join a group",
+              //               );
+              //             },
+              //           );
+              //         } else if (addOrderControllre.mealtime.value == '') {
+              //           showNoSelectionMessage();
+              //         } else {
+              //           Get.to(
+              //               () => OrderFriendList(
+              //                     host: loignController
+              //                         .studentDataResponse.value!.name,
+              //                     product: widget.product,
+              //                     groupid: loignController
+              //                         .studentDataResponse.value!.groupid,
+              //                   ),
+              //               transition: Transition.cupertinoDialog);
+              //         }
+              //       },
+              //       child: Text(
+              //         'For Friend',
+              //         style: TextStyle(color: Colors.white),
+              //       ),
+              //       style: ElevatedButton.styleFrom(
+              //         padding: EdgeInsets.symmetric(vertical: 16),
+              //         backgroundColor: Colors.teal,
+              //         textStyle: TextStyle(fontSize: 18),
+              //         shape: RoundedRectangleBorder(
+              //           borderRadius: BorderRadius.circular(3),
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),
@@ -385,8 +748,19 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             style: AppStyles.listTileTitle,
           ),
           SizedBox(width: 8), //  Add spacing between topic and subtopic
-          Text(subtopic, style: AppStyles.listTileTitle),
+          Text(subtopic,
+              style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w400)),
         ],
+      ),
+    );
+  }
+
+  void showNoSelectionMessage() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.green,
+        content: Text('Select Time Slots'),
+        duration: Duration(seconds: 2),
       ),
     );
   }

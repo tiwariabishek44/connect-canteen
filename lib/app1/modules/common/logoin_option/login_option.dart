@@ -1,3 +1,4 @@
+import 'package:connect_canteen/app1/modules/canteen_module.dart/canteen_main_screen/canteen_main_screen.dart';
 import 'package:connect_canteen/app1/modules/common/login/view/login_view.dart';
 import 'package:connect_canteen/app1/modules/common/logoin_option/login_option_controller.dart';
 import 'package:flutter/material.dart';
@@ -61,13 +62,14 @@ class OnboardingScreen extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: () {
-                      loginOptionController.isStudent.value = true;
+                      loginOptionController.userTypes.value = 'student';
 
-                      Get.to(() => LoginView());
+                      Get.to(() => LoginView(),
+                          transition: Transition.cupertinoDialog);
                     },
                     child: Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: AppColors.primaryColor,
                         borderRadius: BorderRadius.circular(10),
@@ -76,7 +78,7 @@ class OnboardingScreen extends StatelessWidget {
                         child: Text(
                           "As Student",
                           style: TextStyle(
-                            fontSize: 20.sp,
+                            fontSize: 18.sp,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
                           ),
@@ -89,9 +91,10 @@ class OnboardingScreen extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: () {
-                      loginOptionController.isStudent.value = false;
+                      loginOptionController.userTypes.value = 'canteen';
 
-                      Get.to(() => LoginView());
+                      Get.to(() => LoginView(),
+                          transition: Transition.cupertinoDialog);
                     },
                     child: Container(
                       width: double.infinity,
@@ -104,7 +107,7 @@ class OnboardingScreen extends StatelessWidget {
                         child: Text(
                           "As Canteen ",
                           style: TextStyle(
-                            fontSize: 20.sp,
+                            fontSize: 18.sp,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
                           ),

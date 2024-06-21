@@ -1,10 +1,19 @@
 class ApiEndpoints {
-  static const productCollection = 'productionProducts';
-  static const orderCollection = 'productionOrder';
-  static const studentCollection = 'productionStudents';
-  static const productioCanteenCollection = 'productionCanteen';
-  static const prodcutionWalletCollection = 'prodcutionWallet';
+  static const productCollection = 'products';
+  static const orderCollection = 'order';
+  static const studentCollection = 'students';
+
+  //production collection
+  static const prodcutionStudentCollection = 'productionStudents';
+  static const productionOrderCollection = 'productionOrder';
+  static const productionAdminWallet = 'productionAdminWallet';
+
+  static const productionProdcutCollection = 'productionProduct';
+  static const productioCanteenCollection = 'canteen';
+  static const productionTransctionCollection = 'productionTransaction';
   static const productionGroupCollection = 'productionGroups';
-  static const productionSchoolcollection = 'productionSchool';
-  static const productioncanteenHelperCollection = 'productionCanteenHelper';
+  static const productionSchoolcollection = 'proudctionSchool';
+  static const productioncanteenHelperCollection = 'canteenHelper';
+
+  static const productionCoinCollection = 'productionCoin';
 }

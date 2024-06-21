@@ -1,0 +1,45 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "connect_canteen",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "connect_canteen (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "connect_canteen (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "esewa_flutter_sdk",
+            "cwd": "esewa_sdk/eSewa_flutter_sdk/esewa_flutter_sdk",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "esewa_flutter_sdk (profile mode)",
+            "cwd": "esewa_sdk/eSewa_flutter_sdk/esewa_flutter_sdk",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "esewa_flutter_sdk (release mode)",
+            "cwd": "esewa_sdk/eSewa_flutter_sdk/esewa_flutter_sdk",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}

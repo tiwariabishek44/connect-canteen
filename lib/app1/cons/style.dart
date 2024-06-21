@@ -4,6 +4,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class AppStyles {
+  static TextStyle get appbar {
+    return GoogleFonts.lato(
+        textStyle: TextStyle(
+            fontSize: 19.sp, fontWeight: FontWeight.w800, color: Colors.black));
+  }
+
   static TextStyle get titleStyle {
     return GoogleFonts.lato(
         textStyle: TextStyle(
@@ -73,6 +79,6 @@ class AppStyles {
 
 class AppPadding {
   static EdgeInsetsGeometry get screenHorizontalPadding {
-    return EdgeInsets.symmetric(horizontal: 4.w);
+    return EdgeInsets.symmetric(horizontal: 3.w);
   }
 }
