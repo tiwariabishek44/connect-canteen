@@ -68,6 +68,7 @@ class UserRegisterController extends GetxController {
         "fineAmount": 0,
         'groupname': '',
         'groupcod': '',
+        "balance": 0.0,
       });
       Get.back();
       showDialog(

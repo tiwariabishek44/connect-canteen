@@ -1,16 +1,3 @@
-class Products {
-  final String imageUrl;
-  final String name;
-  final double price;
-  final String type;
-
-  const Products({
-    required this.imageUrl,
-    required this.name,
-    required this.price,
-    required this.type,
-  });
-}
 class ProductResponseModel {
   final String productId; // Unique identifier for the product
   final String name;
@@ -19,6 +6,7 @@ class ProductResponseModel {
   final bool active; // Added field
   final String referenceSchool; // Added field
   final String type; // New field
+  final String category;
 
   ProductResponseModel({
     required this.productId,
@@ -28,6 +16,7 @@ class ProductResponseModel {
     required this.active, // Added parameter
     required this.referenceSchool, // Added parameter
     required this.type, // New parameter
+    required this.category,
   });
 
   factory ProductResponseModel.fromJson(Map<String, dynamic> json) {
@@ -39,6 +28,7 @@ class ProductResponseModel {
       active: json['active'] ?? false, // Added field mapping
       referenceSchool: json['referenceSchool'] ?? "", // Added field mapping
       type: json['type'] ?? "", // New field mapping
+      category: json['category'] ?? '',
     );
   }
 
@@ -51,6 +41,7 @@ class ProductResponseModel {
       'active': active, // Added field mapping
       'referenceSchool': referenceSchool, // Added field mapping
       'type': type, // New field mapping
+      'category': category,
     };
   }
 }

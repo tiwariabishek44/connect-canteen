@@ -1,17 +1,10 @@
-import 'package:connect_canteen/app1/cons/colors.dart';
-import 'package:connect_canteen/app1/cons/style.dart';
-import 'package:connect_canteen/app1/model/order_model.dart';
-import 'package:connect_canteen/app1/modules/canteen_module.dart/salse_figure/salse_figure_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
+import 'package:intl/intl.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class TotalCollection extends StatelessWidget {
   final String totalCollection;
   TotalCollection({super.key, required this.totalCollection});
-
-  final salsefigureController = Get.put(SalseFigureController());
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +41,7 @@ class TotalCollection extends StatelessWidget {
           ),
           SizedBox(height: 5),
           Text(
-            '\NPR $totalCollection',
+            '\NPR ${NumberFormat('#,##,###').format(double.parse(totalCollection))}',
             style: TextStyle(
               fontSize: 27.sp,
               fontWeight: FontWeight.bold,

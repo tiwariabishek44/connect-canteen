@@ -9,7 +9,7 @@ class CustomSnackbar {
       toastLength: Toast.LENGTH_SHORT,
       gravity: ToastGravity.BOTTOM,
       timeInSecForIosWeb: 1,
-      backgroundColor: Color.fromARGB(255, 194, 123, 118),
+      backgroundColor: Color.fromARGB(255, 156, 82, 77),
       textColor: Colors.white,
       fontSize: 16.0,
     );

@@ -57,7 +57,7 @@ class _OrderPageState extends State<OrderPage>
             padding: EdgeInsets.only(top: 16.0),
             child: Text(
               'Orders',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.sp),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 21.sp),
             ),
           ),
           bottom: PreferredSize(
@@ -69,11 +69,11 @@ class _OrderPageState extends State<OrderPage>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.receipt, size: 24.sp, color: Colors.black),
+                      Icon(Icons.receipt, size: 21.sp, color: Colors.black),
                       SizedBox(width: 8),
                       Text('All orders',
                           style:
-                              TextStyle(color: Colors.black, fontSize: 18.sp)),
+                              TextStyle(color: Colors.black, fontSize: 17.sp)),
                     ],
                   ),
                 ),
@@ -81,11 +81,11 @@ class _OrderPageState extends State<OrderPage>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.history, size: 24.sp, color: Colors.black),
+                      Icon(Icons.history, size: 21.sp, color: Colors.black),
                       SizedBox(width: 8),
                       Text('History',
                           style:
-                              TextStyle(color: Colors.black, fontSize: 18.sp)),
+                              TextStyle(color: Colors.black, fontSize: 17.sp)),
                     ],
                   ),
                 ),
@@ -123,16 +123,16 @@ class _OrderPageState extends State<OrderPage>
             children: [
               _isAllOrdersTabActive
                   ? AllOrdersTab(
-                      groupcod:
-                          '${loignController.studentDataResponse.value!.groupcod}',
+                      userid:
+                          '${loignController.studentDataResponse.value!.userid}',
                       schoolrefrenceId:
                           '${loignController.studentDataResponse.value!.schoolId}',
                     )
                   : SizedBox.shrink(),
               _isHistoryTabActive
                   ? HistoryTab(
-                      groupcod:
-                          '${loignController.studentDataResponse.value!.groupcod}',
+                      cid:
+                          '${loignController.studentDataResponse.value!.userid}',
                       schoolrefrenceId:
                           '${loignController.studentDataResponse.value!.schoolId}',
                     )

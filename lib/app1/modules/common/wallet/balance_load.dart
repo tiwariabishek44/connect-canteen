@@ -1,16 +1,12 @@
 import 'package:connect_canteen/app/widget/custom_loging_widget.dart';
-import 'package:connect_canteen/app1/cons/style.dart';
-import 'package:connect_canteen/app1/model/wallet_model.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/canteen_main_screen/canteen_main_screen.dart';
-import 'package:connect_canteen/app1/modules/common/login/login_controller.dart';
 import 'package:connect_canteen/app1/modules/common/wallet/transcton_controller.dart';
+import 'package:connect_canteen/app1/modules/common/wallet/utils/balance_card.dart';
 import 'package:connect_canteen/app1/widget/custom_button.dart';
-import 'package:connect_canteen/app1/widget/custom_text_field.dart';
 import 'package:connect_canteen/app1/widget/textFormField.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:nepali_utils/nepali_utils.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class BalanceLoadPage extends StatefulWidget {
@@ -32,7 +28,6 @@ class BalanceLoadPage extends StatefulWidget {
 
 class _BalanceLoadPageState extends State<BalanceLoadPage> {
   final transctionContorller = Get.put(TransctionController());
-  final _formKey = GlobalKey<FormState>();
   final TextEditingController _amountController = TextEditingController();
   late final TextEditingController _nameController;
   late final TextEditingController _idController;
@@ -94,6 +89,12 @@ class _BalanceLoadPageState extends State<BalanceLoadPage> {
               key: transctionContorller.balanceFormKey,
               child: ListView(
                 children: [
+                  BalanceCard(
+                    userid: widget.id,
+                  ),
+                  SizedBox(
+                    height: 3.h,
+                  ),
                   TextFormFieldWidget(
                     readOnly: true,
                     showIcons: false,
@@ -147,27 +148,19 @@ class _BalanceLoadPageState extends State<BalanceLoadPage> {
                     prefixIcon: const Icon(Icons.person_outline),
                   ),
                   SizedBox(height: 3.h),
-                  CustomButton(
+                  Obx(() => CustomButton(
                       text: 'Load',
                       onPressed: () async {
                         FocusScope.of(context).unfocus();
 
-                        TransctionResponseMode transaction =
-                            TransctionResponseMode(
-                                userId: widget.id,
-                                userName: widget.name,
-                                schoolReference: 'texasinternationalcollege',
-                                className: widget.grade,
-                                remarks: '0',
-                                // remarks: '${widget.oldBalance}',
-                                transactionType: 'Load',
-                                amount: double.parse(_amountController.text),
-                                transactionDate: transctionDate,
-                                transctionTime: transctionTime);
-                        await transctionContorller
-                            .uploadTransaction(transaction);
+                        await transctionContorller.loadWallet(
+                          double.parse(_amountController.text),
+                          widget.id,
+                          widget.name,
+                          widget.grade,
+                        );
                       },
-                      isLoading: false),
+                      isLoading: transctionContorller.orderLoading.value)),
                   SizedBox(
                     height: 4.h,
                   ),

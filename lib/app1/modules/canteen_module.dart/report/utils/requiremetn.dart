@@ -1,8 +1,8 @@
 import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:connect_canteen/app1/cons/style.dart';
 import 'package:connect_canteen/app1/model/order_model.dart';
+import 'package:connect_canteen/app1/model/order_response.dart';
 import 'package:connect_canteen/app1/model/product_detials_model.dart';
-import 'package:connect_canteen/app1/modules/canteen_module.dart/order%20hold/utils/order_tile_shrimmer.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/report/canteen_report_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -45,7 +45,18 @@ class RequirementSection extends StatelessWidget {
               style: AppStyles.topicsHeading,
             ),
           ),
-          StreamBuilder<List<OrderResponse>>(
+          SizedBox(
+            height: 2.h,
+          ),
+          //dividre
+          Divider(
+            color: const Color.fromARGB(255, 209, 206, 206),
+            thickness: 1,
+          ),
+          SizedBox(
+            height: 2.h,
+          ),
+          StreamBuilder<List<UserOrderResponse>>(
             stream: canteenDailyReport.getAllTodayOrders(date),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -118,44 +129,39 @@ class RequirementSection extends StatelessWidget {
               }
 
               var orders = snapshot.data!;
-              canteenDailyReport.calculateProductTotals(orders);
-
+              Map<String, int> aggregatedQuantities =
+                  aggregateProductQuantities(orders);
               return Column(
                 children: [
                   ListView.builder(
                     physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
-                    itemCount: canteenDailyReport.productDetails.length,
+                    itemCount: aggregatedQuantities.length,
                     itemBuilder: (context, index) {
-                      String productName = canteenDailyReport
-                          .productDetails.keys
-                          .toList()[index];
-                      ProductDetail detail =
-                          canteenDailyReport.productDetails[productName]!;
+                      String productName =
+                          aggregatedQuantities.keys.toList()[index];
+                      int totalQuantity = aggregatedQuantities[productName]!;
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
                           height: 5.h,
                           width: double.infinity,
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 2.0.w),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(detail.productName,
-                                    style: TextStyle(
-                                        fontSize: 17.sp,
-                                        fontWeight: FontWeight.w600)),
-                                Text(
-                                  "${detail.totalQuantity} -plate",
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(productName,
                                   style: TextStyle(
-                                      fontSize: 17.sp,
-                                      fontWeight: FontWeight.w500,
-                                      color: const Color.fromARGB(
-                                          255, 151, 16, 7)),
-                                )
-                              ],
-                            ),
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w400)),
+                              Text(
+                                "${totalQuantity} -plate",
+                                style: TextStyle(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w500,
+                                    color:
+                                        const Color.fromARGB(255, 151, 16, 7)),
+                              )
+                            ],
                           ),
                         ),
                       );
@@ -164,6 +170,9 @@ class RequirementSection extends StatelessWidget {
                 ],
               );
             },
+          ),
+          SizedBox(
+            height: 2.h,
           ),
         ],
       ),

@@ -35,8 +35,7 @@ class OrderVerifyController extends GetxController {
         .where('date', isEqualTo: todayDate)
         .where('checkout', isEqualTo: 'false')
         .where('orderType', isEqualTo: 'regular')
-        .where("checkoutVerified", isEqualTo: 'false')
-        .snapshots()
+         .snapshots()
         .map(
           (snapshot) => snapshot.docs
               .map((doc) => OrderResponse.fromJson(doc.data()))
@@ -55,7 +54,7 @@ class OrderVerifyController extends GetxController {
         .get();
 
     for (DocumentSnapshot doc in querySnapshot.docs) {
-      batch.update(doc.reference, {'checkoutVerified': 'true'});
+      batch.update(doc.reference, {'checkout': 'true'});
     }
     await batch.commit();
     verifyLoading(false);

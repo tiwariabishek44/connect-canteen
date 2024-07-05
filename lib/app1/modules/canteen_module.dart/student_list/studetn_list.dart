@@ -1,15 +1,10 @@
-import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:connect_canteen/app1/model/student_model.dart';
-import 'package:connect_canteen/app1/modules/canteen_module.dart/statements/utils/no_data_found.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/student_list/student_list_controller.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/student_list/utils/no_student_found.dart';
 import 'package:connect_canteen/app1/modules/common/wallet/balance_load.dart';
 import 'package:connect_canteen/app1/modules/common/wallet/wallet_page.dart';
-import 'package:connect_canteen/app1/modules/student_modules/friend_list/studetn_list_controller.dart';
-import 'package:connect_canteen/app1/modules/student_modules/group/utils/listtile_shrimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -18,8 +13,9 @@ import 'package:shimmer/shimmer.dart';
 class StudentListPage extends StatelessWidget {
   final String grade;
   final studetnListControllre = Get.put(StudetnController());
+  final String isrecord;
 
-  StudentListPage({super.key, required this.grade});
+  StudentListPage({super.key, required this.grade, this.isrecord = 'false'});
 
   @override
   Widget build(BuildContext context) {
@@ -75,15 +71,25 @@ class StudentListPage extends StatelessWidget {
                     padding:
                         EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
                     child: GestureDetector(
-                      // onTap: () async {
-                      //   Get.to(() => BalanceLoadPage(
-                      //         grade: student.classes,
-                      //         oldBalance: '0',
-                      //         // transctionController.totalbalances.value.toString(),
-                      //         id: student.userid,
-                      //         name: student.name,
-                      //       ));
-                      // },
+                      onTap: () async {
+                        if (isrecord == 'true') {
+                          Get.to(() => WalletPage(
+                                userId: student.userid,
+                                name: student.name,
+                                grade: '',
+                                isStudent: true,
+                                image: '',
+                              ));
+                        } else {
+                          Get.to(() => BalanceLoadPage(
+                                grade: student.classes,
+                                oldBalance: '0',
+                                // transctionController.totalbalances.value.toString(),
+                                id: student.userid,
+                                name: student.name,
+                              ));
+                        }
+                      },
                       child: Container(
                         padding: EdgeInsets.all(8.0),
                         child: Row(
@@ -189,6 +195,32 @@ class StudentListPage extends StatelessWidget {
             );
           }
         },
+      ),
+    );
+  }
+}
+
+class ListtileShrimmer extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: ListTile(
+        leading: CircleAvatar(
+          radius: 20,
+          backgroundColor: Colors.white,
+        ),
+        title: Container(
+          width: double.infinity,
+          height: 10,
+          color: Colors.white,
+        ),
+        subtitle: Container(
+          width: double.infinity,
+          height: 10,
+          color: Colors.white,
+        ),
       ),
     );
   }

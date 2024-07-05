@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class TransactionItem extends StatelessWidget {
@@ -28,7 +29,7 @@ class TransactionItem extends StatelessWidget {
     if (name.toLowerCase() == 'load') {
       iconData = Icons.add_circle_outline;
       backgroundColor = Colors.green.shade100;
-    } else if (name.toLowerCase() == 'penalty') {
+    } else if (name.toLowerCase() == 'purchase') {
       iconData = Icons.remove_circle_outline;
       backgroundColor = Colors.red.shade100;
     } else {
@@ -36,93 +37,79 @@ class TransactionItem extends StatelessWidget {
       backgroundColor = Colors.grey.shade200;
     }
 
- 
-
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0, top: 8),
       child: GestureDetector(
         onTap: () {
           showDialog(
-                    barrierColor: Colors.black.withOpacity(0.5),
-                    context: context,
-                    builder: (BuildContext context) {
-                      return Dialog(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.0),
-                        ),
-                        backgroundColor: Colors.transparent,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(4.0),
-                          ),
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 16, horizontal: 10.w),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Type:',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey.shade600,
-                                      ),
-                                    ),
-                                    SizedBox(width: 5),
-                                    Text(
-                              '${name.toLowerCase() == 'load' ? "Balance Load" : name.toLowerCase() == 'penalty' ? 'Penalty' : 'Purchase'}',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 10),
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Date:',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey.shade600,
-                                      ),
-                                    ),
-                                    SizedBox(width: 5),
-                                    Text(
-                              date + " : " + transctionTime,
-                                      style: TextStyle(
-                                        fontSize: 16.sp,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 10),
-                                Row(
-                                  children: [
-                                    Text(
-                                      name.toLowerCase() == 'load'
-                                  ? "" : '',
+            barrierColor: Colors.black.withOpacity(0.5),
+            context: context,
+            builder: (BuildContext context) {
+              return Dialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                backgroundColor: Colors.transparent,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4.0),
+                  ),
+                  child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 16, horizontal: 10.w),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              'Type:',
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.grey.shade600,
                               ),
                             ),
                             SizedBox(width: 5),
-                            Expanded(
-                              child: Text(
-                                name.toLowerCase() == 'load'
-                                    ? ''
-                                    : name.toLowerCase() == 'penalty'
-                                        ? 'Penalty :Rs${remarks.split(' ')[0]}'
-                                        : 'Last Time :Rs ${remarks.split(' ')[0]}',
+                            Text(
+                              '${name.toLowerCase() == 'load' ? "Balance Load" : 'Purchase'}',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Text(
+                              'Date:',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                            SizedBox(width: 5),
+                            Text(
+                              date,
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 1.h,
+                        ),
+                        name.toLowerCase() == 'load'
+                            ? SizedBox.shrink()
+                            : Text(
+                                'Item: ${remarks}',
                                 maxLines: 2,
                                 overflow: TextOverflow
                                     .clip, // or TextOverflow.ellipsis
@@ -131,46 +118,12 @@ class TransactionItem extends StatelessWidget {
                                   color: Colors.black,
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        name.toLowerCase() == 'load'
-                            ? SizedBox.shrink()
-                            : Row(
-                                children: [
-                                  Text(
-                                    name.toLowerCase() == 'load'
-                                        ? "Last Time Rs."
-                                        : '',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey.shade600,
-                                    ),
-                                  ),
-                                  SizedBox(width: 5),
-                                  Expanded(
-                                    child: Text(
-                                      name.toLowerCase() == 'load'
-                                          ? remarks
-                                          : 'Item: ${remarks.split(' ').skip(1).join(' ')}',
-                                      maxLines: 2,
-                                      overflow: TextOverflow
-                                          .clip, // or TextOverflow.ellipsis
-                                      style: TextStyle(
-                                        fontSize: 16.sp,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ),
-
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
           );
         },
         child: Container(
@@ -219,7 +172,7 @@ class TransactionItem extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: Text(
-                    "Rs.$amount",
+                    '\NPR ${NumberFormat('#,##,###').format(double.parse(amount))}',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,

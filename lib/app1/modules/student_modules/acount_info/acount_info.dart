@@ -1,7 +1,3 @@
-import 'dart:developer';
-
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connect_canteen/app/config/prefs.dart';
 import 'package:connect_canteen/app/config/style.dart';
 import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:connect_canteen/app1/model/student_model.dart';
@@ -9,11 +5,9 @@ import 'package:connect_canteen/app1/modules/common/login/login_controller.dart'
 import 'package:connect_canteen/app1/modules/student_modules/acount_info/account_info_controller.dart';
 import 'package:connect_canteen/app1/modules/student_modules/acount_info/class_update.dart';
 import 'package:connect_canteen/app1/modules/student_modules/acount_info/name_update.dart';
-import 'package:connect_canteen/app1/modules/student_modules/acount_info/utils/photo_permission.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:shimmer/shimmer.dart';
 
 class AccountInfo extends StatelessWidget {
   AccountInfo({super.key});
@@ -60,95 +54,95 @@ class AccountInfo extends StatelessWidget {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Stack(
-                    children: [
-                      CircleAvatar(
-                        radius: 34.sp,
-                        backgroundColor: Colors.white,
-                        child: studetnData.profilePicture == ''
-                            ? CircleAvatar(
-                                radius: 34.sp,
-                                backgroundColor:
-                                    const Color.fromARGB(255, 236, 230, 230),
-                                child: Icon(
-                                  Icons.person,
-                                  size: 38.sp,
-                                  color: Colors.grey,
-                                ),
-                              )
-                            : CachedNetworkImage(
-                                progressIndicatorBuilder:
-                                    (context, url, downloadProgress) => Opacity(
-                                  opacity: 0.8,
-                                  child: Shimmer.fromColors(
-                                    baseColor: const Color.fromARGB(
-                                        255, 248, 246, 246),
-                                    highlightColor:
-                                        Color.fromARGB(255, 238, 230, 230),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(50),
-                                        color:
-                                            Color.fromARGB(255, 161, 157, 157),
-                                      ),
-                                      width: 14.h,
-                                      height: 14.h,
-                                    ),
-                                  ),
-                                ),
-                                imageUrl: studetnData.profilePicture,
-                                imageBuilder: (context, imageProvider) =>
-                                    Container(
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    image: DecorationImage(
-                                      image: imageProvider,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                errorWidget: (context, url, error) => Icon(
-                                  Icons.person,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                      ),
-                      Positioned(
-                        bottom: 10.sp,
-                        right: 16,
-                        child: GestureDetector(
-                          onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return PhotoPermission(
-                                  studentId: studetnData.userid,
-                                );
-                              },
-                            );
-                          },
-                          child: CircleAvatar(
-                            backgroundColor:
-                                const Color.fromARGB(255, 235, 232, 232),
-                            radius: 20.sp,
-                            child: Icon(
-                              Icons.edit,
-                              size: 20.0.sp,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: 5.h,
-                  ),
-                  Text(
-                    " Basic info",
-                    style:
-                        TextStyle(fontWeight: FontWeight.w800, fontSize: 19.sp),
-                  ),
+                  // Stack(
+                  //   children: [
+                  //     CircleAvatar(
+                  //       radius: 34.sp,
+                  //       backgroundColor: Colors.white,
+                  //       child: studetnData.profilePicture == ''
+                  //           ? CircleAvatar(
+                  //               radius: 34.sp,
+                  //               backgroundColor:
+                  //                   const Color.fromARGB(255, 236, 230, 230),
+                  //               child: Icon(
+                  //                 Icons.person,
+                  //                 size: 38.sp,
+                  //                 color: Colors.grey,
+                  //               ),
+                  //             )
+                  //           : CachedNetworkImage(
+                  //               progressIndicatorBuilder:
+                  //                   (context, url, downloadProgress) => Opacity(
+                  //                 opacity: 0.8,
+                  //                 child: Shimmer.fromColors(
+                  //                   baseColor: const Color.fromARGB(
+                  //                       255, 248, 246, 246),
+                  //                   highlightColor:
+                  //                       Color.fromARGB(255, 238, 230, 230),
+                  //                   child: Container(
+                  //                     decoration: BoxDecoration(
+                  //                       borderRadius: BorderRadius.circular(50),
+                  //                       color:
+                  //                           Color.fromARGB(255, 161, 157, 157),
+                  //                     ),
+                  //                     width: 14.h,
+                  //                     height: 14.h,
+                  //                   ),
+                  //                 ),
+                  //               ),
+                  //               imageUrl: studetnData.profilePicture,
+                  //               imageBuilder: (context, imageProvider) =>
+                  //                   Container(
+                  //                 decoration: BoxDecoration(
+                  //                   shape: BoxShape.circle,
+                  //                   image: DecorationImage(
+                  //                     image: imageProvider,
+                  //                     fit: BoxFit.cover,
+                  //                   ),
+                  //                 ),
+                  //               ),
+                  //               errorWidget: (context, url, error) => Icon(
+                  //                 Icons.person,
+                  //                 color: Colors.grey,
+                  //               ),
+                  //             ),
+                  //     ),
+                  //     Positioned(
+                  //       bottom: 10.sp,
+                  //       right: 16,
+                  //       child: GestureDetector(
+                  //         onTap: () {
+                  //           showDialog(
+                  //             context: context,
+                  //             builder: (BuildContext context) {
+                  //               return PhotoPermission(
+                  //                 studentId: studetnData.userid,
+                  //               );
+                  //             },
+                  //           );
+                  //         },
+                  //         child: CircleAvatar(
+                  //           backgroundColor:
+                  //               const Color.fromARGB(255, 235, 232, 232),
+                  //           radius: 20.sp,
+                  //           child: Icon(
+                  //             Icons.edit,
+                  //             size: 20.0.sp,
+                  //             color: Colors.black,
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     )
+                  //   ],
+                  // ),
+                  // SizedBox(
+                  //   height: 5.h,
+                  // ),
+                  // Text(
+                  //   " Basic info",
+                  //   style:
+                  //       TextStyle(fontWeight: FontWeight.w800, fontSize: 19.sp),
+                  // ),
                   SizedBox(
                     height: 1.h,
                   ),

@@ -2,6 +2,8 @@ import 'dart:developer';
 
 import 'package:connect_canteen/app/widget/custom_app_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
@@ -11,58 +13,67 @@ class SuccesfullPayment extends StatelessWidget {
   SuccesfullPayment({
     required this.amountPaid,
   });
-
+  @override
   Widget build(BuildContext context) {
     // log('PaymentSuccessPage: amountPaid: $amountPaid');
 
     String formattedAmount = NumberFormat('#,##,###').format(amountPaid);
 
     return Scaffold(
-      appBar: CustomAppBar(title: ''),
-      body: Column(
-        children: [
-          SizedBox(
-            height: 10.h,
-          ),
-          Image.asset('assets/payments.png'),
-          SizedBox(height: 10),
-          Text(
-            'Successful',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 20),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 6.w),
-            child: Divider(
-              height: 1,
-              thickness: 1,
-              color: Color.fromARGB(255, 199, 199, 199),
-            ),
-          ),
-          SizedBox(height: 20),
-          Row(
+      backgroundColor: Colors.white,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Icon(
+                Icons.check_circle,
+                color: Colors.green,
+                size: 100,
+              ),
+              SizedBox(height: 20),
               Text(
-                'Rs. ',
+                'Wallet Load  Successfully !',
                 style: TextStyle(
-                  fontSize: 23.sp,
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
+                  color: Colors.black87,
                 ),
               ),
+              SizedBox(height: 10),
               Text(
-                formattedAmount,
+                'Total Loaded Amount Rs. $formattedAmount',
                 style: TextStyle(
-                  fontSize: 26.sp,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Colors.black54,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 30),
+              ElevatedButton(
+                onPressed: () {
+                  Get.back();
+                  // Continue shopping action
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                  textStyle: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                child: Text(
+                  'Continue ',
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
+              SizedBox(height: 30),
             ],
           ),
-        ],
+        ),
       ),
     );
   }

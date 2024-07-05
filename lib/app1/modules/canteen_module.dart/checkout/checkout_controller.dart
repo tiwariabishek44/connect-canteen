@@ -6,72 +6,128 @@ import 'package:connect_canteen/app1/model/order_model.dart';
 import 'package:connect_canteen/app1/widget/payment_succesfull.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 
 class CheckoutController extends GetxController {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final TextEditingController groupCodController = TextEditingController();
-  final RxMap<String, bool> selectedOrders = <String, bool>{}.obs;
-  var groupCod = ''.obs;
-  var checkboxTick = false.obs;
-  var isCashed = false.obs;
-  var isLoded = false.obs;
-  var selectAll = false.obs;
-  List<OrderResponse> orders = [];
-//------------TO GET ALL THE ORDRES OF THE GROUP
-  Stream<List<OrderResponse>> getAllGroupOrder(String groupCod) {
-    DateTime nowUtc = DateTime.now().toUtc();
-    DateTime nowNepal = nowUtc.add(Duration(hours: 5, minutes: 45));
-    final todayDate = "${nowNepal.day}/${nowNepal.month}/${nowNepal.year}";
+  var loading = false.obs;
+  Future<void> orderCheckout(
+    String otpcode,
+    String username,
+    String classname,
+    String mealtime,
+  ) async {
+    try {
+      loading(true);
+      // Query for the document with the given product ID
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection("studentOrders")
+          .where('username', isEqualTo: username)
+          .where('mealTime', isEqualTo: mealtime)
+          .where('userClass', isEqualTo: classname)
+          .where('status', isEqualTo: 'uncompleted')
+          .where("otp",
+              isEqualTo: otpcode) // Assuming productId is the field name
+          .get();
 
-    log("this is the date:zz::::::: ${todayDate}");
-
-    return _firestore
-        .collection(ApiEndpoints.productionOrderCollection)
-        .where('groupcod',
-            isEqualTo: groupCod) // Filter documents by groupid field
-        .where('date', isEqualTo: todayDate)
-        .where('checkout', isEqualTo: 'false')
-        .where('checkoutVerified', isEqualTo: 'true')
-        .where('orderType', isEqualTo: 'regular')
-        .snapshots()
-        .map(
-          (snapshot) => snapshot.docs
-              .map((doc) => OrderResponse.fromJson(doc.data()))
-              .toList(),
-        );
-  }
-
-//------------------ TO CHECKOUT THE ORDERS
-  var checkoutLoading = false.obs;
-  Future<void> checkoutSelectedOrders(List<String> selectedOrderIds) async {
-    checkoutLoading(true);
-    WriteBatch batch = _firestore.batch();
-    QuerySnapshot querySnapshot = await _firestore
-        .collection(ApiEndpoints.productionOrderCollection)
-        .where('id', whereIn: selectedOrderIds)
-        .get();
-
-    for (DocumentSnapshot doc in querySnapshot.docs) {
-      batch.update(doc.reference, {'checkout': 'true'});
+      if (querySnapshot.docs.isNotEmpty) {
+        await querySnapshot.docs.first.reference.update({
+          'status': 'completed',
+          'otp': '',
+        });
+        Get.off(() => OrderCheckoutSuccessPage(
+              orderNumber: '',
+              orderDate: '',
+              totalAmount: 100,
+              deliveryTime: '',
+              deliveryAddress: '',
+            ));
+        loading(false);
+      } else {
+        log('No such document found!');
+        loading(false);
+      }
+    } catch (e) {
+      log("Error: $e");
+      loading(false);
     }
-    await batch.commit();
-    checkoutLoading(false);
-
-    showDialog(
-      context: Get.context!,
-      builder: (BuildContext context) {
-        return PaymentSuccessPopup(
-          message: 'Successfully!',
-        );
-      },
-    );
   }
+}
 
-  //---------- TO VALIDATE IS ORDER OR NOT
-  Future<bool> validateAndFetchOrders(String groupCode) async {
-    log(" this is the ${groupCod}");
-    var ordersStream = getAllGroupOrder(groupCode);
-    var orders = await ordersStream.first;
-    return orders.isNotEmpty;
+class OrderCheckoutSuccessPage extends StatelessWidget {
+  final String orderNumber;
+  final String orderDate;
+  final double totalAmount;
+  final String deliveryTime;
+  final String deliveryAddress;
+
+  OrderCheckoutSuccessPage({
+    required this.orderNumber,
+    required this.orderDate,
+    required this.totalAmount,
+    required this.deliveryTime,
+    required this.deliveryAddress,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey[200],
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        title:
+            Text('Order Confirmation', style: TextStyle(color: Colors.black)),
+        iconTheme: IconThemeData(color: Colors.black),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Center(
+            child: Column(
+              children: [
+                Icon(Icons.check_circle, color: Colors.green, size: 50.sp),
+                SizedBox(height: 16),
+                Text(
+                  'Thank You!',
+                  style: TextStyle(
+                    fontSize: 22.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Order Checkout Succesfully.',
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    color: Colors.black54,
+                  ),
+                ),
+                SizedBox(height: 16),
+                //make the curve edge button ( Go Back)
+                ElevatedButton(
+                  onPressed: () {
+                    Get.back();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 175, 152, 76),
+                    padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                    textStyle: TextStyle(
+                      fontSize: 18.sp,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  child: Text(
+                    'Go Back',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

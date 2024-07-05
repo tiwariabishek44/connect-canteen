@@ -9,10 +9,6 @@ import 'package:connect_canteen/app1/modules/canteen_module.dart/mealTime/meal_t
 import 'package:connect_canteen/app1/modules/canteen_module.dart/penalty_figure/penalty_figure.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/report/report_page.dart';
 import 'package:connect_canteen/app1/modules/common/login/login_controller.dart';
-import 'package:connect_canteen/app1/modules/student_modules/acount_info/acount_info.dart';
-import 'package:connect_canteen/app1/modules/student_modules/group/group.dart';
-import 'package:connect_canteen/app1/modules/common/wallet/wallet_page.dart';
-import 'package:connect_canteen/app1/modules/student_modules/order_hold/order_hold.dart';
 import 'package:connect_canteen/app1/widget/logout_cornfiration.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -121,15 +117,7 @@ class CanteenSetting extends StatelessWidget {
                   title: 'Meal Time  ',
                   subtitle: 'Get the meal time',
                   trailing: Icons.chevron_right),
-              buildCustomListTile(
-                  onTap: () {
-                    Get.to(() => PenaltyFigurePage(),
-                        transition: Transition.cupertinoDialog);
-                  },
-                  //
-                  title: 'Penalty Record',
-                  subtitle: 'Get the penalty record',
-                  trailing: Icons.chevron_right),
+
               buildCustomListTile(
                   onTap: () {
                     showDialog(

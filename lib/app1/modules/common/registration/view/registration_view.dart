@@ -244,6 +244,8 @@ class RegisterView extends StatelessWidget {
                           onPressed: () {
                             FocusScope.of(context).unfocus();
                             if (registercontroller.selectedClass.value != '') {
+                              log(registercontroller.termsAndConditions.value
+                                  .toString());
                               registercontroller.termsAndConditions.value ==
                                       false
                                   ? CustomSnackbar.error(context,
@@ -251,8 +253,8 @@ class RegisterView extends StatelessWidget {
                                   : registercontroller.userRegister(
                                       context, schoolname, schoolId);
                             } else {
-                              CustomSnackbar.error(context,
-                                  'Please accept terms and conditions');
+                              CustomSnackbar.error(
+                                  context, 'Please Select Class');
                             }
                           },
                           isLoading: false,

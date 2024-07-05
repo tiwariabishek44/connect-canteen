@@ -16,7 +16,6 @@ class VerifySearchPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-
       appBar: AppBar(
         scrolledUnderElevation: 0,
         backgroundColor: Colors.white,
@@ -47,7 +46,7 @@ class VerifySearchPage extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.all(18.0),
                 child: Text(
-                  "Enter the student group code and get the list of the student orders!",
+                  "Enter the student   code and get the list of the student orders!",
                   style: TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: 19.sp,

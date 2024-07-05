@@ -1,29 +1,17 @@
-import 'dart:developer';
-
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connect_canteen/app/modules/vendor_modules/daily_report/widget/reaming_order.dart';
-import 'package:connect_canteen/app/modules/vendor_modules/dashboard/salse_controller.dart';
-import 'package:connect_canteen/app/modules/vendor_modules/order_requirements/order_requirement_controller.dart';
-import 'package:connect_canteen/app/modules/vendor_modules/orders_holds/hold_order_controller.dart';
-import 'package:connect_canteen/app/widget/custom_app_bar.dart';
-import 'package:connect_canteen/app/widget/custom_loging_widget.dart';
-import 'package:connect_canteen/app1/model/order_model.dart';
-import 'package:connect_canteen/app1/model/product_detials_model.dart';
-import 'package:connect_canteen/app1/modules/canteen_module.dart/order%20hold/utils/order_tile_shrimmer.dart';
+import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/report/canteen_report_controller.dart';
-import 'package:connect_canteen/app1/modules/canteen_module.dart/report/utils/remaning_order_section.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/report/utils/requiremetn.dart';
+import 'package:connect_canteen/app1/modules/canteen_module.dart/report/utils/un_checkout_order.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/salse_figure/salse_figure.dart';
 import 'package:flutter/material.dart';
-import 'package:connect_canteen/app/config/colors.dart';
 import 'package:connect_canteen/app/config/style.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
-import 'package:nepali_utils/nepali_utils.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:shimmer/shimmer.dart';
-import 'package:nepali_date_picker/nepali_date_picker.dart' as picker;
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+
+class SwitchController extends GetxController {
+  var isTotalOrder = true.obs;
+}
 
 class CanteenDailyReport extends StatefulWidget {
   final bool isDailyReport;
@@ -35,6 +23,7 @@ class CanteenDailyReport extends StatefulWidget {
 
 class _CanteenDailyReportState extends State<CanteenDailyReport> {
   final canteenDailyReport = Get.put(CanteenReportController());
+  final switchController = Get.put(SwitchController());
   DateTime _selectedDate = DateTime.now();
 
   void selectDate() {
@@ -65,7 +54,7 @@ class _CanteenDailyReportState extends State<CanteenDailyReport> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.greyColor,
+      backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
         elevation: 0,
         scrolledUnderElevation: 0,
@@ -154,16 +143,91 @@ class _CanteenDailyReportState extends State<CanteenDailyReport> {
             SizedBox(
               height: 5.h,
             ),
-            RequirementSection(
-              date: canteenDailyReport.selectedDate.value,
-            ),
+            Container(
+                width: double.infinity,
+                height: 6.h,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: Color.fromARGB(255, 255, 255, 255),
+                ),
+                child: Obx(() {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          switchController.isTotalOrder.value = true;
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: switchController.isTotalOrder.value
+                                ? Colors.black
+                                : Colors.grey[200],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: 8.0, right: 8, top: 5, bottom: 5),
+                            child: Text(
+                              'Total Order',
+                              style: TextStyle(
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.w600,
+                                color: switchController.isTotalOrder.value
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          switchController.isTotalOrder.value = false;
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: switchController.isTotalOrder.value
+                                ? Colors.grey[200]
+                                : Colors.black,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: 8.0, right: 8, top: 5, bottom: 5),
+                            child: Text(
+                              '  Remaining    ',
+                              style: TextStyle(
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.w600,
+                                color: switchController.isTotalOrder.value
+                                    ? Colors.black
+                                    : Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                })),
             SizedBox(
-              height: 4.h,
+              height: 2.h,
             ),
-            RemaningOrderSection(date: canteenDailyReport.selectedDate.value),
-            SizedBox(
-              height: 4.h,
-            ),
+            Obx(() {
+              switch (switchController.isTotalOrder.value) {
+                case true:
+                  return RequirementSection(
+                    date: canteenDailyReport.selectedDate.value,
+                  );
+                case false:
+                  return RemaningORders(
+                    date: canteenDailyReport.selectedDate.value,
+                  );
+                default:
+                  return SizedBox.shrink(); // Default case if needed
+              }
+            }),
           ],
         ),
       )),

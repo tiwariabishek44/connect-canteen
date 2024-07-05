@@ -1,15 +1,11 @@
-import 'dart:ffi';
+import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connect_canteen/app1/cons/colors.dart';
-import 'package:connect_canteen/app1/cons/style.dart';
-import 'package:connect_canteen/app1/model/product_model.dart';
-import 'package:connect_canteen/app1/modules/student_modules/homepage/detail_poduct_shortcurt.dart';
-import 'package:connect_canteen/app1/modules/student_modules/product_detail/product_detail.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:connect_canteen/app1/model/cart_modeld.dart';
+import 'package:connect_canteen/app1/modules/canteen_module.dart/menue_edit/menue_edit.dart';
+import 'package:connect_canteen/app1/modules/student_modules/cart/cart_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -17,19 +13,23 @@ class ProductCard extends StatelessWidget {
   final String name;
   final String imageUrl;
   final double price;
+  final String productId;
 
   final String type;
   final String userType; // New field userType
   final bool active;
 
   ProductCard(
-      {this.userType = 'student', // Default value is 'student'
+      {required this.productId,
+      this.userType = 'student', // Default value is 'student'
 
       required this.name,
       required this.imageUrl,
       required this.price,
       required this.type,
       required this.active});
+
+  final cartController = Get.put(CartController());
 
   @override
   Widget build(BuildContext context) {
@@ -39,25 +39,43 @@ class ProductCard extends StatelessWidget {
         // Image Section
         Stack(
           children: [
-            AspectRatio(
-              aspectRatio: 1,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(15),
-                child: CachedNetworkImage(
-                  progressIndicatorBuilder: (context, url, downloadProgress) =>
-                      Opacity(
-                    opacity: 0.8,
-                    child: Shimmer.fromColors(
-                      baseColor: Colors.black12,
-                      highlightColor: Colors.red,
-                      child: Container(),
+            GestureDetector(
+              onTap: () {
+                if (userType == 'student') {
+                  cartController.addItem(
+                      CartItem(
+                          id: productId, name: name, quantity: 1, price: price),
+                      context);
+                } else {
+                  Get.to(
+                      () => MenueEditPage(
+                            productId: productId,
+                          ),
+                      transition: Transition.cupertinoDialog);
+                }
+              },
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: CachedNetworkImage(
+                    progressIndicatorBuilder:
+                        (context, url, downloadProgress) => Opacity(
+                      opacity: 0.8,
+                      child: Shimmer.fromColors(
+                        baseColor: Colors.black12,
+                        highlightColor: Colors.red,
+                        child: Container(),
+                      ),
                     ),
+                    imageUrl: imageUrl == ''
+                        ? 'https://b.zmtcdn.com/data/pictures/chains/3/19056943/06029b048ef65a9180d3ab70f50c3f19.jpg?fit=around|960:500&crop=960:500;*,*'
+                        : imageUrl,
+                    fit: BoxFit.fill,
+                    width: double.infinity,
+                    errorWidget: (context, url, error) =>
+                        Icon(Icons.error_outline, size: 40),
                   ),
-                  imageUrl: imageUrl ?? '',
-                  fit: BoxFit.fill,
-                  width: double.infinity,
-                  errorWidget: (context, url, error) =>
-                      Icon(Icons.error_outline, size: 40),
                 ),
               ),
             ),
@@ -65,15 +83,27 @@ class ProductCard extends StatelessWidget {
                 right: 2.w,
                 bottom: 0.3.h,
                 child: userType == 'student'
-                    ? SizedBox.shrink()
-                    // CircleAvatar(
-                    //     radius: 17,
-                    //     backgroundColor: Color.fromARGB(255, 38, 121, 41),
-                    //     child: Icon(
-                    //       Icons.add,
-                    //       color: Colors.white,
-                    //     ),
-                    //   )
+                    ? GestureDetector(
+                        onTap: () {
+                          Timer(Duration(milliseconds: 100), () {
+                            cartController.addItem(
+                                CartItem(
+                                    id: productId,
+                                    name: name,
+                                    quantity: 1,
+                                    price: price),
+                                context);
+                          });
+                        },
+                        child: CircleAvatar(
+                          radius: 17,
+                          backgroundColor: Color.fromARGB(255, 38, 121, 41),
+                          child: Icon(
+                            Icons.add,
+                            color: Colors.white,
+                          ),
+                        ),
+                      )
                     : CircleAvatar(
                         radius: 17,
                         backgroundColor: active == true
@@ -107,19 +137,6 @@ class ProductCard extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                   color: Color.fromARGB(255, 0, 0, 0)),
             ),
-            // Add to Cart Button
-            price > 45
-                ? Row(
-                    children: [
-                      Image.asset(
-                        'assets/coin.jpeg',
-                        height: 4.h,
-                        width: 4.w,
-                      ),
-                      Text('10')
-                    ],
-                  )
-                : SizedBox.shrink()
           ],
         ),
       ],

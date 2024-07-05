@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:connect_canteen/app/config/style.dart';
 import 'package:connect_canteen/app1/model/admin_summary.dart';
-import 'package:connect_canteen/app1/model/wallet_model.dart';
+import 'package:connect_canteen/app1/model/transction_model.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/order%20hold/utils/order_tile_shrimmer.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/statements/statement_controller.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/statements/utils/balance_filed.dart';
@@ -11,6 +11,7 @@ import 'package:connect_canteen/app1/modules/common/wallet/wallet_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:nepali_date_picker/nepali_date_picker.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:nepali_date_picker/nepali_date_picker.dart' as picker;
@@ -127,7 +128,7 @@ class _StatementPageState extends State<StatementPage> {
             ),
             Expanded(
               child: SingleChildScrollView(
-                child: StreamBuilder<List<TransctionResponseMode>>(
+                child: StreamBuilder<List<TransactionResponseModel>>(
                   stream: statementController.getStatement(
                       'texasinternationalcollege',
                       statementController.selectedDate.value),
@@ -186,10 +187,10 @@ class _StatementPageState extends State<StatementPage> {
                                 child: GestureDetector(
                                   onTap: () {
                                     Get.to(() => WalletPage(
-                                          grade: statement.className,
+                                          grade: statement.type,
                                           userId: statement.userId,
                                           isStudent: true,
-                                          name: statement.userName,
+                                          name: statement.type,
                                           image: '',
                                         ));
                                   },
@@ -203,8 +204,7 @@ class _StatementPageState extends State<StatementPage> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                statement.transactionDate
-                                                    .toString(),
+                                                statement.date.toString(),
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.w600,
                                                   fontSize: 18.0.sp,
@@ -217,7 +217,7 @@ class _StatementPageState extends State<StatementPage> {
                                                       size: 17.sp),
                                                   SizedBox(width: 1.w),
                                                   Text(
-                                                    '${statement.userName}',
+                                                    '${statement.studentName}',
                                                     style: TextStyle(
                                                       fontSize: 17.0,
                                                       color: Colors.grey[600],
@@ -226,7 +226,7 @@ class _StatementPageState extends State<StatementPage> {
                                                 ],
                                               ),
                                               Text(
-                                                '${statement.className}',
+                                                '${statement.classes}',
                                                 style: TextStyle(
                                                   fontSize: 17.0.sp,
                                                   color: Colors.black,
@@ -237,7 +237,7 @@ class _StatementPageState extends State<StatementPage> {
                                           ),
                                         ),
                                         Text(
-                                          'Rs.${statement.amount.toStringAsFixed(1)}',
+                                          '\NPR ${NumberFormat('#,##,###').format(statement.amount)}',
                                           style: TextStyle(
                                             fontSize: 17.0.sp,
                                             color: Colors.black,

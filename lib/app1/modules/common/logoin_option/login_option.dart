@@ -12,6 +12,8 @@ class OnboardingScreen extends StatelessWidget {
   final loginOptionController = Get.put(LoginOptionController());
   @override
   Widget build(BuildContext context) {
+    FocusScope.of(context).unfocus();
+
     return Scaffold(
       body: Stack(
         children: [

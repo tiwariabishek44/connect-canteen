@@ -268,11 +268,11 @@ class _VerifyPageState extends State<VerifyPage> {
               },
               backgroundColor: Colors.black,
               child: Text(
-                'Verify Orders',
+                'Order Checkout',
                 style: TextStyle(
-                  fontSize: 19.sp,
+                  fontSize: 17.sp,
                   color: Colors.white,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),

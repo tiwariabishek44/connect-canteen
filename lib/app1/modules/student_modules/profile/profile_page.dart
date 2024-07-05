@@ -1,25 +1,13 @@
-import 'dart:developer';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connect_canteen/app/config/colors.dart';
 import 'package:connect_canteen/app/config/style.dart';
-import 'package:connect_canteen/app1/model/student_model.dart';
-import 'package:connect_canteen/app1/modules/canteen_module.dart/checkout/chekcout_page.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/mealTime/meal_time.dart';
 import 'package:connect_canteen/app1/modules/common/login/login_controller.dart';
 import 'package:connect_canteen/app1/modules/student_modules/acount_info/acount_info.dart';
-import 'package:connect_canteen/app1/modules/student_modules/coin%20collect/coin_collect_page.dart';
-import 'package:connect_canteen/app1/modules/student_modules/contact_us_page/contact_us_page.dart';
-import 'package:connect_canteen/app1/modules/student_modules/group/group.dart';
 import 'package:connect_canteen/app1/modules/common/wallet/wallet_page.dart';
-import 'package:connect_canteen/app1/modules/student_modules/order_hold/order_hold.dart';
-import 'package:connect_canteen/app1/modules/student_modules/pin/pin_page.dart';
 import 'package:connect_canteen/app1/widget/logout_cornfiration.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:connect_canteen/app/widget/profile_tile.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:shimmer/shimmer.dart';
 
 class ProfilePage extends StatelessWidget {
   final loignController = Get.put(LoginController());
@@ -119,15 +107,7 @@ class ProfilePage extends StatelessWidget {
                   title: 'Wallet ',
                   subtitle: 'Your Wallet Your money',
                   trailing: Icons.chevron_right),
-              buildCustomListTile(
-                  onTap: () {
-                    Get.to(() => PinPage(),
-                        transition: Transition.cupertinoDialog,
-                        duration: duration);
-                  },
-                  title: 'Account Pin ',
-                  subtitle: 'Order meal in one click',
-                  trailing: Icons.chevron_right),
+
               // buildCustomListTile(
               //     onTap: () {
               //       Get.to(
@@ -141,19 +121,19 @@ class ProfilePage extends StatelessWidget {
               //     title: 'Coins  ',
               //     subtitle: 'Get your gifts and rewards ',
               //     trailing: Icons.chevron_right),
-              buildCustomListTile(
-                  onTap: () {
-                    Get.to(
-                        () => OrderCheckoutPage(
-                              groupCode: loignController
-                                  .studentDataResponse.value!.groupcod,
-                            ),
-                        transition: Transition.cupertinoDialog);
-                  },
-                  //
-                  title: 'Checkout',
-                  subtitle: 'Checkout your meal',
-                  trailing: Icons.chevron_right),
+              // buildCustomListTile(
+              //     onTap: () {
+              //       Get.to(
+              //           () => OrderCheckoutPage(
+              //                 cid: loignController
+              //                     .studentDataResponse.value!.groupcod,
+              //               ),
+              //           transition: Transition.cupertinoDialog);
+              //     },
+              //     //
+              //     title: 'Checkout',
+              //     subtitle: 'Checkout your meal',
+              //     trailing: Icons.chevron_right),
               buildCustomListTile(
                   onTap: () {
                     Get.to(() => Mealtime(),

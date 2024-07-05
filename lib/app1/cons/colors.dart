@@ -8,7 +8,7 @@ class AppColors {
       Color.fromARGB(255, 237, 237, 237);
 
   static const Color inputFieldBorderColor = Color(0xFFB7B5B5);
-  static const Color backgroundColor = Color(0xFFF4F8F9);
+  static const Color backgroundColor = Color(0xffF5F6FB);
   static const Color cardColor = Color.fromARGB(255, 241, 243, 244);
   static const Color iconColors = Colors.black87;
 }

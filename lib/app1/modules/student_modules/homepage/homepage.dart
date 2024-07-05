@@ -1,31 +1,29 @@
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connect_canteen/app/config/prefs.dart';
 import 'package:connect_canteen/app1/model/student_model.dart';
-import 'package:connect_canteen/app1/modules/canteen_module.dart/checkout/chekcout_page.dart';
 import 'package:connect_canteen/app1/modules/common/login/login_controller.dart';
 import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:connect_canteen/app1/cons/style.dart';
-import 'package:connect_canteen/app1/modules/common/wallet/wallet_page.dart';
-import 'package:connect_canteen/app1/modules/student_modules/acount_info/acount_info.dart';
-import 'package:connect_canteen/app1/modules/student_modules/group/group.dart';
+import 'package:connect_canteen/app1/modules/common/wallet/transcton_controller.dart';
+import 'package:connect_canteen/app1/modules/student_modules/cart/cart_page.dart';
+import 'package:connect_canteen/app1/modules/student_modules/homepage/utils/category.dart';
 import 'package:connect_canteen/app1/modules/student_modules/homepage/utils/menue_section.dart';
-import 'package:connect_canteen/app1/modules/common/wallet/utils/balance_card.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:intl/intl.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class StudentHomePage extends StatelessWidget {
   final storage = GetStorage();
   final loignController = Get.put(LoginController());
+  final transctionController = Get.put(TransctionController());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
+      backgroundColor: Color(0xffF5F6FB),
       appBar: AppBar(
         backgroundColor: AppColors.backgroundColor,
         elevation: 0,
@@ -36,6 +34,7 @@ class StudentHomePage extends StatelessWidget {
         padding: AppPadding.screenHorizontalPadding,
         child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               SizedBox(
@@ -45,39 +44,59 @@ class StudentHomePage extends StatelessWidget {
               SizedBox(
                 height: 2.h,
               ),
-              GestureDetector(
-                  onTap: () {
-                    Get.to(
-                      () => WalletPage(
-                        grade:
-                            loignController.studentDataResponse.value!.classes,
-                        userId:
-                            loignController.studentDataResponse.value!.userid,
-                        isStudent: true,
-                        name: loignController.studentDataResponse.value!.name,
-                        image: loignController
-                            .studentDataResponse.value!.profilePicture,
-                      ),
-                      transition: Transition.cupertinoDialog,
-                    );
-                  },
-                  child: BalanceCard(userid: storage.read(userId))),
+
+              // make container with the screen widht and the light grey border
+
               SizedBox(
-                height: 3.h,
+                height: 2.h,
               ),
-              Text(
-                'What do you want to eat today? 🍔',
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 19.sp,
-                  fontWeight: FontWeight.w600,
-                  color: Color.fromARGB(255, 80, 79, 79),
-                ),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: Divider(
+                      color: const Color.fromARGB(255, 211, 210, 210),
+                      thickness: 1,
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Text(
+                    "What's on your mind ?",
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w300,
+                      color: Color.fromARGB(255, 80, 79, 79),
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Divider(
+                      color: const Color.fromARGB(255, 211, 210, 210),
+                      thickness: 1,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 2.h,
+              ),
+
+              HorizontalGridView(),
+              SizedBox(
+                height: 2.h,
               ),
               Divider(
                 color: Colors.grey[300],
                 thickness: 1,
+              ),
+              SizedBox(
+                height: 2.h,
+              ),
+              Text(
+                "What do you want to eat today ?",
+                style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w400),
               ),
               MenueSection(),
             ],
@@ -98,104 +117,103 @@ class StudentHomePage extends StatelessWidget {
         } else if (snapshot.data == null) {
           return SizedBox.shrink();
         } else {
-          StudentDataResponse studentData = snapshot.data!;
+          StudentDataResponse studetnData = snapshot.data!;
+          log("${loignController.studentDataResponse.value!.classes}");
 
-          return Container(
-            width: 100.w,
-            height: 14.h,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: Color.fromARGB(255, 226, 226, 226),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.only(left: 18, right: 18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${studentData.name}! 👋',
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 18.sp,
-                                fontWeight: FontWeight.w800,
-                                color: Color.fromARGB(255, 70, 69, 69),
-                              ),
-                            ),
-                            Text(
-                              studentData.classes.isEmpty
-                                  ? 'N/A'
-                                  : '${studentData.classes}',
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(179, 50, 49, 49),
-                              ),
-                            ),
-                          ],
+          return Column(
+            children: [
+              // row to show the Column( name and the class)  and the circular avatar for the cart .
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          studetnData.name,
+                          style: TextStyle(
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Color.fromARGB(255, 80, 79, 79),
+                          ),
+                        ),
+                        Text(
+                          studetnData.classes,
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w300,
+                            color: Color.fromARGB(255, 80, 79, 79),
+                          ),
+                        ),
+                      ],
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Get.to(CartPage(),
+                            transition: Transition.rightToLeftWithFade);
+                      },
+                      child: CircleAvatar(
+                        radius: 20,
+                        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+                        child: Icon(
+                          Icons.shopping_cart_outlined,
+                          color: Color.fromARGB(255, 80, 79, 79),
                         ),
                       ),
-                      // Replace CircleAvatar with Row for icons
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            backgroundColor: Colors.white,
-                            child: IconButton(
-                              icon: Icon(Icons.notifications),
-                              onPressed: () {
-                                Get.to(() => OrderCheckoutPage(
-                                    groupCode: loignController
-                                        .studentDataResponse.value!.groupcod));
-                                // Handle notifications button press
-                                // Example: Get.toNamed('/notifications');
-                              },
+                    )
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 2.h,
+              ),
+              Container(
+                width: double.infinity,
+                height: 6.h,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: Color.fromARGB(255, 255, 255, 255),
+                  border: Border.all(
+                    color: Color.fromARGB(255, 228, 224, 224),
+                    width: 1,
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 18, right: 18),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Obx(() => Text(
+                            transctionController.showMoney.value
+                                ? '\NPR ${NumberFormat('#,##,###').format(studetnData.balance)}'
+                                : 'NPR XX.XX',
+                            style: TextStyle(
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.w600,
+                              color: Color.fromARGB(255, 119, 117, 117),
                             ),
-                          ),
-                          SizedBox(
-                            width: 2.w,
-                          ),
-                          // CircleAvatar(
-                          //   backgroundColor: Colors.white,
-                          //   child: IconButton(
-                          //     icon: Icon(Icons.group),
-                          //     onPressed: () {
-                          //       Get.to(() => GroupPage(),
-                          //           transition: Transition.cupertinoDialog);
-                          //       // Handle notifications button press
-                          //       // Example: Get.toNamed('/notifications');
-                          //     },
-                          //   ),
-                          // ),
-                        ],
-                      ),
+                          )),
+                      Obx(() => GestureDetector(
+                            onTap: () {
+                              transctionController.showMoney.value =
+                                  !transctionController.showMoney.value;
+                            },
+                            child: Icon(
+                              transctionController.showMoney.value
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined,
+                            ),
+                          ))
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
+            ],
           );
         }
       },
     );
-  }
-}
-
-class DetailPageController extends GetxController {
-  var quantity = 1.obs;
-
-  void increment() => quantity++;
-  void decrement() {
-    if (quantity > 1) {
-      quantity--;
-    }
   }
 }

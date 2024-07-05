@@ -23,7 +23,7 @@ class PenaltyFigurePage extends StatelessWidget {
             backgroundColor: AppColors.backgroundColor,
             titleSpacing: 4.0, // Adjusts the spacing above the title
             title: Text(
-              'Penalty',
+              'Orders',
               style: TextStyle(fontWeight: FontWeight.w300),
             ),
             bottom: PreferredSize(
@@ -33,7 +33,7 @@ class PenaltyFigurePage extends StatelessWidget {
                 child: Padding(
                   padding: EdgeInsets.only(left: 4.0.w),
                   child: Text(
-                    'Penalty Records',
+                    'Un Checked Orders',
                     style:
                         TextStyle(fontWeight: FontWeight.bold, fontSize: 24.sp),
                   ),

@@ -2,7 +2,6 @@ import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:connect_canteen/app1/cons/style.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/dashboard/utils/clickable_action_icon.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/menue/menue_page.dart';
-import 'package:connect_canteen/app1/modules/canteen_module.dart/penalty/penalty.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/report/canteen_report_controller.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/report/report_page.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/wallet_class/class_wallet.dart';
@@ -74,21 +73,16 @@ class ManagerActivity extends StatelessWidget {
                 },
               ),
               buildClickableIcon(
-                icon: Icons.pending_actions,
-                label: 'Penalty',
+                icon: Icons.analytics,
+                label: 'Order List',
                 onTap: () {
-                  canteenDailyReport.selectedDate.value = date;
-                  Get.to(() => PenaltyPage(),
+                  Get.to(
+                      () => ClassWalletPage(
+                            isrecord: 'orderlist',
+                          ),
                       transition: Transition.cupertinoDialog);
+
                   // // Handle click for Analytics\
-                },
-              ),
-              buildClickableIcon(
-                icon: Icons.people,
-                label: 'Students List',
-                onTap: () {
-                  Get.to(() => ClassWalletPage(),
-                      transition: Transition.cupertinoDialog);
                 },
               ),
             ],

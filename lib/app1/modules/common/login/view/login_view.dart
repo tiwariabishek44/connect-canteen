@@ -1,3 +1,4 @@
+import 'package:connect_canteen/app/modules/common/forget_password/forget_password_page.dart';
 import 'package:connect_canteen/app/modules/common/register/register_controller.dart';
 import 'package:connect_canteen/app/widget/custom_loging_widget.dart';
 import 'package:connect_canteen/app1/cons/colors.dart';
@@ -111,7 +112,10 @@ class _LoginViewState extends State<LoginView> {
                         padding: const EdgeInsets.all(8.0),
                         child: InkWell(
                           onTap: () {
-                            Get.off(() => ForgetPasswordView());
+                            Get.to(
+                              () => ForgetPasswordPage(),
+                              transition: Transition.cupertinoDialog,
+                            );
                           },
                           child: Text("Forgot Password?",
                               style: TextStyle(

@@ -1,6 +1,7 @@
 import 'package:connect_canteen/app/config/style.dart';
 import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:connect_canteen/app1/model/school_model.dart';
+import 'package:connect_canteen/app1/modules/canteen_module.dart/class_order/class_order.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/student_list/studetn_list.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/wallet_class/class_wallet_controller.dart';
 import 'package:connect_canteen/app1/modules/common/wallet/utils/transction_shrimmer.dart';
@@ -9,7 +10,8 @@ import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class ClassWalletPage extends StatelessWidget {
-  ClassWalletPage({super.key});
+  final String isrecord;
+  ClassWalletPage({super.key, this.isrecord = 'false'});
   final classlistController = Get.put(ClassListController());
   @override
   build(BuildContext context) {
@@ -20,7 +22,7 @@ class ClassWalletPage extends StatelessWidget {
         backgroundColor: Colors.white,
         titleSpacing: 4.0, // Adjusts the spacing above the title
         title: Text(
-          'Wallet',
+          isrecord == 'orderlist' ? 'Order List' : 'Wallet',
           style: TextStyle(fontWeight: FontWeight.w300),
         ),
         bottom: PreferredSize(
@@ -85,8 +87,18 @@ class ClassWalletPage extends StatelessWidget {
                         ),
                         child: ListTile(
                           onTap: () {
-                            Get.to(() => StudentListPage(grade: grade.name),
-                                transition: Transition.cupertinoDialog);
+                            if (isrecord == 'orderlist') {
+                              Get.to(() => ClassOrder(
+                                    grade: grade.name,
+                                  ));
+                            } else {
+                              Get.to(
+                                  () => StudentListPage(
+                                        grade: grade.name,
+                                        isrecord: isrecord,
+                                      ),
+                                  transition: Transition.cupertinoDialog);
+                            }
                           },
                           title: Text(
                             "${grade.name}" ?? '',

@@ -1,18 +1,12 @@
 import 'dart:developer';
 
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connect_canteen/app1/cons/colors.dart';
-import 'package:connect_canteen/app1/model/wallet_model.dart';
-import 'package:connect_canteen/app1/modules/common/wallet/balance_load.dart';
+import 'package:connect_canteen/app1/model/transction_model.dart';
 import 'package:connect_canteen/app1/modules/common/wallet/utils/balance_card.dart';
 import 'package:connect_canteen/app1/modules/common/wallet/utils/transctionItems.dart';
 import 'package:connect_canteen/app1/modules/common/wallet/utils/transction_shrimmer.dart';
 import 'package:connect_canteen/app1/modules/common/wallet/transcton_controller.dart';
-import 'package:connect_canteen/app1/widget/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
-import 'package:nepali_utils/nepali_utils.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class WalletPage extends StatefulWidget {
@@ -24,7 +18,7 @@ class WalletPage extends StatefulWidget {
 
   WalletPage({
     Key? key,
-    required this.grade,  
+    required this.grade,
     required this.userId,
     required this.isStudent,
     required this.name,
@@ -38,7 +32,7 @@ class WalletPage extends StatefulWidget {
 class _WalletPageState extends State<WalletPage> {
   final transctionController = Get.put(TransctionController());
   bool _showAllTransactions = false;
- 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,7 +54,7 @@ class _WalletPageState extends State<WalletPage> {
               padding: EdgeInsets.only(left: 4.0.w),
               child: Text(
                 widget.name,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.sp),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22.sp),
               ),
             ),
           ),
@@ -72,14 +66,6 @@ class _WalletPageState extends State<WalletPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 1.h),
-              Text(
-                "Wallet",
-                style: TextStyle(
-                  fontSize: 25.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
               SizedBox(height: 1.h),
               BalanceCard(
                 userid: widget.userId,
@@ -108,43 +94,13 @@ class _WalletPageState extends State<WalletPage> {
                 color: Colors.black,
               ),
             ),
-            if (!widget.isStudent)
-              GestureDetector(
-                onTap: () async {
-                  Get.to(() => BalanceLoadPage(
-                        grade: widget.grade,
-                        oldBalance: '0',
-                        // transctionController.totalbalances.value.toString(),
-                        id: widget.userId,
-                        name: widget.name,
-                      ));
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: AppColors.primaryColor,
-                  ),
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: Text(
-                    "Add Balance",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
           ],
         ),
-
-
-
-
         SizedBox(height: 20),
-        StreamBuilder<List<TransctionResponseMode>>(
+        StreamBuilder<List<TransactionResponseModel>>(
           stream: transctionController.fetchAllTransction(
-              widget.userId, 'texasinternationalcollege'),
+            widget.userId,
+          ),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return ListView.builder(
@@ -155,7 +111,42 @@ class _WalletPageState extends State<WalletPage> {
                 },
               );
             } else if (snapshot.hasError) {
-              return Text('Error loading transactions');
+              log('Error: ${snapshot.error}');
+              return Container(
+                padding: EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      color: Colors.red,
+                      size: 50,
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Server Error',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              );
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
               return Center(
                 child: Container(
@@ -195,9 +186,8 @@ class _WalletPageState extends State<WalletPage> {
                 ),
               );
             } else {
-              List<TransctionResponseMode> transactions = snapshot.data!;
-              transactions.sort(
-                  (a, b) => b.transactionDate.compareTo(a.transactionDate));
+              List<TransactionResponseModel> transactions = snapshot.data!;
+              transactions.sort((a, b) => b.date.compareTo(a.date));
               int itemCount = _showAllTransactions
                   ? transactions.length
                   : (transactions.length > 5 ? 5 : transactions.length);
@@ -209,12 +199,13 @@ class _WalletPageState extends State<WalletPage> {
                     physics: NeverScrollableScrollPhysics(),
                     itemCount: itemCount,
                     itemBuilder: (context, index) {
-                      TransctionResponseMode transaction = transactions[index];
+                      TransactionResponseModel transaction =
+                          transactions[index];
                       return TransactionItem(
-                        transctionTime: transaction.transctionTime,
-                        name: transaction.transactionType,
-                        date: transaction.transactionDate.toString(),
-                        remarks: transaction.remarks,
+                        transctionTime: transaction.date,
+                        name: transaction.type,
+                        date: transaction.date.toString(),
+                        remarks: transaction.status,
                         amount: transaction.amount.toInt().toString(),
                         color:
                             Colors.green, // Assuming all amounts are positive
@@ -256,11 +247,6 @@ class _WalletPageState extends State<WalletPage> {
             }
           },
         ),
-
-
-
-
-        
       ],
     );
   }

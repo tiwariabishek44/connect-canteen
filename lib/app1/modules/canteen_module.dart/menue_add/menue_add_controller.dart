@@ -9,7 +9,7 @@ class MenueAddController extends GetxController {
   final productNameController = TextEditingController();
   final priceController = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
+  var category = ''.obs;
   void doAdd() {
     if (_formKey.currentState?.validate() ?? false) {
       addProduct();
@@ -32,6 +32,7 @@ class MenueAddController extends GetxController {
       active: true, // Defaulting to active on creation
       referenceSchool: "texasinternationalcollege",
       type: '',
+      category: category.value,
     );
 
     try {

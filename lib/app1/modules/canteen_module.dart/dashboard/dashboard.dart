@@ -69,7 +69,7 @@ class CanteenDashboard extends StatelessWidget {
               SizedBox(
                 height: 2.h,
               ),
-              SalseActivity(),
+              // SalseActivity(),
               SizedBox(
                 height: 2.h,
               ),

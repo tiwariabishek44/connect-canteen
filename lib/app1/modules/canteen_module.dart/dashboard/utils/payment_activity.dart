@@ -93,6 +93,17 @@ class PaymentActivity extends StatelessWidget {
                       transition: Transition.cupertinoDialog);
                 },
               ),
+              buildClickableIcon(
+                icon: Icons.people,
+                label: 'Students List',
+                onTap: () {
+                  Get.to(
+                      () => ClassWalletPage(
+                            isrecord: 'true',
+                          ),
+                      transition: Transition.cupertinoDialog);
+                },
+              ),
             ],
           ),
         ]),

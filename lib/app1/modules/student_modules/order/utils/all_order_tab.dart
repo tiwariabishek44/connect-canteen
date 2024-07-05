@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:connect_canteen/app1/model/order_model.dart';
+import 'package:connect_canteen/app1/model/order_response.dart';
 import 'package:connect_canteen/app1/modules/student_modules/order/order_controller.dart';
 import 'package:connect_canteen/app1/modules/student_modules/order/utils/order_tile.dart';
 import 'package:connect_canteen/app1/modules/student_modules/order/utils/order_tile_simmer.dart';
@@ -10,14 +11,14 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 
 class AllOrdersTab extends StatelessWidget {
   final studentOrderControler = Get.put(StudetnORderController());
-  final String groupcod;
+  final String userid;
   final String schoolrefrenceId;
   AllOrdersTab(
-      {super.key, required this.groupcod, required this.schoolrefrenceId});
+      {super.key, required this.userid, required this.schoolrefrenceId});
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<List<OrderResponse>>(
-      stream: studentOrderControler.fetchOrders(groupcod, schoolrefrenceId),
+    return StreamBuilder<List<UserOrderResponse>>(
+      stream: studentOrderControler.fetchOrders(userid, schoolrefrenceId),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return ListView.builder(
@@ -26,6 +27,7 @@ class AllOrdersTab extends StatelessWidget {
                 return OrderTilesShrimmer();
               });
         } else if (snapshot.hasError) {
+          log('Error: ${snapshot.error}');
           return Center(
             child: Text('Error: ${snapshot.error}'),
           );
@@ -60,10 +62,13 @@ class AllOrdersTab extends StatelessWidget {
           return ListView.builder(
             itemCount: orders.length,
             itemBuilder: (context, index) {
-              OrderResponse order = orders[index]!;
+              UserOrderResponse order = orders[index]!;
 
               return Column(
                 children: [
+                  SizedBox(
+                    height: 2.h,
+                  ),
                   OrderTiles(
                     order: order,
                     type: 'regular',

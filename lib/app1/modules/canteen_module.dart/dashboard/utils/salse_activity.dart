@@ -1,4 +1,3 @@
-import 'package:connect_canteen/app1/modules/canteen_module.dart/checkout/search_page.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/order%20verify/verify_search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:connect_canteen/app1/cons/colors.dart';
@@ -65,13 +64,13 @@ class SalseActivity extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Image.asset(
-                            'assets/cash.png',
-                            scale: 9.sp,
+                            'assets/checkout.png',
+                            scale: 5.sp,
                           ),
                           SizedBox(height: 2.0),
                           Center(
                             child: Text(
-                              'Verify Order',
+                              'Order Checkout',
                               style: TextStyle(
                                 color: const Color.fromARGB(255, 59, 57, 57),
                                 fontWeight: FontWeight.bold,
@@ -82,7 +81,6 @@ class SalseActivity extends StatelessWidget {
                       ),
                     ),
                   ),
-                
                 ],
               ),
             ),

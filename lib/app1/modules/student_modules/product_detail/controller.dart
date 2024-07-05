@@ -4,12 +4,13 @@ import 'package:connect_canteen/app/config/prefs.dart';
 import 'package:connect_canteen/app/local_notificaiton/local_notifications.dart';
 import 'package:connect_canteen/app1/cons/api_end_points.dart';
 import 'package:connect_canteen/app1/model/order_model.dart';
-import 'package:connect_canteen/app1/model/wallet_model.dart';
+import 'package:connect_canteen/app1/model/transction_model.dart';
 import 'package:connect_canteen/app1/modules/common/wallet/transcton_controller.dart';
 import 'package:connect_canteen/app1/modules/student_modules/product_detail/utils/order_succesfull.dart';
 import 'package:connect_canteen/app1/repository/add_ordre_repository.dart';
 import 'package:connect_canteen/app1/service/api_cilent.dart';
 import 'package:connect_canteen/app1/widget/custom_sncak_bar.dart';
+import 'package:connect_canteen/app1/widget/order_succesufll.dart';
 import 'package:connect_canteen/app1/widget/payment_succesfull.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -19,7 +20,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddOrderController extends GetxController {
   final AddOrderRepository orderRepository = AddOrderRepository();
-  final paymentType = 'cash'.obs;
+  final paymentType = 'wallet'.obs;
   final Rx<ApiResponse<OrderResponse>> orderResponse =
       ApiResponse<OrderResponse>.initial().obs;
   var isLoading = false.obs;
@@ -49,7 +50,6 @@ class AddOrderController extends GetxController {
     required String scrhoolrefrenceid,
   }) async {
     try {
-      isLoading(true);
       DateTime now = DateTime.now();
       String productId =
           '${now.year}${now.month}${now.day}${now.hour}${now.minute}${now.second}${now.millisecond}';
@@ -94,32 +94,12 @@ class AddOrderController extends GetxController {
         orderResponse.value =
             ApiResponse<OrderResponse>.completed(addOrderResult.response);
 
-        if (paymentType.value == 'wallet') {
-          TransctionResponseMode transaction = TransctionResponseMode(
-              userId: cid,
-              userName: customer,
-              schoolReference: 'texasinternationalcollege',
-              className: classs,
-              remarks: ' ${productName}/ Qnty-${quantity}',
-              transactionType: 'Purchase',
-              amount: price,
-              transactionDate: date,
-              transctionTime: orderTime);
-          await transctionController.uploadTransaction(transaction);
-        } else {
-          showDialog(
-            context: Get.context!,
-            builder: (BuildContext context) {
-              return PaymentSuccessPopup(
-                message: 'Order Successfully place (Cash Payment)!',
-              );
-            },
-          );
-        }
         LocalNotifications.showScheduleNotification(
             title: "Thank for placing your order!",
             body: "Your meal will be ready for pickup from the counter.",
             payload: "This is periodic data");
+        Get.off(() => OrderSuccesfullPage(),
+            transition: Transition.cupertinoDialog);
 
         isLoading(false);
 

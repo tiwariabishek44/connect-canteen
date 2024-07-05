@@ -1,33 +1,25 @@
+import 'dart:async';
 import 'dart:developer';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connect_canteen/app/widget/custom_loging_widget.dart';
 import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:connect_canteen/app1/cons/style.dart';
+import 'package:connect_canteen/app1/model/cart_modeld.dart';
 import 'package:connect_canteen/app1/model/meal_time.dart';
 import 'package:connect_canteen/app1/model/product_model.dart';
-import 'package:connect_canteen/app1/model/student_model.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/mealTime/meal_time_controller.dart';
 import 'package:connect_canteen/app1/modules/common/login/login_controller.dart';
 import 'package:connect_canteen/app1/modules/common/wallet/transcton_controller.dart';
-import 'package:connect_canteen/app1/modules/student_modules/group/group_controller.dart';
-import 'package:connect_canteen/app1/modules/student_modules/order_for_friend/order_for_friend.dart';
+import 'package:connect_canteen/app1/modules/student_modules/cart/cart_controller.dart';
 import 'package:connect_canteen/app1/modules/student_modules/product_detail/controller.dart';
-import 'package:connect_canteen/app1/modules/student_modules/product_detail/utils/info_widget.dart';
-import 'package:connect_canteen/app1/modules/student_modules/product_detail/utils/no_group.dart';
-import 'package:connect_canteen/app1/modules/student_modules/product_detail/utils/payment_type.dart';
 import 'package:connect_canteen/app1/modules/student_modules/product_detail/utils/time_off.dart';
-import 'package:connect_canteen/app1/modules/student_modules/product_detail/utils/update_profile_popup.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:nepali_utils/nepali_utils.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:shimmer/shimmer.dart';
-import 'package:nepali_date_picker/nepali_date_picker.dart' as picker;
 
 class ProductDetailPage extends StatefulWidget {
-  final Products product;
+  final ProductResponseModel product;
 
   ProductDetailPage({required this.product});
 
@@ -36,6 +28,7 @@ class ProductDetailPage extends StatefulWidget {
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
+  final cartController = Get.put(CartController());
   final loignController = Get.put(LoginController());
   final transctionController = Get.put(TransctionController());
   final addOrderControllre = Get.put(AddOrderController());
@@ -82,80 +75,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
     } else {
       addOrderControllre.mealtime.value = mealtime;
     }
-  }
-
-  Future<void> performOrderLogic(String todaydate) async {
-    addOrderControllre.isLoading.value = true;
-
-    bool isPermission = await addOrderControllre.isPermission(
-      loignController.studentDataResponse.value!.userid,
-    );
-    if (isPermission && addOrderControllre.quantity.value <= 1) {
-      // if (transctionController.totalbalances.value <= 45) {
-      //   addOrderControllre.isLoading.value = false;
-
-      //   showDialog(
-      //     context: context,
-      //     builder: (BuildContext context) {
-      //       return InfoDialog(
-      //         message:
-      //             'You do not have sufficient balance. Please contact the administration.',
-      //       );
-      //     },
-      //   );
-      // } else
-      if (loignController.studentDataResponse.value!.groupid == '') {
-        addOrderControllre.isLoading.value = false;
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return NoGroup(
-              heading: 'You are not in any group',
-              subheading: "Make a group or join a group",
-            );
-          },
-        );
-      } else if (addOrderControllre.mealtime.value == '') {
-        addOrderControllre.isLoading.value = false;
-        showNoSelectionMessage();
-      } else {
-        log('transction amount ${transctionController.totalbalances.value}');
-        await addOrderControllre.addItemToOrder(
-          context,
-          orderby: loignController.studentDataResponse.value!.name,
-          groupName: loignController.studentDataResponse.value!.groupname,
-          customerImage:
-              loignController.studentDataResponse.value!.profilePicture,
-          classs: loignController.studentDataResponse.value!.classes,
-          customer: loignController.studentDataResponse.value!.name,
-          groupid: loignController.studentDataResponse.value!.groupid,
-          cid: loignController.studentDataResponse.value!.userid,
-          productName: widget.product.name,
-          productImage: widget.product.imageUrl,
-          price:
-              (widget.product.price.toInt() * addOrderControllre.quantity.value)
-                  .toDouble(),
-          quantity: addOrderControllre.quantity.value,
-          groupcod: loignController.studentDataResponse.value!.groupcod,
-          checkout: 'false',
-          mealtime: addOrderControllre.mealtime.value,
-          date: todaydate,
-          orderHoldTime: '',
-          scrhoolrefrenceid:
-              loignController.studentDataResponse.value!.schoolId,
-        );
-      }
-    } else {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return InfoDialog(
-            message: 'Your order quota has been exceeded.',
-          );
-        },
-      );
-    }
-    addOrderControllre.isLoading.value = false;
   }
 
   @override
@@ -428,8 +347,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           Color.fromARGB(255, 222, 219, 219).withOpacity(0.5),
                     ),
 
-                    SizedBox(height: 1.h),
-                    PaymentTypeRow(),
                     SizedBox(height: 2.h),
 
                     Row(
@@ -561,7 +478,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
           Positioned(
               top: 40.h,
               left: 40.w,
-              child: Obx(() => addOrderControllre.isLoading.value
+              child: Obx(() => cartController.itemAddLoading.value
                   ? LoadingWidget()
                   : SizedBox.shrink()))
         ],
@@ -579,89 +496,89 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   height: 6.h,
                   child: ElevatedButton(
                     onPressed: () async {
-                      performOrderLogic(todayDate);
-                      // // addOrderControllre.addDummyOrder(context);
-                      // bool ispermission = await addOrderControllre.isPermission(
-                      //     loignController.studentDataResponse.value!.userid);
-                      // if (ispermission &&
-                      //     (addOrderControllre.quantity.value <= 2)) {
-                      //   if (transctionController.totalbalances.value <= 45) {
-                      //     showDialog(
-                      //       context: context,
-                      //       builder: (BuildContext context) {
-                      //         return InfoDialog(
-                      //           message:
-                      //               'You do not have sufficient balance. Please contact the administration.',
-                      //         );
-                      //       },
-                      //     );
-                      //   } else if (loignController
-                      //               .studentDataResponse.value!.classes ==
-                      //           ''
+                      Timer(Duration(milliseconds: 100), () {
+                        cartController.addItem(
+                            CartItem(
+                                id: widget.product.productId,
+                                name: widget.product.name,
+                                quantity: 1,
+                                price: widget.product.price),
+                            context);
+                      });
 
-                      //       //      ||
-                      //       // loignController.studentDataResponse.value!
-                      //       //         .profilePicture ==
-                      //       //     ''
-
-                      //       ) {
-                      //     showUpdateProfileDialog(Get.context!);
-                      //   } else if (loignController
-                      //           .studentDataResponse.value!.groupid ==
-                      //       '') {
-                      //     showDialog(
-                      //       context: context,
-                      //       builder: (BuildContext context) {
-                      //         return NoGroup(
-                      //           heading: 'You are not in any group',
-                      //           subheading: "Make a group or join a group",
-                      //         );
-                      //       },
-                      //     );
-                      //   } else if (addOrderControllre.mealtime.value == '') {
-                      //     showNoSelectionMessage();
-                      //   } else {
-                      //     log('transction amount ${transctionController.totalbalances.value}');
-                      //     await addOrderControllre.addItemToOrder(
-                      //       context,
-                      //       orderby:
-                      //           loignController.studentDataResponse.value!.name,
-                      //       groupName: loignController
-                      //           .studentDataResponse.value!.groupname,
-                      //       customerImage: loignController
-                      //           .studentDataResponse.value!.profilePicture,
-                      //       classs: loignController
-                      //           .studentDataResponse.value!.classes,
-                      //       customer:
-                      //           loignController.studentDataResponse.value!.name,
-                      //       groupid: loignController
-                      //           .studentDataResponse.value!.groupid,
-                      //       cid: loignController
-                      //           .studentDataResponse.value!.userid,
-                      //       productName: widget.product.name,
-                      //       productImage: widget.product.imageUrl,
-                      //       price: (widget.product.price.toInt() *
-                      //               addOrderControllre.quantity.value)
-                      //           .toDouble(),
-                      //       quantity: addOrderControllre.quantity.value,
-                      //       groupcod: loignController
-                      //           .studentDataResponse.value!.groupcod,
-                      //       checkout: 'false',
-                      //       mealtime: addOrderControllre.mealtime.value,
-                      //       date: todayDate,
-                      //       orderHoldTime: '',
-                      //       scrhoolrefrenceid: loignController
-                      //           .studentDataResponse.value!.schoolId,
-                      //     );
-                      //   }
-                      // } else {
+                      // if (transctionController.totalbalances.value <=
+                      //     ((widget.product.price.toInt() *
+                      //             addOrderControllre.quantity.value)
+                      //         .toDouble())) {
+                      // Timer(Duration(milliseconds: 100), () {
+                      //   addOrderControllre.isLoading.value = false;
                       //   showDialog(
                       //     context: context,
                       //     builder: (BuildContext context) {
                       //       return InfoDialog(
-                      //         message: 'Your order quota has been exceeded.',
+                      //         message:
+                      //             'You do not have sufficient balance. Please contact the administration.',
                       //       );
                       //     },
+                      //   );
+                      // });
+                      // } else if (loignController
+                      //         .studentDataResponse.value!.profilePicture ==
+                      //     '') {
+                      //   Timer(Duration(milliseconds: 200), () {
+                      //     addOrderControllre.isLoading.value = false;
+                      //     showUpdateProfileDialog(Get.context!);
+                      //   });
+                      // } else if (loignController
+                      //         .studentDataResponse.value!.groupid ==
+                      //     '') {
+                      //   addOrderControllre.isLoading.value = false;
+
+                      //   showDialog(
+                      //     context: context,
+                      //     builder: (BuildContext context) {
+                      //       return NoGroup(
+                      //         heading: 'No PIn ',
+                      //         subheading: "Create your pin first",
+                      //       );
+                      //     },
+                      //   );
+                      // } else if (addOrderControllre.mealtime.value == '') {
+                      //   Timer(Duration(milliseconds: 200), () {
+                      //     addOrderControllre.isLoading.value = false;
+                      //     showNoSelectionMessage();
+                      //   });
+                      // } else {
+                      //   await addOrderControllre.addItemToOrder(
+                      //     context,
+                      //     orderby:
+                      //         loignController.studentDataResponse.value!.name,
+                      //     groupName: loignController
+                      //         .studentDataResponse.value!.groupname,
+                      //     customerImage: loignController
+                      //         .studentDataResponse.value!.profilePicture,
+                      //     classs: loignController
+                      //         .studentDataResponse.value!.classes,
+                      //     customer:
+                      //         loignController.studentDataResponse.value!.name,
+                      //     groupid: loignController
+                      //         .studentDataResponse.value!.groupid,
+                      //     cid:
+                      //         loignController.studentDataResponse.value!.userid,
+                      //     productName: widget.product.name,
+                      //     productImage: widget.product.imageUrl,
+                      //     price: (widget.product.price.toInt() *
+                      //             addOrderControllre.quantity.value)
+                      //         .toDouble(),
+                      //     quantity: addOrderControllre.quantity.value,
+                      //     groupcod: loignController
+                      //         .studentDataResponse.value!.groupcod,
+                      //     checkout: 'false',
+                      //     mealtime: addOrderControllre.mealtime.value,
+                      //     date: todayDate,
+                      //     orderHoldTime: '',
+                      //     scrhoolrefrenceid: loignController
+                      //         .studentDataResponse.value!.schoolId,
                       //   );
                       // }
 
@@ -685,51 +602,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               SizedBox(
                 width: 2.w,
               ),
-              // Expanded(
-              //   child: SizedBox(
-              //     height: 6.h,
-              //     child: ElevatedButton(
-              //       onPressed: () {
-              //         if (loignController.studentDataResponse.value!.groupid ==
-              //             '') {
-              //           showDialog(
-              //             context: context,
-              //             builder: (BuildContext context) {
-              //               return NoGroup(
-              //                 heading: 'You are not in any group',
-              //                 subheading: "Make a group or join a group",
-              //               );
-              //             },
-              //           );
-              //         } else if (addOrderControllre.mealtime.value == '') {
-              //           showNoSelectionMessage();
-              //         } else {
-              //           Get.to(
-              //               () => OrderFriendList(
-              //                     host: loignController
-              //                         .studentDataResponse.value!.name,
-              //                     product: widget.product,
-              //                     groupid: loignController
-              //                         .studentDataResponse.value!.groupid,
-              //                   ),
-              //               transition: Transition.cupertinoDialog);
-              //         }
-              //       },
-              //       child: Text(
-              //         'For Friend',
-              //         style: TextStyle(color: Colors.white),
-              //       ),
-              //       style: ElevatedButton.styleFrom(
-              //         padding: EdgeInsets.symmetric(vertical: 16),
-              //         backgroundColor: Colors.teal,
-              //         textStyle: TextStyle(fontSize: 18),
-              //         shape: RoundedRectangleBorder(
-              //           borderRadius: BorderRadius.circular(3),
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-              // ),
             ],
           ),
         ),
