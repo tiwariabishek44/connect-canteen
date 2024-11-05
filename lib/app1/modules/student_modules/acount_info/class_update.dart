@@ -1,9 +1,5 @@
-import 'dart:developer';
-
 import 'package:connect_canteen/app/widget/custom_loging_widget.dart';
 import 'package:connect_canteen/app1/modules/student_modules/acount_info/account_info_controller.dart';
-import 'package:connect_canteen/app1/widget/black_textform_field.dart';
-import 'package:connect_canteen/app1/widget/custom_app_bar.dart';
 import 'package:connect_canteen/app1/widget/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,24 +7,18 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 
 class ClassUpdate extends StatelessWidget {
   final String initialName;
-  final List<String> classOptions;
   final String userId;
 
-  ClassUpdate(
-      {Key? key,
-      required this.userId,
-      required this.initialName,
-      required this.classOptions})
-      : super(key: key);
+  ClassUpdate({
+    Key? key,
+    required this.userId,
+    required this.initialName,
+  }) : super(key: key);
+
   final accountInfoController = Get.put(AccountInfoController());
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController nameController =
-        TextEditingController(text: initialName);
-    var selectedClass =
-        classOptions.isNotEmpty ? classOptions.first.obs : ''.obs;
-
     return Stack(
       children: [
         Scaffold(
@@ -36,7 +26,7 @@ class ClassUpdate extends StatelessWidget {
           appBar: AppBar(
             scrolledUnderElevation: 0,
             backgroundColor: Colors.white,
-            titleSpacing: 4.0, // Adjusts the spacing above the title
+            titleSpacing: 4.0,
             title: Text(
               'User Account',
               style: TextStyle(fontWeight: FontWeight.w300),
@@ -56,109 +46,231 @@ class ClassUpdate extends StatelessWidget {
               ),
             ),
           ),
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(18.0),
-                  child: Text(
-                    "Update your profile to the latest class. ",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 19.sp,
-                      color: Colors.black,
+          body: StreamBuilder<List<String>>(
+            stream: accountInfoController
+                .getClassNames('texasinternationalcollege'),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: LoadingWidget());
+              }
+
+              if (snapshot.hasError) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.error_outline, color: Colors.red, size: 48),
+                      SizedBox(height: 16),
+                      Text('Error loading classes'),
+                    ],
+                  ),
+                );
+              }
+
+              final classList = snapshot.data ?? [];
+              if (classList.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.school_outlined, color: Colors.grey, size: 48),
+                      SizedBox(height: 16),
+                      Text('No classes available'),
+                    ],
+                  ),
+                );
+              }
+
+              // Initialize newClass if it's not set
+              if (accountInfoController.newClass.value == 'Select Class') {
+                accountInfoController.newClass.value = classList.first;
+              }
+
+              return SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Current Class Section
+                    Container(
+                      margin: EdgeInsets.all(16),
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[50],
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey[200]!),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.info_outline,
+                                  color: Colors.grey[600], size: 20),
+                              SizedBox(width: 8),
+                              Text(
+                                'Current Class',
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  color: Colors.grey[600],
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 12),
+                          Container(
+                            padding: EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.grey[300]!),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.school_outlined,
+                                    color: Colors.grey[800]),
+                                SizedBox(width: 12),
+                                Text(
+                                  initialName,
+                                  style: TextStyle(
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(18.0),
-                  child: BlackTextFormField(
-                    prefixIcon: const Icon(Icons.person),
-                    textInputType: TextInputType.text,
-                    hintText: 'Previous Class',
-                    controller: nameController,
-                    validatorFunction: (value) {
-                      if (value.isEmpty) {
-                        return '  Name Can\'t be empty';
-                      }
-                      return null;
-                    },
-                    actionKeyboard: TextInputAction.next,
-                    onSubmitField: () {},
-                  ),
-                ),
-                SizedBox(
-                  height: 3.h,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 18.0),
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      'Latest Class',
-                      style: TextStyle(
-                          fontSize: 19.sp,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600),
+
+                    // New Class Selection
+                    Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.edit_outlined,
+                                  color: Colors.grey[600], size: 20),
+                              SizedBox(width: 8),
+                              Text(
+                                'Select New Class',
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  color: Colors.grey[600],
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 12),
+                          Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.grey[300]!),
+                            ),
+                            child: ListView.separated(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: classList.length,
+                              separatorBuilder: (context, index) => Divider(
+                                height: 1,
+                                color: Colors.grey[200],
+                              ),
+                              itemBuilder: (context, index) {
+                                final className = classList[index];
+                                return GetX<AccountInfoController>(
+                                  builder: (controller) {
+                                    final isSelected =
+                                        controller.newClass.value == className;
+                                    return ListTile(
+                                      onTap: () {
+                                        controller.newClass.value = className;
+                                      },
+                                      tileColor: isSelected
+                                          ? Colors.grey[50]
+                                          : Colors.white,
+                                      title: Text(
+                                        className,
+                                        style: TextStyle(
+                                          fontSize: 15.sp,
+                                          fontWeight: isSelected
+                                              ? FontWeight.w600
+                                              : FontWeight.normal,
+                                          color: isSelected
+                                              ? Colors.black
+                                              : Colors.black87,
+                                        ),
+                                      ),
+                                      trailing: isSelected
+                                          ? Icon(Icons.check_circle,
+                                              color: Colors.green, size: 20)
+                                          : null,
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ),
-                SizedBox(
-                  height: 2.h,
-                ),
-                
-                Padding(
-                  padding: const EdgeInsets.only(left: 18.0, right: 18),
-                  child: Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(24, 152, 151, 151),
-                      borderRadius: BorderRadius.circular(10),
+
+                    SizedBox(height: 24),
+
+                    // Update Button
+                    Padding(
+                      padding: EdgeInsets.all(16),
+                      child: GetX<AccountInfoController>(
+                        builder: (controller) => CustomButton(
+                          isLoading:
+                              controller.loading.value == true ? false : false,
+                          text: 'Update Class',
+                          onPressed: () {
+                            if (controller.newClass.value != initialName &&
+                                controller.newClass.value != 'Select Class') {
+                              controller.doCalssUpdae(
+                                userId,
+                                controller.newClass.value,
+                              );
+                            } else {
+                              Get.snackbar(
+                                'Select Different Class',
+                                'Please select a different class to update',
+                                snackPosition: SnackPosition.BOTTOM,
+                                backgroundColor: Colors.orange,
+                                colorText: Colors.white,
+                              );
+                            }
+                          },
+                          buttonColor: Colors.black,
+                          textColor: Colors.white,
+                        ),
+                      ),
                     ),
-                    child: Obx(() => DropdownButton<String>(
-                          value: selectedClass.value,
-                      onChanged: (newValue) {
-                            selectedClass.value = newValue.toString();
-                            accountInfoController.newClass.value =
-                                newValue.toString();
-                      },
-                      items: classOptions
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                        )),
-                  ),
+                  ],
                 ),
-                SizedBox(
-                  height: 15.h,
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CustomButton(
-                    isLoading: false,
-                    text: 'Update',
-                    onPressed: () {
-                      accountInfoController.doCalssUpdae(
-                          userId, accountInfoController.newClass.value);
-                    },
-                    buttonColor: Colors.black,
-                    textColor: Colors.white,
-                  ),
-                ),
-              ],
-            ),
+              );
+            },
           ),
         ),
-        Positioned(
-            top: 40.h,
-            left: 40.w,
-            child: Obx(() => accountInfoController.loading.value
-                ? LoadingWidget()
-                : SizedBox.shrink()))
+
+        // Loading Overlay
+        GetX<AccountInfoController>(
+          builder: (controller) => controller.loading.value
+              ? Positioned.fill(
+                  child: Container(
+                    color: Colors.black.withOpacity(0.3),
+                    child: Center(child: LoadingWidget()),
+                  ),
+                )
+              : SizedBox.shrink(),
+        ),
       ],
     );
   }

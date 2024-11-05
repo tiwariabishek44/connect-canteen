@@ -13,7 +13,7 @@ class ProfilePage extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: Colors.grey[50],
       body: CustomScrollView(
         slivers: [
           _buildAppBar(theme),
@@ -27,39 +27,57 @@ class ProfilePage extends StatelessWidget {
 
   Widget _buildAppBar(ThemeData theme) {
     return SliverAppBar(
-      expandedHeight: 180,
+      expandedHeight: 140,
       pinned: true,
-      backgroundColor: theme.colorScheme.primary,
+      backgroundColor: Colors.white,
+      elevation: 0,
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                theme.colorScheme.primary,
-                theme.colorScheme.primary.withOpacity(0.8),
-              ],
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(32),
+              bottomRight: Radius.circular(32),
             ),
           ),
           child: Stack(
             children: [
+              // Decorative elements
               Positioned(
-                right: -50,
-                top: -50,
-                child: CircleAvatar(
-                  radius: 100,
-                  backgroundColor: Colors.white.withOpacity(0.1),
+                right: -20,
+                top: -20,
+                child: Container(
+                  width: 140,
+                  height: 140,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [
+                        theme.colorScheme.primary.withOpacity(0.1),
+                        theme.colorScheme.primary.withOpacity(0.05),
+                      ],
+                    ),
+                  ),
                 ),
               ),
               Positioned(
                 left: -40,
                 bottom: -40,
-                child: CircleAvatar(
-                  radius: 80,
-                  backgroundColor: Colors.white.withOpacity(0.1),
+                child: Container(
+                  width: 180,
+                  height: 180,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [
+                        theme.colorScheme.primary.withOpacity(0.05),
+                        theme.colorScheme.primary.withOpacity(0.02),
+                      ],
+                    ),
+                  ),
                 ),
               ),
+              // Content
               Align(
                 alignment: Alignment.bottomLeft,
                 child: Padding(
@@ -69,19 +87,19 @@ class ProfilePage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Settings',
+                        'Profile',
                         style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 32,
+                          color: Colors.black87,
+                          fontSize: 28,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 8),
+                      SizedBox(height: 4),
                       Text(
-                        'Manage your preferences',
+                        'Manage your preferences and account',
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.9),
-                          fontSize: 16,
+                          color: Colors.grey[600],
+                          fontSize: 14,
                         ),
                       ),
                     ],
@@ -97,58 +115,163 @@ class ProfilePage extends StatelessWidget {
 
   Widget _buildBody(BuildContext context, ThemeData theme) {
     return Padding(
-      padding: EdgeInsets.all(16),
+      padding: EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionTitle('Account Settings', theme),
+          // SizedBox(height: 16),
+          // _buildQuickActions(theme),
+          SizedBox(height: 24),
+          _buildSectionTitle('Account', theme),
           _buildSettingsGroup(
             theme,
             children: [
               _buildSettingsTile(
                 theme,
-                title: 'My Account',
-                subtitle: 'Your Account Details',
+                title: 'Profile Details',
+                subtitle: 'Manage your personal information',
                 icon: Icons.person_outline,
+                iconGradient: [Color(0xFF6C5CE7), Color(0xFF8E7CF7)],
                 onTap: () => Get.to(() => AccountInfo()),
               ),
-              _buildSettingsTile(theme,
-                  title: 'Deposit Money',
-                  subtitle: 'Manage your wallet',
-                  icon: Icons.account_balance_wallet_outlined,
-                  onTap: () {}),
+              _buildSettingsTile(
+                theme,
+                title: 'Cashback & Rewards',
+                subtitle: 'View your earnings and offers',
+                icon: Icons.savings_outlined,
+                iconGradient: [Color(0xFF00B894), Color(0xFF55EFC4)],
+                onTap: () {},
+              ),
             ],
           ),
           SizedBox(height: 24),
-          _buildSectionTitle('General Settings', theme),
+          _buildSectionTitle('Support', theme),
           _buildSettingsGroup(
             theme,
             children: [
               _buildSettingsTile(
                 theme,
-                title: 'Contact Us',
-                subtitle: 'Get support and help',
-                icon: Icons.support_agent_outlined,
+                title: 'Help Center',
+                subtitle: 'Get support and assistance',
+                icon: Icons.help_outline,
+                iconGradient: [Color(0xFFFF7675), Color(0xFFFF9F9E)],
                 onTap: () => Get.to(() => ContactUsPage()),
+              ),
+              _buildSettingsTile(
+                theme,
+                title: 'About App',
+                subtitle: 'Version and information',
+                icon: Icons.info_outline,
+                iconGradient: [Color(0xFF74B9FF), Color(0xFF0984E3)],
+                onTap: () {},
               ),
             ],
           ),
-          SizedBox(height: 24),
+          SizedBox(height: 32),
           _buildLogoutButton(context, theme),
+          SizedBox(height: 24),
         ],
+      ),
+    );
+  }
+
+  Widget _buildQuickActions(ThemeData theme) {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildQuickActionCard(
+            theme,
+            title: 'Orders',
+            icon: Icons.receipt_long_outlined,
+            color: Color(0xFF6C5CE7),
+            onTap: () {},
+          ),
+        ),
+        SizedBox(width: 12),
+        Expanded(
+          child: _buildQuickActionCard(
+            theme,
+            title: 'Payments',
+            icon: Icons.payment_outlined,
+            color: Color(0xFF00B894),
+            onTap: () {},
+          ),
+        ),
+        SizedBox(width: 12),
+        Expanded(
+          child: _buildQuickActionCard(
+            theme,
+            title: 'Support',
+            icon: Icons.headset_mic_outlined,
+            color: Color(0xFFFF7675),
+            onTap: () {},
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuickActionCard(
+    ThemeData theme, {
+    required String title,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.03),
+                blurRadius: 10,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: color, size: 20),
+              ),
+              SizedBox(height: 8),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey[800],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildSectionTitle(String title, ThemeData theme) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+      padding: EdgeInsets.only(left: 4, bottom: 12),
       child: Text(
         title,
         style: TextStyle(
-          color: theme.colorScheme.primary,
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
+          color: Colors.grey[800],
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
@@ -158,19 +281,17 @@ class ProfilePage extends StatelessWidget {
       {required List<Widget> children}) {
     return Container(
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: theme.shadowColor.withOpacity(0.05),
+            color: Colors.black.withOpacity(0.03),
             blurRadius: 10,
             offset: Offset(0, 4),
           ),
         ],
       ),
-      child: Column(
-        children: children,
-      ),
+      child: Column(children: children),
     );
   }
 
@@ -179,6 +300,7 @@ class ProfilePage extends StatelessWidget {
     required String title,
     required String subtitle,
     required IconData icon,
+    required List<Color> iconGradient,
     required VoidCallback onTap,
   }) {
     return Material(
@@ -191,14 +313,19 @@ class ProfilePage extends StatelessWidget {
           child: Row(
             children: [
               Container(
-                padding: EdgeInsets.all(12),
+                padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withOpacity(0.1),
+                  gradient: LinearGradient(
+                    colors: iconGradient,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   icon,
-                  color: theme.colorScheme.primary,
+                  color: Colors.white,
+                  size: 20,
                 ),
               ),
               SizedBox(width: 16),
@@ -209,26 +336,26 @@ class ProfilePage extends StatelessWidget {
                     Text(
                       title,
                       style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: theme.colorScheme.onSurface,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey[800],
                       ),
                     ),
-                    SizedBox(height: 4),
+                    SizedBox(height: 2),
                     Text(
                       subtitle,
                       style: TextStyle(
-                        fontSize: 14,
-                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                        fontSize: 13,
+                        color: Colors.grey[600],
                       ),
                     ),
                   ],
                 ),
               ),
               Icon(
-                Icons.arrow_forward_ios,
-                size: 16,
-                color: theme.colorScheme.onSurface.withOpacity(0.3),
+                Icons.chevron_right,
+                size: 20,
+                color: Colors.grey[400],
               ),
             ],
           ),
@@ -238,37 +365,45 @@ class ProfilePage extends StatelessWidget {
   }
 
   Widget _buildLogoutButton(BuildContext context, ThemeData theme) {
-    return Container(
-      margin: EdgeInsets.only(top: 8),
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return ConfirmationDialog(
-                heading: 'Logout',
-                subheading: 'Are you sure you want to logout?',
-                confirmButton: 'Logout',
-                cancelButton: 'Cancel',
-                showButtons: true,
-                color: Colors.red,
-                onConfirm: () => loginController.logout(),
-              );
-            },
-          );
-        },
-        icon: Icon(Icons.logout),
-        label: Text('Logout'),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: theme.colorScheme.error,
-          foregroundColor: Colors.white,
-          padding: EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          elevation: 0,
+    return ElevatedButton(
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return ConfirmationDialog(
+              heading: 'Logout',
+              subheading: 'Are you sure you want to logout?',
+              confirmButton: 'Logout',
+              cancelButton: 'Cancel',
+              showButtons: true,
+              color: Colors.red,
+              onConfirm: () => loginController.logout(),
+            );
+          },
+        );
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.red[50],
+        foregroundColor: Colors.red,
+        padding: EdgeInsets.symmetric(vertical: 16),
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
         ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.logout_outlined),
+          SizedBox(width: 8),
+          Text(
+            'Logout',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }

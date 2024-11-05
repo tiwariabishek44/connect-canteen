@@ -152,7 +152,7 @@ class QuotaProgressCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      'Quick Order Slots Today',
+                      'Daily Free order',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -164,7 +164,10 @@ class QuotaProgressCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        '${quotaController.currentOrders.value}/${quotaController.dailyQuota.value}',
+                        quotaController.currentOrders.value.toInt() >=
+                                quotaController.dailyQuota.value.toInt()
+                            ? '${quotaController.dailyQuota.value}/${quotaController.dailyQuota.value}'
+                            : '${quotaController.currentOrders.value}/${quotaController.dailyQuota.value}',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -172,7 +175,7 @@ class QuotaProgressCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'Quick Slots Left: ${quotaController.availableQuota.value}',
+                        'Free order Left: ${quotaController.availableQuota.value}',
                         style: TextStyle(
                           fontSize: 14,
                           color:
@@ -200,7 +203,7 @@ class QuotaProgressCard extends StatelessWidget {
                           value: value,
                           backgroundColor: Colors.grey.withOpacity(0.2),
                           valueColor: AlwaysStoppedAnimation<Color>(
-                            value >= 0.8
+                            value >= 1
                                 ? Colors.red
                                 : Theme.of(context).primaryColor,
                           ),
@@ -214,42 +217,7 @@ class QuotaProgressCard extends StatelessWidget {
                 },
               ),
               SizedBox(height: 8),
-              _buildExplanationCard(context, quotaController),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () => _showQuotaDetails(context),
-                    style: TextButton.styleFrom(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      backgroundColor:
-                          Theme.of(context).primaryColor.withOpacity(0.1),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.help_outline,
-                          size: 16,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                        SizedBox(width: 4),
-                        Text(
-                          'How it works?',
-                          style: TextStyle(
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+              // _buildExplanationCard(context, quotaController),
             ],
           ),
         ));
@@ -269,7 +237,7 @@ class QuotaProgressCard extends StatelessWidget {
     if (availableQuota <= 0) {
       message = '😊 You can still order!';
       subMessage = 'Just need to add deposit amount';
-      messageColor = Colors.red;
+      messageColor = Colors.green;
       messageIcon = Icons.account_balance_wallet;
     } else if (availableQuota <= (controller.dailyQuota.value * 0.2).floor()) {
       message = '🏃‍♂️ Quick! Almost full!';
@@ -340,17 +308,15 @@ class QuotaProgressCard extends StatelessWidget {
             style: TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 14,
-              color: Theme.of(context).primaryColor,
+              color: Colors.green,
             ),
           ),
           SizedBox(height: 8),
           if (isQuotaAvailable) ...[
             _buildExplanationRow(context, "🎯",
-                "First ${controller.dailyQuota.value} students can order instantly"),
+                "First ${controller.dailyQuota.value} students can order ."),
             _buildExplanationRow(
                 context, "💰", "No deposit needed for quick slots"),
-            _buildExplanationRow(
-                context, "🔄", "Slots refresh daily at midnight"),
           ] else ...[
             _buildExplanationRow(
                 context, "💫", "Don't worry! You can still order"),
@@ -377,7 +343,7 @@ class QuotaProgressCard extends StatelessWidget {
               text,
               style: TextStyle(
                 fontSize: 13,
-                color: Theme.of(context).primaryColor.withOpacity(0.8),
+                color: Colors.green,
               ),
             ),
           ),

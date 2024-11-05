@@ -29,13 +29,13 @@ class AccountInfo extends StatelessWidget {
           "Profile",
           style: TextStyle(
             color: Colors.black87,
-            fontSize: 20.sp,
+            fontSize: 18.sp,
             fontWeight: FontWeight.w600,
           ),
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.help_outline, color: Colors.black87),
+            icon: Icon(Icons.settings_outlined, color: Colors.black87),
             onPressed: () {},
           ),
         ],
@@ -54,18 +54,23 @@ class AccountInfo extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildProfileHeader(studentData),
-                SizedBox(height: 2.h),
-                _buildQuickStats(studentData),
-                SizedBox(height: 3.h),
-                _buildSectionTitle("Account Information"),
-                _buildInfoSection(studentData, theme),
-                SizedBox(height: 3.h),
-                _buildSectionTitle("Preferences"),
-                _buildPreferencesSection(theme),
-                SizedBox(height: 3.h),
-                _buildLogoutButton(),
-                SizedBox(height: 2.h),
+                _buildProfileHeader(studentData, theme),
+                _buildWalletSection(studentData, theme),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Text(
+                    "Account Settings",
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[800],
+                    ),
+                  ),
+                ),
+                _buildAccountSettings(studentData, theme),
+                SizedBox(height: 16),
+                // _buildPreferencesSection(theme),
+                // SizedBox(height: 24),
               ],
             ),
           );
@@ -74,285 +79,380 @@ class AccountInfo extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileHeader(StudentDataResponse studentData) {
+  Widget _buildProfileHeader(StudentDataResponse studentData, ThemeData theme) {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(20),
-          bottomRight: Radius.circular(20),
+          bottomLeft: Radius.circular(24),
+          bottomRight: Radius.circular(24),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: Offset(0, 5),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Text(
+                studentData.name[0].toUpperCase(),
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  studentData.name,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  studentData.classes,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: () => _navigateToNameUpdate(studentData),
+            icon: Icon(Icons.edit_outlined, color: theme.colorScheme.primary),
           ),
         ],
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+    );
+  }
+
+  Widget _buildWalletSection(StudentDataResponse studentData, ThemeData theme) {
+    return Container(
+      margin: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: LinearGradient(
+          colors: [
+            theme.colorScheme.primary,
+            Color(0xFF3366FF),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Stack(
         children: [
-          SizedBox(height: 5.h),
-          Container(
-            width: 100.sp,
-            child: Text(
-              studentData.name,
+          Positioned(
+            right: -20,
+            top: -20,
+            child: Icon(
+              Icons.account_balance_wallet,
+              size: 100,
+              color: Colors.white.withOpacity(0.1),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Deposit Balance',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.9),
+                            fontSize: 14,
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          'Rs. ${studentData.depositAmount.toStringAsFixed(2)}',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                              size: 16,
+                            ),
+                            SizedBox(width: 2),
+                            Text(
+                              '${loginController.studentDataResponse.value!.creditScore}',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: theme.colorScheme.primary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.savings_outlined,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                      SizedBox(width: 8),
+                      Text(
+                        'Cashback Available: Rs. ${studentData.cashbackAmount.toStringAsFixed(2)}',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatCard({
+    required IconData icon,
+    required String label,
+    required String value,
+    required ThemeData theme,
+  }) {
+    return Expanded(
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 10,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Icon(
+              icon,
+              color: theme.colorScheme.primary,
+              size: 22,
+            ),
+            SizedBox(height: 8),
+            Text(
+              value,
               style: TextStyle(
-                fontSize: 20.sp,
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
                 color: Colors.black87,
               ),
             ),
-          ),
-          SizedBox(height: 4),
-          Text(
-            studentData.classes,
-            style: TextStyle(
-              fontSize: 16.sp,
-              color: Colors.grey[600],
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey[600],
+              ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildQuickStats(StudentDataResponse studentData) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        children: [
-          _buildStatItem(
-            icon: Icons.food_bank_outlined,
-            label: "Orders",
-            value: "12",
-          ),
-          _buildStatDivider(),
-          _buildStatItem(
-            icon: Icons.star_outline,
-            label: "Credits",
-            value: " 0",
-          ),
-          _buildStatDivider(),
-          _buildStatItem(
-            icon: Icons.account_balance_wallet_outlined,
-            label: "Deposit",
-            value: "Rs 0",
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatItem({
-    required IconData icon,
-    required String label,
-    required String value,
-  }) {
-    return Expanded(
-      child: Column(
-        children: [
-          Icon(icon, color: AppColors.primaryColor, size: 24.sp),
-          SizedBox(height: 8),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 18.sp,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 14.sp,
-              color: Colors.grey[600],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatDivider() {
-    return Container(
-      height: 40,
-      width: 1,
-      color: Colors.grey[300],
-    );
-  }
-
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: 18.sp,
-          fontWeight: FontWeight.bold,
-          color: Colors.black87,
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildInfoSection(StudentDataResponse studentData, ThemeData theme) {
+  Widget _buildAccountSettings(
+      StudentDataResponse studentData, ThemeData theme) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20),
+      margin: EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacity(0.03),
             blurRadius: 10,
           ),
         ],
       ),
       child: Column(
         children: [
-          _buildInfoTile(
-            theme,
-            icon: Icons.person_outline,
-            title: "Name",
-            subtitle: studentData.name,
-            onTap: () => _navigateToNameUpdate(studentData),
-            showEdit: true,
-          ),
-          _buildDivider(),
-          _buildInfoTile(
-            theme,
+          _buildSettingsTile(
             icon: Icons.school_outlined,
             title: "Class",
             subtitle: studentData.classes,
             onTap: () => _navigateToClassUpdate(studentData),
-            showEdit: true,
+            theme: theme,
           ),
-          _buildDivider(),
-          _buildInfoTile(
-            theme,
+          _buildSettingsDivider(),
+          _buildSettingsTile(
             icon: Icons.phone_outlined,
             title: "Phone",
             subtitle: studentData.phone,
             isVerified: true,
+            theme: theme,
           ),
-          _buildDivider(),
-          _buildInfoTile(
-            theme,
+          _buildSettingsDivider(),
+          _buildSettingsTile(
             icon: Icons.email_outlined,
             title: "Email",
             subtitle: studentData.email,
             isVerified: true,
+            theme: theme,
           ),
         ],
       ),
     );
   }
 
+  Widget _buildSettingsTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    bool isVerified = false,
+    VoidCallback? onTap,
+    required ThemeData theme,
+  }) {
+    return ListTile(
+      leading: Container(
+        padding: EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.primary.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(icon, color: theme.colorScheme.primary, size: 20),
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: Colors.black87,
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: TextStyle(
+          fontSize: 13,
+          color: Colors.grey[600],
+        ),
+      ),
+      trailing: isVerified
+          ? Icon(Icons.verified, color: Colors.green, size: 20)
+          : Icon(Icons.chevron_right, color: Colors.grey[400]),
+      onTap: onTap,
+    );
+  }
+
+  Widget _buildSettingsDivider() {
+    return Divider(height: 1, thickness: 1, color: Colors.grey[100]);
+  }
+
   Widget _buildPreferencesSection(ThemeData theme) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20),
+      margin: EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacity(0.03),
             blurRadius: 10,
           ),
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildInfoTile(
-            theme,
-            icon: Icons.notifications_outlined,
-            title: "Notifications",
-            subtitle: "Order updates & offers",
-            onTap: () {},
-            showChevron: true,
-          ),
-          _buildDivider(),
-          _buildInfoTile(
-            theme,
-            icon: Icons.security_outlined,
-            title: "Privacy",
-            subtitle: "Data usage & sharing",
-            onTap: () {},
-            showChevron: true,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoTile(
-    ThemeData theme, {
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    VoidCallback? onTap,
-    bool showEdit = false,
-    bool showChevron = false,
-    bool isVerified = false,
-  }) {
-    return ListTile(
-      leading: Container(
-        padding: EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.primary.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(
-          icon,
-          color: theme.colorScheme.primary,
-        ),
-      ),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontSize: 16.sp,
-          fontWeight: FontWeight.w500,
-          color: Colors.black87,
-        ),
-      ),
-      subtitle: Row(
-        children: [
-          Expanded(
+          Padding(
+            padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
             child: Text(
-              subtitle,
+              "Preferences",
               style: TextStyle(
                 fontSize: 14.sp,
-                color: Colors.grey[600],
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[800],
               ),
             ),
           ),
-          if (isVerified)
-            Icon(
-              Icons.verified,
-              color: Colors.green,
-              size: 16.sp,
-            ),
+          _buildSettingsTile(
+            icon: Icons.notifications_outlined,
+            title: "Notifications",
+            subtitle: "Order updates & reminders",
+            onTap: () {},
+            theme: theme,
+          ),
+          _buildSettingsDivider(),
+          _buildSettingsTile(
+            icon: Icons.security_outlined,
+            title: "Privacy",
+            subtitle: "Manage your data",
+            onTap: () {},
+            theme: theme,
+          ),
         ],
       ),
-      trailing: showEdit
-          ? Icon(Icons.edit, color: AppColors.primaryColor)
-          : showChevron
-              ? Icon(Icons.chevron_right, color: Colors.grey)
-              : null,
-      onTap: onTap,
     );
   }
 
-  Widget _buildDivider() {
-    return Divider(height: 1, thickness: 1, color: Colors.grey[200]);
-  }
-
-  Widget _buildLogoutButton() {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20),
+  Widget _buildLogoutButton(ThemeData theme) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16),
       child: ElevatedButton(
         onPressed: () {},
         style: ElevatedButton.styleFrom(
@@ -362,15 +462,16 @@ class AccountInfo extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
+          elevation: 0,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.logout),
+            Icon(Icons.logout, size: 20),
             SizedBox(width: 8),
             Text(
               'Logout',
-              style: TextStyle(fontSize: 16.sp),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
           ],
         ),
@@ -435,7 +536,6 @@ class AccountInfo extends StatelessWidget {
       () => ClassUpdate(
         userId: studentData.userid,
         initialName: studentData.classes,
-        classOptions: [], // Pass your class options here
       ),
       transition: Transition.cupertino,
     );

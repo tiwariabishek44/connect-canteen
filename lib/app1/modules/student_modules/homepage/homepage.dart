@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connect_canteen/app1/model/student_model.dart';
 import 'package:connect_canteen/app1/modules/common/login/login_controller.dart';
+import 'package:connect_canteen/app1/modules/student_modules/acount_info/acount_info.dart';
 import 'package:connect_canteen/app1/modules/student_modules/cart/cartPage.dart';
 import 'package:connect_canteen/app1/modules/student_modules/homepage/utils/cashbackContainer.dart';
 import 'package:connect_canteen/app1/modules/student_modules/homepage/utils/menue_section.dart';
@@ -22,9 +23,11 @@ class StudentHomePage extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text('EasyCanteen'),
+      ),
       body: CustomScrollView(
         slivers: [
-          _buildSliverAppBar(theme),
           SliverToBoxAdapter(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 3.w),
@@ -74,101 +77,203 @@ class StudentHomePage extends StatelessWidget {
         if (!snapshot.hasData) return _buildShimmerLoading();
 
         final student = snapshot.data!;
+        final depositAmount =
+            loginController.studentDataResponse.value!.depositAmount;
 
-        log('Student Data: ${loginController.studentDataResponse.value!.depositAmount}');
         return Column(
           children: [
-            Container(
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    theme.colorScheme.primary.withOpacity(0.8),
-                    theme.colorScheme.primary.withOpacity(0.6),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+            GestureDetector(
+              onTap: () {
+                Get.to(() => AccountInfo());
+              },
+              child: Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      theme.colorScheme.primary.withOpacity(0.8),
+                      theme.colorScheme.primary.withOpacity(0.6),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Hello,',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.white.withOpacity(0.9),
-                            ),
-                          ),
-                          Text(
-                            student.name,
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          if (student.classes.isNotEmpty)
-                            Text(
-                              student.classes,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.white.withOpacity(0.9),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // User Info Section
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Left side - User Details
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Hello,',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.white.withOpacity(0.9),
+                                ),
                               ),
+                              Text(
+                                student.name,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              if (student.classes.isNotEmpty)
+                                Text(
+                                  student.classes,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.white.withOpacity(0.9),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                        // Right side - Points
+                        Container(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                                size: 16,
+                              ),
+                              SizedBox(width: 2),
+                              Text(
+                                '${loginController.studentDataResponse.value!.creditScore}',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.colorScheme.primary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    // Balance Section
+                    Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.2),
+                          width: 1,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          // Deposit Amount
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.account_balance_wallet,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
+                                SizedBox(width: 6),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Deposit Balance',
+                                      style: TextStyle(
+                                        color: Colors.white.withOpacity(0.9),
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Rs. ${depositAmount.toStringAsFixed(2)}',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
+                          ),
                         ],
                       ),
-                      Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                              size: 20,
-                            ),
-                            SizedBox(width: 4),
-                            Text(
-                              '${loginController.studentDataResponse.value!.creditScore} points',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: theme.colorScheme.primary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
             ),
-            SizedBox(
-              height: 2.h,
-            ),
-            loginController.studentDataResponse.value!.cashbackAmount.toInt() >=
-                    100
-                ? CashbackRedemptionCard(
-                    cashbackAmount: loginController
-                        .studentDataResponse.value!.depositAmount,
-                    onRedeem: () {},
-                  )
-                : SizedBox.shrink()
+            SizedBox(height: 1.h),
+            if (loginController.studentDataResponse.value!.cashbackAmount
+                    .toInt() >=
+                100)
+              CashbackRedemptionCard(
+                cashbackAmount:
+                    loginController.studentDataResponse.value!.depositAmount,
+                onRedeem: () {},
+              ),
           ],
         );
       },
+    );
+  }
+
+  Widget _buildShimmerLoading() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        padding: EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 80,
+              height: 12,
+              color: Colors.white,
+            ),
+            SizedBox(height: 4),
+            Container(
+              width: 140,
+              height: 16,
+              color: Colors.white,
+            ),
+            SizedBox(height: 8),
+            Container(
+              width: double.infinity,
+              height: 50,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -183,17 +288,6 @@ class StudentHomePage extends StatelessWidget {
         SizedBox(height: 16),
         MenuSection(),
       ],
-    );
-  }
-
-  Widget _buildShimmerLoading() {
-    return Container(
-      width: double.infinity,
-      height: 100,
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(16),
-      ),
     );
   }
 }

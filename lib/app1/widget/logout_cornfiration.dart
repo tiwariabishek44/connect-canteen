@@ -30,41 +30,42 @@ class ConfirmationDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return AnimatedContainer(
-      duration: Duration(milliseconds: 200),
-      child: Dialog(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        child: TweenAnimationBuilder<double>(
-          duration: Duration(milliseconds: 300),
-          tween: Tween(begin: 0.0, end: 1.0),
-          builder: (context, value, child) {
-            return Transform.scale(
-              scale: value,
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      child: TweenAnimationBuilder<double>(
+        duration: Duration(milliseconds: 350),
+        curve: Curves.easeOutCubic,
+        tween: Tween(begin: 0.0, end: 1.0),
+        builder: (context, value, child) {
+          return Transform.scale(
+            scale: value,
+            child: Opacity(
+              opacity: value,
               child: child,
-            );
-          },
-          child: Container(
-            constraints: BoxConstraints(maxWidth: 400),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surface,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: theme.shadowColor.withOpacity(0.1),
-                  blurRadius: 20,
-                  offset: Offset(0, 10),
-                ),
-              ],
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // _buildHeader(theme),
-                _buildContent(theme),
-                if (showButtons) _buildActions(theme),
-              ],
-            ),
+          );
+        },
+        child: Container(
+          constraints: BoxConstraints(maxWidth: 85.w),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.08),
+                blurRadius: 20,
+                offset: Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildHeader(theme),
+              _buildContent(theme),
+              if (showButtons) _buildActions(theme),
+            ],
           ),
         ),
       ),
@@ -73,34 +74,38 @@ class ConfirmationDialog extends StatelessWidget {
 
   Widget _buildHeader(ThemeData theme) {
     return Container(
-      padding: EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: color ?? theme.colorScheme.error.withOpacity(0.1),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      child: Row(
+      padding: EdgeInsets.fromLTRB(24, 32, 24, 16),
+      child: Column(
         children: [
           Container(
-            padding: EdgeInsets.all(12),
+            padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: color ?? theme.colorScheme.error.withOpacity(0.2),
+              gradient: LinearGradient(
+                colors: [
+                  (color ?? theme.colorScheme.error).withOpacity(0.1),
+                  (color ?? theme.colorScheme.error).withOpacity(0.05),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               shape: BoxShape.circle,
             ),
             child: Icon(
-              Icons.warning_rounded,
+              heading.toLowerCase() == 'logout'
+                  ? Icons.logout_rounded
+                  : Icons.warning_rounded,
               color: color ?? theme.colorScheme.error,
-              size: 28,
+              size: 32,
             ),
           ),
-          SizedBox(width: 16),
-          Expanded(
-            child: Text(
-              heading,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onSurface,
-              ),
+          SizedBox(height: 16),
+          Text(
+            heading,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: Colors.grey[800],
+              letterSpacing: -0.5,
             ),
           ),
         ],
@@ -109,25 +114,26 @@ class ConfirmationDialog extends StatelessWidget {
   }
 
   Widget _buildContent(ThemeData theme) {
-    return Padding(
-      padding: EdgeInsets.all(24),
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Text(
         subheading,
-        style: TextStyle(
-          fontSize: 16,
-          color: theme.colorScheme.onSurface.withOpacity(0.8),
-          height: 1.5,
-        ),
         textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 15,
+          color: Colors.grey[600],
+          height: 1.4,
+        ),
       ),
     );
   }
 
   Widget _buildActions(ThemeData theme) {
-    return Padding(
+    return Container(
       padding: EdgeInsets.all(24),
       child: Column(
         children: [
+          // Confirm Button
           ElevatedButton(
             onPressed: () {
               Get.back();
@@ -135,38 +141,59 @@ class ConfirmationDialog extends StatelessWidget {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: color ?? theme.colorScheme.error,
-              foregroundColor: Colors.white,
-              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              elevation: 0,
+              padding: EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-              elevation: 0,
               minimumSize: Size(double.infinity, 48),
-            ),
-            child: Text(
-              confirmButton,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+            ).copyWith(
+              overlayColor: MaterialStateProperty.all(
+                Colors.white.withOpacity(0.1),
               ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (heading.toLowerCase() == 'logout')
+                  Padding(
+                    padding: EdgeInsets.only(right: 8),
+                    child: Icon(Icons.logout_rounded, size: 20),
+                  ),
+                Text(
+                  confirmButton,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ],
             ),
           ),
           SizedBox(height: 12),
+          // Cancel Button
           TextButton(
             onPressed: () => Get.back(),
             style: TextButton.styleFrom(
-              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              padding: EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
               minimumSize: Size(double.infinity, 48),
+            ).copyWith(
+              overlayColor: MaterialStateProperty.all(
+                Colors.grey.withOpacity(0.1),
+              ),
             ),
             child: Text(
               cancelButton,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 15,
                 fontWeight: FontWeight.w600,
-                color: theme.colorScheme.onSurface.withOpacity(0.8),
+                color: Colors.grey[600],
+                letterSpacing: 0.3,
               ),
             ),
           ),
@@ -176,21 +203,46 @@ class ConfirmationDialog extends StatelessWidget {
   }
 }
 
-// Usage example:
-void showLogoutConfirmation(BuildContext context) {
+// Modern Dialog Helper
+void showModernDialog({
+  required BuildContext context,
+  required String title,
+  required String message,
+  String? confirmText,
+  String? cancelText,
+  VoidCallback? onConfirm,
+  Color? color,
+  bool isDanger = false,
+}) {
   showDialog(
     context: context,
+    barrierDismissible: false,
     builder: (BuildContext context) {
       return ConfirmationDialog(
-        heading: 'Logout',
-        subheading: 'Are you sure you want to logout from the application?',
-        confirmButton: 'Yes, Logout',
-        cancelButton: 'Cancel',
+        heading: title,
+        subheading: message,
+        confirmButton: confirmText ?? 'Confirm',
+        cancelButton: cancelText ?? 'Cancel',
         showButtons: true,
-        onConfirm: () {
-          // Handle logout logic
-        },
+        onConfirm: onConfirm ?? () {},
+        color: isDanger ? Colors.red : color,
       );
+    },
+  );
+}
+
+// Usage Example:
+void showLogoutConfirmation(BuildContext context) {
+  showModernDialog(
+    context: context,
+    title: 'Logout',
+    message:
+        'Are you sure you want to logout from your account? You\'ll need to sign in again to access your account.',
+    confirmText: 'Logout',
+    cancelText: 'Cancel',
+    isDanger: true,
+    onConfirm: () {
+      // Handle logout logic
     },
   );
 }
