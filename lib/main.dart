@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:connect_canteen/app/local_notificaiton/local_notifications.dart';
+import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/canteen_main_screen/canteen_main_screen.dart';
 import 'package:connect_canteen/app1/modules/common/splash%20screen/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -111,9 +112,7 @@ class _MyAppState extends State<MyApp> {
             return GetMaterialApp(
               title: 'Connect Canteen',
               debugShowCheckedModeBanner: false,
-              theme: ThemeData(
-                primarySwatch: Colors.blue,
-              ),
+              theme: EasyCanteenTheme.zomatoInspired(),
               // Check connectivity status to determine which screen to show
               home: _connectionStatus == ConnectivityResult.none
                   ? OfflineScreen()

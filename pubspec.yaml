@@ -55,8 +55,7 @@ dependencies:
   fl_chart: ^0.66.0
   fluttertoast: ^8.2.4
   image_picker: ^1.0.2
-  esewa_flutter_sdk:
-    path: ./esewa_sdk/eSewa_flutter_sdk/esewa_flutter_sdk
+
   pinput: ^3.0.0
   permission_handler: ^11.3.1
   shimmer: ^3.0.0
@@ -67,6 +66,7 @@ dependencies:
   flutter_screenutil: ^5.9.3
   image: ^4.2.0
   font_awesome_flutter: ^10.7.0
+  confetti: ^0.8.0
 
 dev_dependencies:
   flutter_test:

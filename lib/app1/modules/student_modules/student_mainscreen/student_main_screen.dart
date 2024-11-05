@@ -13,8 +13,7 @@ class StudentMainScreenView extends StatelessWidget {
 
   final List<Widget> pages = [
     StudentHomePage(),
-    OrderPage(),
-    // StorePage(),
+    StudentOrdersPage(),
     ProfilePage(),
   ];
 
@@ -22,69 +21,7 @@ class StudentMainScreenView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: WillPopScope(
-        onWillPop: () async {
-          return await showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                elevation: 0,
-                backgroundColor: AppColors.backgroundColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(
-                      12.0), // Adjust border radius as needed
-                ),
-                title: Text(
-                  'Exit App?',
-                  style: TextStyle(
-                    fontSize: 17.5.sp,
-                    color: Color.fromARGB(221, 37, 36, 36),
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                content: Text(
-                  'Are you sure you want to exit the app?',
-                  style: TextStyle(
-                    color: const Color.fromARGB(221, 72, 71, 71),
-                    fontSize: 16.0.sp,
-                  ),
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      // Close the dialog
-
-                      Get.back();
-                    },
-                    child: Text(
-                      'Cancel',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16.sp,
-                          color: Colors.purple),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).pop(true);
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(12.0),
-                      child: Text(
-                        "Exit",
-                        style: TextStyle(
-                          color: Color.fromARGB(255, 225, 6, 6),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 17.sp,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          );
-          ; // Allow back navigation
-        },
+        onWillPop: () => _showExitDialog(context),
         child: Obx(
           () => PageStorage(
             bucket: studentController.bucket,
@@ -94,41 +31,24 @@ class StudentMainScreenView extends StatelessWidget {
       ),
       bottomNavigationBar: Obx(
         () => Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: Colors.white,
-            border: Border(
-              top: BorderSide(
-                color: Color.fromARGB(
-                    255, 210, 207, 207), // Specify your desired border color
-                width: 0.50, // Specify the border width
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.06),
+                blurRadius: 10,
+                offset: Offset(0, -5),
               ),
-            ),
-          ),
-          height: 7.5.h,
-          child: MyBottomNavigationBar(
-            currentIndex: studentController.currentTab.value,
-            onTap: (index) {
-              studentController.currentTab.value = index;
-              studentController.currentScreen.value = pages[index];
-            },
-            items: [
-              MyBottomNavigationBarItem(
-                  nonSelectedicon: Icons.home_outlined,
-                  icon: Icons.home,
-                  label: 'Home'),
-              MyBottomNavigationBarItem(
-                  nonSelectedicon: Icons.shopping_cart_outlined,
-                  icon: Icons.shopping_cart,
-                  label: 'MyOrders'),
-              // MyBottomNavigationBarItem(
-              //     nonSelectedicon: Icons.shopping_cart_outlined,
-              //     icon: Icons.shopping_cart,
-              //     label: 'Store'),
-              MyBottomNavigationBarItem(
-                  nonSelectedicon: Icons.settings_outlined,
-                  icon: Icons.settings,
-                  label: 'Settings'),
             ],
+          ),
+          child: SafeArea(
+            child: ModernBottomBar(
+              currentIndex: studentController.currentTab.value,
+              onTap: (index) {
+                studentController.currentTab.value = index;
+                studentController.currentScreen.value = pages[index];
+              },
+            ),
           ),
         ),
       ),
@@ -136,73 +56,227 @@ class StudentMainScreenView extends StatelessWidget {
   }
 }
 
-class MyBottomNavigationBar extends StatelessWidget {
+class ModernBottomBar extends StatelessWidget {
   final int currentIndex;
-  final ValueChanged<int> onTap;
-  final List<MyBottomNavigationBarItem> items;
+  final Function(int) onTap;
 
-  MyBottomNavigationBar({
+  ModernBottomBar({
     required this.currentIndex,
     required this.onTap,
-    required this.items,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: items.map((item) {
-        var index = items.indexOf(item);
-        return Expanded(
-          child: InkWell(
-            onTap: () => onTap(index),
-            splashColor: Colors.transparent, // Disable tap effect
-
-            child: item.build(index == currentIndex),
-          ),
-        );
-      }).toList(),
-    );
-  }
-}
-
-class MyBottomNavigationBarItem {
-  final IconData icon;
-  final IconData nonSelectedicon;
-
-  final String label;
-
-  MyBottomNavigationBarItem({
-    required this.nonSelectedicon,
-    required this.icon,
-    required this.label,
-  });
-
-  Widget build(bool isSelected) {
     return Container(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+      height: 12.h,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Icon(
-            isSelected ? icon : nonSelectedicon,
-            color: isSelected
-                ? Colors.black
-                : const Color.fromARGB(255, 69, 67, 67),
-            // Outline the icon if not selected
-            size: 20.0.sp,
-            semanticLabel: label,
+          _buildNavItem(
+            index: 0,
+            label: 'Home',
+            selectedIcon: Icons.home_rounded,
+            unselectedIcon: Icons.home_outlined,
           ),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w600,
-              color: isSelected
-                  ? Colors.black
-                  : const Color.fromARGB(255, 69, 67, 67),
-            ),
+          _buildNavItem(
+            index: 1,
+            label: 'Orders',
+            selectedIcon: Icons.receipt_long_rounded,
+            unselectedIcon: Icons.receipt_long_outlined,
+          ),
+          _buildNavItem(
+            index: 2,
+            label: 'Profile',
+            selectedIcon: Icons.person_rounded,
+            unselectedIcon: Icons.person_outline_rounded,
           ),
         ],
       ),
     );
   }
+
+  Widget _buildNavItem({
+    required int index,
+    required String label,
+    required IconData selectedIcon,
+    required IconData unselectedIcon,
+    bool showBadge = false,
+  }) {
+    final isSelected = currentIndex == index;
+
+    return GestureDetector(
+      onTap: () => onTap(index),
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        width: 20.w,
+        padding: EdgeInsets.symmetric(vertical: 8),
+        child: TweenAnimationBuilder<double>(
+          tween: Tween(
+            begin: 0.0,
+            end: isSelected ? 1.0 : 0.0,
+          ),
+          duration: Duration(milliseconds: 200),
+          builder: (context, value, child) {
+            return Container(
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? Theme.of(context).primaryColor.withOpacity(0.1)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Icon(
+                        isSelected ? selectedIcon : unselectedIcon,
+                        color: isSelected
+                            ? Theme.of(context).primaryColor
+                            : Colors.grey.shade600,
+                        size: 24,
+                      ),
+                      if (showBadge)
+                        Positioned(
+                          right: -6,
+                          top: -6,
+                          child: Container(
+                            padding: EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Text(
+                              '1', // You can make this dynamic
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    label,
+                    style: TextStyle(
+                      color: isSelected
+                          ? Theme.of(context).primaryColor
+                          : Colors.grey.shade600,
+                      fontSize: 12,
+                      fontWeight:
+                          isSelected ? FontWeight.w600 : FontWeight.normal,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+// Exit Dialog with modern design
+Future<bool> _showExitDialog(BuildContext context) async {
+  return await showDialog(
+        context: context,
+        builder: (context) => Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            padding: EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: Colors.white,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade50,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.exit_to_app_rounded,
+                    color: Colors.red,
+                    size: 32,
+                  ),
+                ),
+                SizedBox(height: 16),
+                Text(
+                  'Exit App?',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Are you sure you want to exit the app?',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
+                    fontSize: 16,
+                  ),
+                ),
+                SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () => Get.back(),
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: Text(
+                          'Cancel',
+                          style: TextStyle(
+                            color: Colors.grey.shade700,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 2),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.of(context).pop(true),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: Text(
+                          'Exit',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ) ??
+      false;
 }

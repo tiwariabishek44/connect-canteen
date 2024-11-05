@@ -1,13 +1,9 @@
 import 'package:connect_canteen/app1/modules/canteen_helper/helper_main_screen/screen_controller.dart';
 import 'package:connect_canteen/app1/modules/canteen_helper/setting/setting.dart';
-import 'package:connect_canteen/app1/modules/canteen_helper/verify%20list/verify_order_list.dart';
-import 'package:connect_canteen/app1/modules/canteen_module.dart/canteen_main_screen/canteen_main_screen_controller.dart';
-
-import 'package:connect_canteen/app1/modules/canteen_module.dart/dashboard/dashboard.dart';
 
 import 'package:connect_canteen/app1/cons/colors.dart';
 import 'package:connect_canteen/app1/modules/canteen_module.dart/order_requirement/order_requirement.dart';
-import 'package:connect_canteen/app1/modules/canteen_module.dart/setting/setting.dart';
+import 'package:connect_canteen/app1/modules/canteen_module.dart/studentClass/studetnclass.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -17,13 +13,21 @@ class CanteenHelperMainScreen extends StatelessWidget {
   final canteenScreenController = Get.put(HelperScreenController());
 
   final List<Widget> pages = [
-    VerifyOrderList(),
+    OrderRequirementPage(),
     HelperSetting(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Get.to(() => MealTimePage());
+          // Quick order processing action
+        },
+        backgroundColor: Color.fromARGB(255, 216, 48, 113),
+        child: Icon(Icons.checklist_outlined, color: Colors.white),
+      ),
       body: WillPopScope(
         onWillPop: () async {
           return await showDialog(

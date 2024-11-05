@@ -3,112 +3,194 @@ import 'package:get/get.dart';
 import 'package:connect_canteen/app/config/style.dart';
 import 'package:connect_canteen/app/widget/customized_button.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class LogoutConfirmationDialog extends StatelessWidget {
+class ConfirmationDialog extends StatelessWidget {
   final String heading;
   final String subheading;
-  final String firstbutton;
-  final String secondbutton;
+  final String confirmButton;
+  final String cancelButton;
   final VoidCallback onConfirm;
-  final bool isbutton;
+  final bool showButtons;
+  final Color? color;
 
-  const LogoutConfirmationDialog(
-      {required this.heading,
-      required this.subheading,
-      required this.isbutton,
-      required this.firstbutton,
-      required this.secondbutton,
-      required this.onConfirm,
-      Key? key})
-      : super(key: key);
+  const ConfirmationDialog({
+    Key? key,
+    required this.heading,
+    required this.subheading,
+    required this.showButtons,
+    required this.confirmButton,
+    required this.cancelButton,
+    required this.onConfirm,
+    this.color,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      alignment: Alignment.bottomCenter,
-      insetPadding: EdgeInsets.zero,
-      child: Container(
-        height: MediaQuery.of(context).size.height * 0.3,
-        width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
-          color: Colors.white,
-        ),
-        child: Padding(
-          padding: AppPadding.screenHorizontalPadding,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top: 3.0.h),
-                child: Column(
-                  children: [
-                    Text(heading,
-                        style: TextStyle(
-                            fontSize: 27.0, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 10),
-                    Center(
-                      child: Column(
-                        children: [
-                          Text(
-                            subheading,
-                            style: TextStyle(
-                                fontSize: 17,
-                                color: Color.fromARGB(255, 119, 116, 116)),
-                            maxLines: 2,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+    final theme = Theme.of(context);
+
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 200),
+      child: Dialog(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: TweenAnimationBuilder<double>(
+          duration: Duration(milliseconds: 300),
+          tween: Tween(begin: 0.0, end: 1.0),
+          builder: (context, value, child) {
+            return Transform.scale(
+              scale: value,
+              child: child,
+            );
+          },
+          child: Container(
+            constraints: BoxConstraints(maxWidth: 400),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: theme.shadowColor.withOpacity(0.1),
+                  blurRadius: 20,
+                  offset: Offset(0, 10),
                 ),
-              ),
-              isbutton
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        CustomButton(
-                            text: firstbutton,
-                            onPressed: onConfirm,
-                            isLoading: false),
-                        SizedBox(
-                          height: 1.5.h,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Get.back();
-                          },
-                          child: Container(
-                            height: 5.5.h,
-                            width: 100.w,
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 238, 235, 235),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Center(
-                                child: Text(
-                              secondbutton,
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            )),
-                          ),
-                        )
-                      ],
-                    )
-                  : Container(),
-              Expanded(
-                flex: 1,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(),
-                ),
-              ),
-            ],
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // _buildHeader(theme),
+                _buildContent(theme),
+                if (showButtons) _buildActions(theme),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+
+  Widget _buildHeader(ThemeData theme) {
+    return Container(
+      padding: EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: color ?? theme.colorScheme.error.withOpacity(0.1),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: color ?? theme.colorScheme.error.withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.warning_rounded,
+              color: color ?? theme.colorScheme.error,
+              size: 28,
+            ),
+          ),
+          SizedBox(width: 16),
+          Expanded(
+            child: Text(
+              heading,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContent(ThemeData theme) {
+    return Padding(
+      padding: EdgeInsets.all(24),
+      child: Text(
+        subheading,
+        style: TextStyle(
+          fontSize: 16,
+          color: theme.colorScheme.onSurface.withOpacity(0.8),
+          height: 1.5,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
+  Widget _buildActions(ThemeData theme) {
+    return Padding(
+      padding: EdgeInsets.all(24),
+      child: Column(
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              Get.back();
+              onConfirm();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: color ?? theme.colorScheme.error,
+              foregroundColor: Colors.white,
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 0,
+              minimumSize: Size(double.infinity, 48),
+            ),
+            child: Text(
+              confirmButton,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          SizedBox(height: 12),
+          TextButton(
+            onPressed: () => Get.back(),
+            style: TextButton.styleFrom(
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              minimumSize: Size(double.infinity, 48),
+            ),
+            child: Text(
+              cancelButton,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: theme.colorScheme.onSurface.withOpacity(0.8),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Usage example:
+void showLogoutConfirmation(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return ConfirmationDialog(
+        heading: 'Logout',
+        subheading: 'Are you sure you want to logout from the application?',
+        confirmButton: 'Yes, Logout',
+        cancelButton: 'Cancel',
+        showButtons: true,
+        onConfirm: () {
+          // Handle logout logic
+        },
+      );
+    },
+  );
 }

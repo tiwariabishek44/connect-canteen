@@ -5,7 +5,7 @@ class ApiEndpoints {
 
   //production collection
   static const prodcutionStudentCollection = 'productionStudents';
-  static const productionOrderCollection = 'productionOrder';
+  static const productionOrderCollection = 'studentOrders';
   static const productionAdminWallet = 'productionAdminWallet';
 
   static const productionProdcutCollection = 'productionProduct';

@@ -81,17 +81,14 @@ class HelperSetting extends StatelessWidget {
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
-                        return LogoutConfirmationDialog(
-                          isbutton: true,
-                          heading: 'Alert',
-                          subheading:
-                              "Do you want to logout of the application?",
-                          firstbutton: "Yes",
-                          secondbutton: 'No',
-                          onConfirm: () {
-                            loignController.logout();
-                          },
-                        );
+                        return ConfirmationDialog(
+                            heading: 'Logout',
+                            subheading: 'Are you sure you want to logout?',
+                            confirmButton: 'Logout',
+                            cancelButton: 'Cancel',
+                            showButtons: true,
+                            color: Colors.red,
+                            onConfirm: () => loignController.logout());
                       },
                     );
                   },

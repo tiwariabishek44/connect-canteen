@@ -1,221 +1,178 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connect_canteen/app/config/style.dart';
-import 'package:connect_canteen/app/modules/vendor_modules/dashboard/demand_supply.dart';
 import 'package:connect_canteen/app1/model/order_model.dart';
 import 'package:connect_canteen/app1/modules/common/login/login_controller.dart';
-import 'package:connect_canteen/app1/modules/student_modules/order/hold_your_order.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:shimmer/shimmer.dart';
 
-class OrderTiles extends StatelessWidget {
+class OrderTiles extends StatefulWidget {
   final OrderResponse order;
-  final String type;
-  OrderTiles({super.key, required this.order, required this.type});
-  final loignController = Get.put(LoginController());
+  const OrderTiles({
+    Key? key,
+    required this.order,
+  }) : super(key: key);
+
+  @override
+  State<OrderTiles> createState() => _OrderTilesState();
+}
+
+class _OrderTilesState extends State<OrderTiles>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  final loginController = Get.put(LoginController());
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.98).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: AppPadding.screenHorizontalPadding,
+    return AnimatedBuilder(
+      animation: _scaleAnimation,
+      builder: (context, child) => Transform.scale(
+        scale: _scaleAnimation.value,
+        child: child,
+      ),
       child: GestureDetector(
-        onTap: () {
-          if (type == 'regular')
-            loignController.studentDataResponse.value!.userid == order.cid
-                ? Get.to(
-                    () => HoldYourOrder(
-                          order: order,
-                        ),
-                    transition: Transition.cupertinoDialog)
-                : null;
-        },
+        onTapDown: (_) => _controller.forward(),
+        onTapUp: (_) => _controller.reverse(),
+        onTapCancel: () => _controller.reverse(),
+        onTap: () {},
         child: Container(
-          padding: EdgeInsets.all(8.0),
-          // margin: EdgeInsets.symmetric(vertical: 4.0),
+          padding: EdgeInsets.all(12.0),
+          margin: EdgeInsets.symmetric(vertical: 0.5.h),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                spreadRadius: 1,
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
           child: Row(
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Product Name
                     Text(
-                      order.productName,
+                      widget.order.productName,
                       style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 20.0.sp,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18.sp,
+                        color: Colors.grey[800],
                       ),
                     ),
+                    SizedBox(height: 1.h),
+
+                    // Price and Time Row
                     Row(
                       children: [
-                        Text(
-                          'NPR ${order.price}',
-                          style: TextStyle(
-                              fontSize: 16.0.sp,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w400),
+                        // Price
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 3.w,
+                            vertical: 0.5.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color:
+                                Theme.of(context).primaryColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            'NPR ${widget.order.price}',
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              color: Theme.of(context).primaryColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
-                        SizedBox(
-                          width: 3.w,
-                        ),
+                        SizedBox(width: 3.w),
+
+                        // Meal Time
                         Icon(
                           Icons.alarm_outlined,
                           size: 17.sp,
+                          color: Colors.grey[600],
                         ),
-                        SizedBox(
-                          width: 1.w,
-                        ),
+                        SizedBox(width: 1.w),
                         Text(
-                          '${order.mealtime}',
+                          widget.order.mealTime,
                           style: TextStyle(
-                              fontSize: 16.0.sp,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w400),
+                            fontSize: 15.sp,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        SizedBox(width: 3.w),
+
+                        // Meal Time
+                        Icon(
+                          Icons.calendar_month_outlined,
+                          size: 17.sp,
+                          color: Colors.grey[600],
+                        ),
+                        SizedBox(width: 1.w),
+                        Text(
+                          widget.order.mealDate,
+                          style: TextStyle(
+                            fontSize: 15.sp,
+                            color: Colors.grey[600],
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ],
                     ),
-                    SizedBox(height: 0.6.h),
+                    SizedBox(height: 1.h),
+
+                    // Student Name
                     Row(
                       children: [
                         Icon(
                           Icons.person_outline,
                           size: 17.sp,
+                          color: Colors.grey[600],
                         ),
-                        SizedBox(
-                          width: 1.w,
-                        ),
+                        SizedBox(width: 1.w),
                         Text(
-                          '${order.customer}',
+                          widget.order.studentName,
                           style: TextStyle(
-                            fontSize: 14.0,
+                            fontSize: 14.sp,
                             color: Colors.grey[600],
+                            fontWeight: FontWeight.w400,
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(height: 0.6.h),
-                    if (order.orderType != 'hold')
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.calendar_today,
-                            size: 17.sp,
-                          ),
-                          SizedBox(
-                            width: 1.w,
-                          ),
-                          Text(
-                            '${order.date}',
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                          SizedBox(width: 2.w),
-                          SizedBox(
-                            width: 1.w,
-                          ),
-                          Text(
-                            '${order.quantity}/plate',
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ],
-                      ),
-                    SizedBox(height: 0.6.h),
-                    if (order.orderType == 'hold')
-                      Row(
-                        children: [
-                          Text("Hold on:"),
-                          SizedBox(
-                            width: 1.w,
-                          ),
-                          Text(
-                            '${order.holdDate}',
-                            style: TextStyle(
-                              fontSize: 14.0,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ],
-                      ),
                   ],
                 ),
               ),
-              Stack(
-                children: [
-                  Container(
-                    width: 14.h,
-                    height: 14.h,
-                    child: CachedNetworkImage(
-                      progressIndicatorBuilder:
-                          (context, url, downloadProgress) => Opacity(
-                        opacity: 0.8,
-                        child: Shimmer.fromColors(
-                          baseColor: const Color.fromARGB(255, 248, 246, 246),
-                          highlightColor: Color.fromARGB(255, 238, 230, 230),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: const Color.fromARGB(255, 243, 242, 242),
-                            ),
-                            width: 14.h,
-                            height: 14.h,
-                          ),
-                        ),
-                      ),
-                      imageUrl: order.productImage ?? '',
-                      imageBuilder: (context, imageProvider) => Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          image: DecorationImage(
-                            image: imageProvider,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                      fit: BoxFit.fill,
-                      width: double.infinity,
-                      errorWidget: (context, url, error) => CircleAvatar(
-                        radius: 21.4.sp,
-                        child: Icon(
-                          Icons.person,
-                          color: Colors.white,
-                        ),
-                        backgroundColor:
-                            const Color.fromARGB(255, 224, 218, 218),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                      right: 0,
-                      top: 0,
-                      child:
-                          loignController.studentDataResponse.value!.userid ==
-                                  order.cid
-                              ? Container(
-                                  decoration: BoxDecoration(
-                                      color: Color.fromARGB(255, 0, 0, 0),
-                                      borderRadius: BorderRadius.circular(16)),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 6.0, vertical: 1.5),
-                                    child: Text(
-                                      "My Order",
-                                      style: TextStyle(
-                                          fontSize: 14.sp,
-                                          fontWeight: FontWeight.w700,
-                                          color: const Color.fromARGB(
-                                              255, 255, 255, 255)),
-                                    ),
-                                  ),
-                                )
-                              : SizedBox.shrink())
-                ],
-              ),
+
+              // Status Indicator
             ],
           ),
         ),

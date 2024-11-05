@@ -1,15 +1,7 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connect_canteen/app/config/style.dart';
-import 'package:connect_canteen/app/modules/vendor_modules/dashboard/demand_supply.dart';
 import 'package:connect_canteen/app1/cons/colors.dart';
-import 'package:connect_canteen/app1/model/order_model.dart';
-import 'package:connect_canteen/app1/modules/common/login/login_controller.dart';
-import 'package:connect_canteen/app1/modules/student_modules/order/hold_your_order.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:shimmer/shimmer.dart';
 
 class OrderTilesShrimmer extends StatelessWidget {
   @override

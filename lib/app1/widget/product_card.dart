@@ -1,15 +1,6 @@
-import 'dart:ffi';
-
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connect_canteen/app1/cons/colors.dart';
-import 'package:connect_canteen/app1/cons/style.dart';
-import 'package:connect_canteen/app1/model/product_model.dart';
-import 'package:connect_canteen/app1/modules/student_modules/homepage/detail_poduct_shortcurt.dart';
-import 'package:connect_canteen/app1/modules/student_modules/product_detail/product_detail.dart';
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -22,16 +13,14 @@ class ProductCard extends StatelessWidget {
   final String userType; // New field userType
   final bool active;
 
-  ProductCard({
-    
-    this.userType = 'student', // Default value is 'student'
+  ProductCard(
+      {this.userType = 'student', // Default value is 'student'
 
-    required this.name,
-    required this.imageUrl,
-    required this.price,
+      required this.name,
+      required this.imageUrl,
+      required this.price,
       required this.type,
-      required this.active
-  });
+      required this.active});
 
   @override
   Widget build(BuildContext context) {

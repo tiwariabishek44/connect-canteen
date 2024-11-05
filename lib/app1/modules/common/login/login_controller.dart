@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connect_canteen/app/local_notificaiton/local_notifications.dart';
-import 'package:connect_canteen/app/modules/canteen_helper/helper%20main%20screen/main_screen.dart';
 import 'package:connect_canteen/app1/cons/api_end_points.dart';
 import 'package:connect_canteen/app1/cons/prefs.dart';
 import 'package:connect_canteen/app1/model/student_model.dart';
@@ -57,7 +56,6 @@ class LoginController extends GetxController {
                   : ''; // Or handle other cases
 
       isLoginLoading.value = true;
-      // Attempt to sign in with email and password
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: emailController.text,
         password: passwordController.text,
@@ -71,7 +69,6 @@ class LoginController extends GetxController {
             payload: "This is periodic data");
         saveDataLocally(Get.context!);
       } else {
-        // Perform both sign-out and display the login failure dialog
         await _auth.signOut();
         showDialog(
           context: Get.context!,
@@ -115,7 +112,6 @@ class LoginController extends GetxController {
         );
       }
       isLoginLoading.value = false;
- 
     } on FirebaseAuthException catch (e) {
       // Handle FirebaseAuthException
       isLoginLoading.value = false;
@@ -146,7 +142,7 @@ class LoginController extends GetxController {
           .where('userid', isEqualTo: userId)
           .get();
 
-      // Return true if data exists for the user in the "canteen" collection
+      // Return true if data exists for the    in the "canteen" collection
       return querySnapshot.docs.isNotEmpty ? true : false;
     } catch (e) {
       // Handle errors
@@ -216,7 +212,6 @@ class LoginController extends GetxController {
                     : '');
 
     if (loiginOptionController.userTypes.value == 'student') {
-      log(' this is hte collection name :::::${loiginOptionController.userTypes.value}');
       Get.offAll(() => StudentMainScreenView());
     } else if (loiginOptionController.userTypes.value == 'canteen') {
       log(' this is hte collection name :::::${loiginOptionController.userTypes.value}');

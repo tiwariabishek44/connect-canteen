@@ -5,17 +5,12 @@ import 'dart:isolate';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connect_canteen/app1/cons/api_end_points.dart';
-import 'package:connect_canteen/app1/cons/style.dart';
-import 'package:connect_canteen/app1/data/api_models/register_api_response.dart';
-import 'package:connect_canteen/app1/modules/common/login/view/login_view.dart';
-import 'package:connect_canteen/app1/modules/common/wallet/transcton_controller.dart';
 
 import 'package:connect_canteen/app1/widget/custom_sncak_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
 import 'package:flutter/material.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
 
 class UserRegisterController extends GetxController {
   final TextEditingController nameController = TextEditingController();
@@ -24,14 +19,14 @@ class UserRegisterController extends GetxController {
   final TextEditingController passwordController = TextEditingController();
 
   var schoolname = ''.obs;
-  
+
   var isPasswordVisible = false.obs;
   var iscPasswordVisible = false.obs;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GlobalKey<FormState> registerFormKey = GlobalKey<FormState>();
 
   var termsAndConditions = false.obs;
- 
+
   // Check validation for the inputs for login
   void userRegister(BuildContext context, String schoolName, String schoolId) {
     if (registerFormKey.currentState!.validate()) {
@@ -60,38 +55,21 @@ class UserRegisterController extends GetxController {
         'name': nameController.text,
         'phone': mobileNumberController.text,
         'email': emailController.text,
-        'groupid': '',
         'classes': '',
         "schoolId": schoolId,
         'schoolName': schoolName,
         'profilePicture': '',
-        "fineAmount": 0,
-        'groupname': '',
-        'groupcod': '',
+        'creditScore': 5,
+        'depositAmount': 0.0, // Initializing depositAmount with 0 balance
       });
       Get.back();
-      showDialog(
-            context: Get.context!,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0), // No border radius
-                ),
-                scrollable: false,
-                elevation: 0,
-                title: Text(
-                  'Success!',
-                  style: AppStyles.appbar
-                      .copyWith(fontWeight: FontWeight.bold, fontSize: 20.sp),
-                ),
-                content: Text(
-                  'Account created successfully.',
-                  style: AppStyles.listTileTitle,
-                ),
-              );
-            });
-
-  
+      DialogHelper.showSuccessDialog(
+        title: 'Success!',
+        message: 'Account created successfully.',
+        onConfirm: () {
+          Get.back();
+        },
+      );
     } on FirebaseAuthException catch (e) {
       // Handle FirebaseAuthException
       isRegisterLoading.value = false;
@@ -120,58 +98,6 @@ class UserRegisterController extends GetxController {
     }
   }
 
-  //-----------TO CREATE THE SCHOOLS
-  final CollectionReference _schoolCollection = FirebaseFirestore.instance
-      .collection(ApiEndpoints.productionSchoolcollection);
-  Future<void> uploadDummySchools() async {
-    try {
-      isRegisterLoading.value = true;
-
-      // List of dummy schools with names and addresses
-      final List<Map<String, dynamic>> dummySchools = [
-        {
-          "name": "Texas International College",
-          "address": "Mitrapark-Chabahil, Kathmandu"
-        },
-        {"name": "St. Xavier's College", "address": "Maitighar, Kathmandu"},
-        {"name": "Kathmandu Model College", "address": "Bagbazar, Kathmandu"},
-        {
-          "name": "Trinity International College",
-          "address": "Dillibazar, Kathmandu"
-        },
-        {"name": "Prime College", "address": "Nayabazar, Kathmandu"},
-        {
-          "name": "Kathmandu University",
-          "address": "Dhulikhel, Kavrepalanchok"
-        },
-        {
-          "name": "Nepal Engineering College",
-          "address": "Changunarayan, Bhaktapur"
-        },
-      ];
-
-      // Upload each dummy school to Firestore
-      for (final school in dummySchools) {
-        final schoolId = "${school['name'].toLowerCase().replaceAll(' ', '')}";
-        await _schoolCollection.add({
-          'schoolId': schoolId,
-          'name': school['name'],
-          'address': school['address'],
-          'classes': ['Class A', 'Class B', 'Class C'] // Add your dummy classes
-
-          // You can add additional fields as needed
-        });
-      }
-
-      isRegisterLoading.value = false;
-      // Success message or any other action after upload
-    } catch (e) {
-      // Error handling
-      print("Error uploading dummy schools: $e");
-      isRegisterLoading.value = false;
-    }
-  }
-
   @override
   void onClose() {
     // Dispose controllers when the controller is closed
@@ -181,5 +107,129 @@ class UserRegisterController extends GetxController {
     passwordController.clear();
 
     super.onClose();
+  }
+}
+
+class DialogHelper {
+  static void showSuccessDialog({
+    String title = 'Success!',
+    String message = 'Action completed successfully.',
+    VoidCallback? onConfirm,
+  }) {
+    showGeneralDialog(
+      context: Get.context!,
+      barrierDismissible: true,
+      barrierLabel: '',
+      barrierColor: Colors.black.withOpacity(0.5),
+      transitionDuration: Duration(milliseconds: 400),
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return Container();
+      },
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        final theme = Theme.of(context);
+
+        return ScaleTransition(
+          scale: CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeOutBack,
+          ),
+          child: AlertDialog(
+            backgroundColor: theme.colorScheme.surface,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
+            contentPadding: EdgeInsets.zero,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Success animation and header
+                Container(
+                  padding: EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(24),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      // Success Icon with Animation
+                      TweenAnimationBuilder<double>(
+                        duration: Duration(milliseconds: 600),
+                        tween: Tween(begin: 0.0, end: 1.0),
+                        builder: (context, value, child) {
+                          return Transform.scale(
+                            scale: value,
+                            child: Container(
+                              width: 72,
+                              height: 72,
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.primary,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.check_rounded,
+                                color: Colors.white,
+                                size: 40,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      SizedBox(height: 16),
+                      // Title
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Message and action buttons
+                Padding(
+                  padding: EdgeInsets.all(24),
+                  child: Column(
+                    children: [
+                      Text(
+                        message,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: theme.colorScheme.onSurface,
+                        ),
+                      ),
+                      SizedBox(height: 24),
+                      ElevatedButton(
+                        onPressed: onConfirm,
+                        child: Text('OK',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            )),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: theme.colorScheme.primary,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }

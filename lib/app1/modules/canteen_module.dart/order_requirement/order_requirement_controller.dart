@@ -3,55 +3,71 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connect_canteen/app1/cons/api_end_points.dart';
 import 'package:connect_canteen/app1/model/order_model.dart';
-import 'package:connect_canteen/app1/model/product_detials_model.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:nepali_utils/nepali_utils.dart';
 
 class OrderRequirementController extends GetxController {
   var mealtime = "All".obs;
+  var isLoading = false.obs;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  void updateMealtime(String newMealtime) {
-    mealtime.value = newMealtime;
+  Stream<Map<String, Map<String, dynamic>>> getOrderRequirements(
+      String schoolId) {
+    final now = NepaliDateTime.now();
+    final today = DateFormat('yyyy-MM-dd').format(now);
+
+    return _firestore
+        .collection('orders')
+        .where('referenceSchoolId', isEqualTo: schoolId)
+        .where('mealDate', isEqualTo: today)
+        .snapshots()
+        .map((snapshot) => _processOrders(snapshot.docs));
   }
 
-  Stream<List<OrderResponse>> getAllTodayOrders() {
-    DateTime now = DateTime.now();
-    NepaliDateTime nepaliDateTime = NepaliDateTime.fromDateTime(now);
-    final todayDate = DateFormat('dd/MM/yyyy\'', 'en').format(nepaliDateTime);
+  Map<String, Map<String, dynamic>> _processOrders(
+      List<QueryDocumentSnapshot> docs) {
+    Map<String, Map<String, dynamic>> requirements = {};
 
-    Query query = _firestore
-        .collection(ApiEndpoints.productionOrderCollection)
-        .where('scrhoolrefrenceid', isEqualTo: "texasinternationalcollege")
-        .where('date', isEqualTo: todayDate);
+    for (var doc in docs) {
+      final order = OrderResponse.fromMap(doc.data() as Map<String, dynamic>);
 
-    if (mealtime.value != "All") {
-      query = query.where('mealtime', isEqualTo: mealtime.value);
-    }
-
-    return query.snapshots().map(
-          (snapshot) => snapshot.docs
-              .map((doc) =>
-                  OrderResponse.fromJson(doc.data() as Map<String, dynamic>))
-              .toList(),
-        );
-  }
-
-  var productDetails = <String, ProductDetail>{}.obs;
-
-  void calculateProductTotals(List<OrderResponse> orders) {
-    productDetails.clear(); // Clear previous totals
-    for (var order in orders) {
-      if (productDetails.containsKey(order.productName)) {
-        productDetails[order.productName]!.totalQuantity += order.quantity;
-      } else {
-        productDetails[order.productName] = ProductDetail(
-          productName: order.productName,
-          productImage: order.productImage,
-          totalQuantity: order.quantity,
-        );
+      if (mealtime.value != "All" && order.mealTime != mealtime.value) {
+        continue;
       }
+
+      if (!requirements.containsKey(order.productName)) {
+        requirements[order.productName] = {
+          'quantity': 0,
+          'totalPrice': 0.0,
+          'unitPrice': order.price,
+        };
+      }
+
+      requirements[order.productName]!['quantity'] =
+          requirements[order.productName]!['quantity']! + 1;
+      requirements[order.productName]!['totalPrice'] =
+          requirements[order.productName]!['totalPrice']! + order.price;
     }
+
+    return requirements;
+  }
+
+  Stream<List<OrderResponse>> getDetailedOrders(String schoolId) {
+    final now = NepaliDateTime.now();
+    final today = DateFormat('yyyy-MM-dd').format(now);
+
+    return _firestore
+        .collection('orders')
+        .where('referenceSchoolId', isEqualTo: schoolId)
+        .where('mealDate', isEqualTo: today)
+        .where('isCheckout', isEqualTo: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) =>
+                OrderResponse.fromMap(doc.data() as Map<String, dynamic>))
+            .where((order) =>
+                mealtime.value == "All" || order.mealTime == mealtime.value)
+            .toList());
   }
 }

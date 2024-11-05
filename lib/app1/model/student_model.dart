@@ -3,32 +3,26 @@ class StudentDataResponse {
   final String name;
   final String email;
   final String phone;
-  final String groupid;
-  final String groupcod; // Added groupcod field
   final String classes;
   final String profilePicture;
-  final int studentScore;
-  final int fineAmount;
-  final int miCoin;
   final String schoolId;
-  final String schoolName; // Added school name field
-  final String groupname;
+  final String schoolName;
+  final int creditScore; // Existing creditScore field
+  final double depositAmount; // New depositAmount field
+  final double cashbackAmount; // New cashbackAmount field
 
   StudentDataResponse({
     required this.userid,
     required this.name,
     required this.email,
     required this.phone,
-    required this.groupid,
-    required this.groupcod, // Included in the constructor
     required this.classes,
     required this.profilePicture,
-    required this.studentScore,
-    required this.fineAmount,
-    required this.miCoin,
     required this.schoolId,
-    required this.schoolName, // Included in the constructor
-    required this.groupname,
+    required this.schoolName,
+    required this.creditScore,
+    required this.depositAmount, // Included in the constructor
+    required this.cashbackAmount, // Included in the constructor
   });
 
   factory StudentDataResponse.fromJson(Map<String, dynamic> json) {
@@ -37,18 +31,19 @@ class StudentDataResponse {
       name: json['name'] ?? '',
       email: json['email'] ?? '',
       phone: json['phone']?.toString() ?? '',
-      groupid: json['groupid'] ?? '',
-      groupcod: json['groupcod'] ?? '', // Parsing groupcod
       classes: json['classes'] ?? '',
       profilePicture: json['profilePicture'] ?? '',
-      studentScore: json['studentScore'] ?? 0,
-      fineAmount: json['fineAmount'] ?? 0,
-      miCoin: json['miCoin'] ?? 0,
       schoolId: json['schoolId'] ?? '',
-      schoolName: json['schoolName'] ?? '', // Parsing school name
-      groupname: json['groupname'] ?? '',
+      schoolName: json['schoolName'] ?? '',
+      creditScore: json['creditScore'] ?? 0,
+      depositAmount:
+          json['depositAmount']?.toDouble() ?? 0.0, // Parsing depositAmount
+      cashbackAmount:
+          json['cashbackAmount']?.toDouble() ?? 0.0, // Parsing cashbackAmount
     );
   }
+
+  get id => null;
 
   Map<String, dynamic> toMap() {
     return {
@@ -56,16 +51,14 @@ class StudentDataResponse {
       'name': name,
       'email': email,
       'phone': phone,
-      'groupid': groupid,
-      'groupcod': groupcod, // Adding groupcod to the map
       'classes': classes,
       'profilePicture': profilePicture,
-      'studentScore': studentScore,
-      'fineAmount': fineAmount,
-      'miCoin': miCoin,
       'schoolId': schoolId,
-      'schoolName': schoolName, // Adding school name to the map
-      'groupname': groupname,
+      'schoolName': schoolName,
+      'creditScore': creditScore,
+      'depositAmount': depositAmount, // Adding depositAmount to the map
+
+      'cashbackAmount': cashbackAmount, // Adding cashbackAmount to the map
     };
   }
 }

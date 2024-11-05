@@ -1,18 +1,6 @@
-class Products {
-  final String imageUrl;
-  final String name;
-  final double price;
-  final String type;
-
-  const Products({
-    required this.imageUrl,
-    required this.name,
-    required this.price,
-    required this.type,
-  });
-}
 class ProductResponseModel {
   final String productId; // Unique identifier for the product
+  final String adminId; // Unique identifier for the admin
   final String name;
   final String proudctImage;
   final double price;
@@ -22,6 +10,7 @@ class ProductResponseModel {
 
   ProductResponseModel({
     required this.productId,
+    required this.adminId,
     required this.name,
     required this.proudctImage,
     required this.price,
@@ -33,6 +22,7 @@ class ProductResponseModel {
   factory ProductResponseModel.fromJson(Map<String, dynamic> json) {
     return ProductResponseModel(
       productId: json['productId'] ?? "",
+      adminId: json['adminId'] ?? "",
       name: json['name'] ?? "",
       proudctImage: json['image'] ?? "",
       price: json['price']?.toDouble() ?? 0.0,
@@ -45,6 +35,7 @@ class ProductResponseModel {
   Map<String, dynamic> toJson() {
     return {
       'productId': productId,
+      'adminId': adminId,
       'name': name,
       'image': proudctImage,
       'price': price,

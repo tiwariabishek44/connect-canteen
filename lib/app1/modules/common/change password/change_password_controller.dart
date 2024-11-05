@@ -5,10 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
-import '../../../cons/prefs.dart';
-import '../../../data/api_models/change_password_api_response.dart';
-import '../../../widget/snackbar_widget.dart';
-
 class ChangePasswordController extends GetxController {
   final GlobalKey<FormState> changePasswordKey = GlobalKey<FormState>();
   final TextEditingController oldPasswordController = TextEditingController();

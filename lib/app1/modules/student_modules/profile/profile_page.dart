@@ -1,190 +1,275 @@
-import 'dart:developer';
-
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:connect_canteen/app/config/colors.dart';
-import 'package:connect_canteen/app/config/style.dart';
-import 'package:connect_canteen/app1/model/student_model.dart';
-import 'package:connect_canteen/app1/modules/canteen_module.dart/mealTime/meal_time.dart';
 import 'package:connect_canteen/app1/modules/common/login/login_controller.dart';
 import 'package:connect_canteen/app1/modules/student_modules/acount_info/acount_info.dart';
 import 'package:connect_canteen/app1/modules/student_modules/contact_us_page/contact_us_page.dart';
-import 'package:connect_canteen/app1/modules/student_modules/group/group.dart';
-import 'package:connect_canteen/app1/modules/common/wallet/wallet_page.dart';
-import 'package:connect_canteen/app1/modules/student_modules/order_hold/order_hold.dart';
 import 'package:connect_canteen/app1/widget/logout_cornfiration.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:connect_canteen/app/widget/profile_tile.dart';
-import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:shimmer/shimmer.dart';
 
 class ProfilePage extends StatelessWidget {
-  final loignController = Get.put(LoginController());
-
-  Widget buildCustomListTile({
-    required String title,
-    required String subtitle,
-    required IconData trailing,
-    required VoidCallback onTap,
-  }) {
-    return ListTile(
-      title: Text(
-        title,
-        style: TextStyle(
-            fontWeight: FontWeight.w500, fontSize: 19.sp, color: Colors.black),
-      ),
-      subtitle: Text(
-        subtitle,
-        style: TextStyle(
-            fontWeight: FontWeight.w400,
-            fontSize: 16.sp,
-            color: Colors.grey[700]),
-      ),
-      trailing: Icon(
-        trailing,
-        color: Colors.grey[700],
-      ),
-      onTap: onTap,
-    );
-  }
+  final loginController = Get.put(LoginController());
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
-      appBar: AppBar(
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        backgroundColor: Colors.white,
-        titleSpacing: 4.0.w, // Adjusts the spacing above the title
-        title: Text(
-          "Settings",
-          style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w400),
-        ),
+    final theme = Theme.of(context);
 
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(50.0),
-          child: Align(
-            alignment: Alignment.topLeft,
-            child: Padding(
-              padding: EdgeInsets.only(left: 4.0.w),
-              child: Text(
-                'System Settings',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.sp),
-              ),
+    return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
+      body: CustomScrollView(
+        slivers: [
+          _buildAppBar(theme),
+          SliverToBoxAdapter(
+            child: _buildBody(context, theme),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAppBar(ThemeData theme) {
+    return SliverAppBar(
+      expandedHeight: 180,
+      pinned: true,
+      backgroundColor: theme.colorScheme.primary,
+      flexibleSpace: FlexibleSpaceBar(
+        background: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                theme.colorScheme.primary,
+                theme.colorScheme.primary.withOpacity(0.8),
+              ],
             ),
           ),
-        ),
-      ),
-      body: Padding(
-        padding: AppPadding.screenHorizontalPadding,
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Stack(
             children: [
-              SizedBox(
-                height: 2.h,
-              ),      
-              buildCustomListTile(
-                  onTap: () {
-                    Get.to(() => AccountInfo(),
-                        transition: Transition.cupertinoDialog);
-                  },
-                  title: 'My Account ',
-                  subtitle: 'Your Accout Details',
-                  trailing: Icons.chevron_right),
-              SizedBox(
-                height: 1.h,
+              Positioned(
+                right: -50,
+                top: -50,
+                child: CircleAvatar(
+                  radius: 100,
+                  backgroundColor: Colors.white.withOpacity(0.1),
+                ),
               ),
-              buildCustomListTile(
-                  onTap: () {
-                    Get.to(
-                        () => WalletPage(
-                              grade: loignController
-                                  .studentDataResponse.value!.classes,
-                              userId: loignController
-                                  .studentDataResponse.value!.userid,
-                              isStudent: true,
-                              name: 'Abishek Tiwari',
-                              image: loignController
-                                  .studentDataResponse.value!.profilePicture,
-                            ),
-                        transition: Transition.cupertinoDialog,
-                        duration: duration);
-                  },
-                  title: 'Wallet ',
-                  subtitle: 'Your Wallet Your money',
-                  trailing: Icons.chevron_right),
-              buildCustomListTile(
-                  onTap: () {
-                    Get.to(() => GroupPage(),
-                        transition: Transition.cupertinoDialog,
-                        duration: duration);
-                  },
-                  title: 'Group ',
-                  subtitle: 'Order meal in group, make dining easy',
-                  trailing: Icons.chevron_right),
-              buildCustomListTile(
-                  onTap: () {
-                    Get.to(
-                        () => OrderHoldPage(
-                              cid: loignController
-                                  .studentDataResponse.value!.userid,
-                              schoolrefrenceId: loignController
-                                  .studentDataResponse.value!.schoolId,
-                            ),
-                        transition: Transition.cupertinoDialog);
-                  },
-                  //
-                  title: 'Order Hold  ',
-                  subtitle: 'Reschedule your order ',
-                  trailing: Icons.chevron_right),
-              buildCustomListTile(
-                  onTap: () {
-                    Get.to(() => ContactUsPage(),
-                        transition: Transition.cupertinoDialog);
-                  },
-                  //
-                  title: 'Contact Us',
-                  subtitle: 'Get you meal time information',
-                  trailing: Icons.chevron_right),
-              buildCustomListTile(
-                  onTap: () {
-                    Get.to(() => Mealtime(),
-                        transition: Transition.cupertinoDialog);
-                  },
-                  //
-                  title: 'Meal Time   ',
-                  subtitle: 'Get you meal time information ',
-                  trailing: Icons.chevron_right),
-              buildCustomListTile(
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return LogoutConfirmationDialog(
-                          isbutton: true,
-                          heading: 'Alert',
-                          subheading:
-                              "Do you want to logout of the application?",
-                          firstbutton: "Yes",
-                          secondbutton: 'No',
-                          onConfirm: () {
-                            loignController.logout();
-                          },
-                        );
-                      },
-                    );
-                  },
-                  title: 'LogOut',
-                  subtitle: 'Get out from system',
-                  trailing: Icons.chevron_right)
+              Positioned(
+                left: -40,
+                bottom: -40,
+                child: CircleAvatar(
+                  radius: 80,
+                  backgroundColor: Colors.white.withOpacity(0.1),
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomLeft,
+                child: Padding(
+                  padding: EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Settings',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Manage your preferences',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.9),
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),
       ),
+    );
+  }
 
-      
+  Widget _buildBody(BuildContext context, ThemeData theme) {
+    return Padding(
+      padding: EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSectionTitle('Account Settings', theme),
+          _buildSettingsGroup(
+            theme,
+            children: [
+              _buildSettingsTile(
+                theme,
+                title: 'My Account',
+                subtitle: 'Your Account Details',
+                icon: Icons.person_outline,
+                onTap: () => Get.to(() => AccountInfo()),
+              ),
+              _buildSettingsTile(theme,
+                  title: 'Deposit Money',
+                  subtitle: 'Manage your wallet',
+                  icon: Icons.account_balance_wallet_outlined,
+                  onTap: () {}),
+            ],
+          ),
+          SizedBox(height: 24),
+          _buildSectionTitle('General Settings', theme),
+          _buildSettingsGroup(
+            theme,
+            children: [
+              _buildSettingsTile(
+                theme,
+                title: 'Contact Us',
+                subtitle: 'Get support and help',
+                icon: Icons.support_agent_outlined,
+                onTap: () => Get.to(() => ContactUsPage()),
+              ),
+            ],
+          ),
+          SizedBox(height: 24),
+          _buildLogoutButton(context, theme),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title, ThemeData theme) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+      child: Text(
+        title,
+        style: TextStyle(
+          color: theme.colorScheme.primary,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSettingsGroup(ThemeData theme,
+      {required List<Widget> children}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: theme.shadowColor.withOpacity(0.05),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: children,
+      ),
+    );
+  }
+
+  Widget _buildSettingsTile(
+    ThemeData theme, {
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  icon,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+              SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: theme.colorScheme.onSurface.withOpacity(0.3),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLogoutButton(BuildContext context, ThemeData theme) {
+    return Container(
+      margin: EdgeInsets.only(top: 8),
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return ConfirmationDialog(
+                heading: 'Logout',
+                subheading: 'Are you sure you want to logout?',
+                confirmButton: 'Logout',
+                cancelButton: 'Cancel',
+                showButtons: true,
+                color: Colors.red,
+                onConfirm: () => loginController.logout(),
+              );
+            },
+          );
+        },
+        icon: Icon(Icons.logout),
+        label: Text('Logout'),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: theme.colorScheme.error,
+          foregroundColor: Colors.white,
+          padding: EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 0,
+        ),
+      ),
     );
   }
 }

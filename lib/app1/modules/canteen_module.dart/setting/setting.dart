@@ -1,149 +1,258 @@
-import 'dart:developer';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connect_canteen/app/config/colors.dart';
 import 'package:connect_canteen/app/config/style.dart';
-import 'package:connect_canteen/app1/model/student_model.dart';
-import 'package:connect_canteen/app1/modules/canteen_module.dart/mealTime/meal_time.dart';
-import 'package:connect_canteen/app1/modules/canteen_module.dart/mealTime/meal_time_controller.dart';
-import 'package:connect_canteen/app1/modules/canteen_module.dart/report/report_page.dart';
+import 'package:connect_canteen/app1/modules/canteen_module.dart/deposit_history/deposit_history_page.dart';
 import 'package:connect_canteen/app1/modules/common/login/login_controller.dart';
-import 'package:connect_canteen/app1/modules/student_modules/acount_info/acount_info.dart';
-import 'package:connect_canteen/app1/modules/student_modules/group/group.dart';
-import 'package:connect_canteen/app1/modules/common/wallet/wallet_page.dart';
-import 'package:connect_canteen/app1/modules/student_modules/order_hold/order_hold.dart';
 import 'package:connect_canteen/app1/widget/logout_cornfiration.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:connect_canteen/app/widget/profile_tile.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:shimmer/shimmer.dart';
 
 class CanteenSetting extends StatelessWidget {
-  final loignController = Get.put(LoginController());
-  final mealTimeController = Get.put(MealTimeController());
-  Widget buildCustomListTile({
-    required String title,
-    required String subtitle,
-    required IconData trailing,
-    required VoidCallback onTap,
-  }) {
-    return ListTile(
-      title: Text(
-        title,
-        style: TextStyle(
-            fontWeight: FontWeight.w500, fontSize: 19.sp, color: Colors.black),
-      ),
-      subtitle: Text(
-        subtitle,
-        style: TextStyle(
-            fontWeight: FontWeight.w400,
-            fontSize: 16.sp,
-            color: Colors.grey[700]),
-      ),
-      trailing: Icon(
-        trailing,
-        color: Colors.grey[700],
-      ),
-      onTap: onTap,
-    );
-  }
+  final loginController = Get.put(LoginController());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
-      appBar: AppBar(
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        backgroundColor: Colors.white,
-        titleSpacing: 4.0.w, // Adjusts the spacing above the title
-        title: Text(
-          "Settings",
-          style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.w400),
-        ),
-
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(50.0),
-          child: Align(
-            alignment: Alignment.topLeft,
-            child: Padding(
-              padding: EdgeInsets.only(left: 4.0.w),
-              child: Text(
-                'System Settings',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.sp),
+      body: CustomScrollView(
+        slivers: [
+          // Modern App Bar
+          SliverAppBar(
+            expandedHeight: 120,
+            floating: false,
+            pinned: true,
+            elevation: 0,
+            backgroundColor: Colors.white,
+            flexibleSpace: FlexibleSpaceBar(
+              titlePadding: EdgeInsets.only(left: 20, bottom: 16),
+              title: Text(
+                "Settings",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
-        ),
-      ),
-      body: Padding(
-        padding: AppPadding.screenHorizontalPadding,
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: 2.h,
+
+          // Settings List
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSection(
+                    title: "Business",
+                    children: [
+                      _buildSettingTile(
+                        icon: Icons.account_balance_wallet_rounded,
+                        title: 'Deposit History',
+                        subtitle: 'Track all your deposit transactions',
+                        iconColor: Colors.blue,
+                        onTap: () => Get.to(() => DepositHistoryPage()),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 24),
+                  _buildSection(
+                    title: "Account",
+                    children: [
+                      _buildSettingTile(
+                        icon: Icons.logout_rounded,
+                        title: 'Logout',
+                        subtitle: 'Sign out from your account',
+                        iconColor: Colors.red,
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => _buildLogoutDialog(context),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              // buildCustomListTile(
-              //     onTap: () {},
-              //     title: 'My Account ',
-              //     subtitle: 'Your Accout Details',
-              //     trailing: Icons.chevron_right),
-              // SizedBox(
-              //   height: 1.h,
-              // ),
-              // buildCustomListTile(
-              //     onTap: () {},
-              //     title: 'Wallet ',
-              //     subtitle: 'Your Wallet Your money',
-              //     trailing: Icons.chevron_right),
-              buildCustomListTile(
-                  onTap: () {
-                    Get.to(
-                        () => CanteenDailyReport(
-                              isDailyReport: false,
-                            ),
-                        transition: Transition.cupertinoDialog);
-                    // // Handle click for Analytics\
-                  },
-                  title: 'Canteen Report ',
-                  subtitle: 'Order meal in group, make dining easy',
-                  trailing: Icons.chevron_right),
-              buildCustomListTile(
-                  onTap: () {
-                    Get.to(() => Mealtime(),
-                        transition: Transition.cupertinoDialog);
-                  },
-                  //
-                  title: 'Meal Time  ',
-                  subtitle: 'Get the meal time',
-                  trailing: Icons.chevron_right),
-              buildCustomListTile(
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return LogoutConfirmationDialog(
-                          isbutton: true,
-                          heading: 'Alert',
-                          subheading:
-                              "Do you want to logout of the application?",
-                          firstbutton: "Yes",
-                          secondbutton: 'No',
-                          onConfirm: () {
-                            loignController.logout();
-                          },
-                        );
-                      },
-                    );
-                  },
-                  title: 'LogOut',
-                  subtitle: 'Get out from system',
-                  trailing: Icons.chevron_right)
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSection({
+    required String title,
+    required List<Widget> children,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(left: 4, bottom: 12),
+          child: Text(
+            title,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[700],
+            ),
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: Offset(0, 4),
+              ),
             ],
           ),
+          child: Column(children: children),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSettingTile({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Color iconColor,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          child: Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: iconColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, color: iconColor),
+              ),
+              SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    if (subtitle.isNotEmpty) ...[
+                      SizedBox(height: 4),
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 16,
+                color: Colors.grey[400],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLogoutDialog(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.red.shade50,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.logout_rounded,
+                color: Colors.red,
+                size: 32,
+              ),
+            ),
+            SizedBox(height: 16),
+            Text(
+              'Logout',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Are you sure you want to logout?',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 16,
+              ),
+            ),
+            SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: TextButton(
+                    onPressed: () => Get.back(),
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text('Cancel'),
+                  ),
+                ),
+                SizedBox(width: 16),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => loginController.logout(),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      'Logout',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
